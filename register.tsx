@@ -27,7 +27,7 @@ export default function RegisterScreen() {
       <TextInput style={styles.input} placeholder="heslo znova" placeholderTextColor="#d3c4a3" secureTextEntry />
 
       {/* Button */}
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/main_menu')}>
         <Text style={styles.buttonText}>Registruj</Text>
       </TouchableOpacity>
     </View>

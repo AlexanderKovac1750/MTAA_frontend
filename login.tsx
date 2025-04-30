@@ -20,7 +20,7 @@ export default function LoginScreen() {
       <TextInput style={styles.input} placeholder="meno" placeholderTextColor="#d3c4a3" />
       <TextInput style={styles.input} placeholder="heslo" placeholderTextColor="#d3c4a3" secureTextEntry />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/main_menu')}>
         <Text style={styles.buttonText}>Prihlas sa</Text>
       </TouchableOpacity>
     </View>

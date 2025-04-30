@@ -25,11 +25,11 @@ export default function LoginChoiceScreen() {
 
       {/* Buttons */}
       <TouchableOpacity style={styles.button} onPress={() => router.push('/login')}>
-        <Text style={styles.buttonText}>Prihlás sa</Text>
+        <Text style={styles.buttonText}>Prihlás sa13</Text>
       </TouchableOpacity>
 
       <View style={styles.bottomButtons}>
-        <TouchableOpacity style={styles.smallButton}>
+        <TouchableOpacity style={styles.smallButton} onPress={() => router.push('/main_menu')}>
           <Text style={styles.smallButtonText}>anonymní mód</Text>
         </TouchableOpacity>
 
