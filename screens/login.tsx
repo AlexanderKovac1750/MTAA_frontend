@@ -1,9 +1,39 @@
 // app/login.tsx or app/(auth)/login.tsx
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router'; 
+import { useState } from 'react';
 
 export default function LoginScreen() {
   const router = useRouter();
+
+  
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      
+      const query = `?name=${encodeURIComponent(name)}&password=${encodeURIComponent(password)}`;
+      const url = `http://147.175.161.105:5000/login${query}`;
+      const response = await fetch(url, {
+        method: 'POST',
+      });
+  
+      const responseText = await response.text(); // 🔁 Use `.text()` instead of `.json()`
+  
+      if (!response.ok) {
+        console.log('❌ Error response:', responseText);
+        throw new Error(`Login failed: ${responseText}`);
+      }
+  
+      console.log('✅ Login successful:', responseText);
+      Alert.alert('Success', responseText);
+    } catch (error) {
+      console.error('🚨 Login error:', error.message);
+      Alert.alert('Login Error', error.message);
+    }
+  };
+
 
   return (
     <View style={styles.container}>
@@ -17,11 +47,28 @@ export default function LoginScreen() {
         <Text style={styles.logoText}>🦅</Text>
       </View>
 
-      <TextInput style={styles.input} placeholder="meno" placeholderTextColor="#d3c4a3" />
-      <TextInput style={styles.input} placeholder="heslo" placeholderTextColor="#d3c4a3" secureTextEntry />
+      <TextInput
+        placeholder="Name"
+        placeholderTextColor="#ccc"
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        placeholder="Password"
+        placeholderTextColor="#ccc"
+        secureTextEntry
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
+      />
 
       <TouchableOpacity style={styles.button} onPress={() => router.push('/screens/main_menu')}>
-        <Text style={styles.buttonText}>Prihlas sa</Text>
+        <Text style={styles.buttonText}>Prihlas saa</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Prihlas sa for real</Text>
       </TouchableOpacity>
     </View>
   );
