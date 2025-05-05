@@ -23,11 +23,14 @@ export default function LoginScreen() {
   
       if (!response.ok) {
         console.log('❌ Error response:', responseText);
-        throw new Error(`Login failed: ${responseText}`);
+        Alert.alert('failed: ', responseText);
+        //throw new Error(`Login failed: ${responseText}`);
+        return;
       }
   
-      console.log('✅ Login successful:', responseText);
-      Alert.alert('Success', responseText);
+      router.push('/screens/main_menu');
+      console.log('✅ Login successful !!:', responseText);
+      //Alert.alert('Success', responseText);
     } catch (error) {
       console.error('🚨 Login error:', error.message);
       Alert.alert('Login Error', error.message);
