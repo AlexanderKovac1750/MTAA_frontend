@@ -2,11 +2,11 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import index from '.';
-import login from './login';
-import register from './register';
-import main_menu from './main_menu';
-import account from './account';
+import first_screen from './screens/first_screen';
+import login from './screens/login';
+import register from './screens/register';
+import main_menu from './screens/main_menu';
+import account from './screens/account';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +15,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="index" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" component={index} />
+        <Stack.Screen name="first_screen" component={first_screen} />
         <Stack.Screen name="Login" component={login} />
         <Stack.Screen name="Register" component={register} />
         <Stack.Screen name="Main_menu" component={main_menu} />

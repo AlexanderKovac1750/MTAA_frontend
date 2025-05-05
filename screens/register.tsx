@@ -1,35 +1,38 @@
-// app/login.tsx or app/(auth)/login.tsx
+// app/register.tsx
+import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router'; 
 
-export default function MainMenuScreen() {
+export default function RegisterScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
+      {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Text style={styles.backButtonText}>◀</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Hlavne menu</Text>
+      {/* Title */}
+      <Text style={styles.title}>U slepeho orla</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/account')}>
-        <Text style={styles.buttonText}>Konto</Text>
-      </TouchableOpacity>
-
+      {/* Logo */}
       <View style={styles.logoPlaceholder}>
         <Text style={styles.logoText}>🦅</Text>
       </View>
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Prihlas sa</Text>
+      {/* Inputs */}
+      <TextInput style={styles.input} placeholder="meno" placeholderTextColor="#d3c4a3" />
+      <TextInput style={styles.input} placeholder="heslo" placeholderTextColor="#d3c4a3" secureTextEntry />
+      <TextInput style={styles.input} placeholder="heslo znova" placeholderTextColor="#d3c4a3" secureTextEntry />
+
+      {/* Button */}
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/screens/main_menu')}>
+        <Text style={styles.buttonText}>Registruj</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-// styles ... your same StyleSheet
-
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#3c2e23', alignItems: 'center', paddingTop: 100 },

@@ -2,7 +2,7 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router'; 
 
-export default function MainMenuScreen() {
+export default function LoginScreen() {
   const router = useRouter();
 
   return (
@@ -11,14 +11,17 @@ export default function MainMenuScreen() {
         <Text style={styles.backButtonText}>◀</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Konto</Text>
+      <Text style={styles.title}>U slepeho orla</Text>
 
       <View style={styles.logoPlaceholder}>
         <Text style={styles.logoText}>🦅</Text>
       </View>
 
-      <TouchableOpacity style={styles.button}  onPress={() => router.push('.')}>
-        <Text style={styles.buttonText}>odhlas sa</Text>
+      <TextInput style={styles.input} placeholder="meno" placeholderTextColor="#d3c4a3" />
+      <TextInput style={styles.input} placeholder="heslo" placeholderTextColor="#d3c4a3" secureTextEntry />
+
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/screens/main_menu')}>
+        <Text style={styles.buttonText}>Prihlas sa</Text>
       </TouchableOpacity>
     </View>
   );
