@@ -51,7 +51,7 @@ export default function LoginChoiceScreen() {
       <View style={styles.bottomButtons}>
         <TouchableOpacity
           style={[styles.smallButton, { borderColor: theme.border }]}
-          onPress={() => router.push('/screens/main_menu')}
+          onPress={() => router.push('/screens/experimental/E_MM')}
         >
           <Text style={[styles.smallButtonText, { color: theme.accent }]}>anonymný mód</Text>
         </TouchableOpacity>
