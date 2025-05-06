@@ -2,12 +2,18 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router'; 
 import { useState } from 'react';
+import { getBaseUrl, setBaseUrl } from '../../config';
 
 export default function E_MainMenuScreen() {
   const router = useRouter();
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
-    const [address, setAddress] = useState('192.168.0.102:5000');
+    const [address, setAddress] = useState(getBaseUrl());
+
+    const handle_change = (text: string) => {
+        setBaseUrl(text);
+        setAddress(text);
+    }
   
     const handleLogin = async () => {
       try {
@@ -27,7 +33,7 @@ export default function E_MainMenuScreen() {
           return;
         }
     
-        router.push('/screens/main_menu');
+        router.push('/screens/experimental/E_MM_food_pic');
         console.log('✅ Login successful !!:', responseText);
         //Alert.alert('Success', responseText);
       } catch (error) {
@@ -39,7 +45,7 @@ export default function E_MainMenuScreen() {
   return (
 
     <View style={styles.container}>
-        <Text style={styles.title}>EEE Hlavne menu5</Text>
+        <Text style={styles.title}>EEE Hlavne menu7</Text>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <Text style={styles.backButtonText}>◀</Text>
         </TouchableOpacity>
@@ -63,12 +69,21 @@ export default function E_MainMenuScreen() {
             style={styles.input}
             placeholder="Type your message here..."
             value={address}
-            onChangeText={setAddress}
+            onChangeText={handle_change}
         />
     
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Prihlas sa for real</Text>
         </TouchableOpacity>
+        <Text>steps:</Text>
+        <Text>1 - get ip of your wifi adapter (ipconfig)</Text>
+        <Text>2 - download latest mtaa_backend, whole zip and extract</Text>
+        <Text>3 - run app from backend, set ip:</Text>
+        <Text> port to that of wifi adapter</Text>
+        <Text>4 - your backend server is now visible on LAN</Text>
+        <Text>5 - now with backend active you can progress further</Text>
+        <Text>5 - set the 3rd field to server address</Text>
+        <Text>5 - Enter valid user f.e. Peter : 123</Text>
     </View>
   );
 }
