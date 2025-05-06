@@ -19,7 +19,7 @@ export default function LoginScreen() {
         method: 'POST',
       });
   
-      const responseText = await response.text(); // 🔁 Use `.text()` instead of `.json()`
+      const responseText = await response.text(); // Use `.text()` instead of `.json()`
   
       if (!response.ok) {
         console.log('❌ Error response:', responseText);

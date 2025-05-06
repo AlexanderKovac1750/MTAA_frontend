@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { Platform, StatusBar } from "react-native";
+import { ThemeProvider } from "./resources/themes/themeProvider";
 
 export default function RootLayout() {
   useEffect(() => {
@@ -10,5 +11,9 @@ export default function RootLayout() {
     }
   }, []);
 
-  return <Stack />;
+  return (
+    <ThemeProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </ThemeProvider>
+  );
 }
