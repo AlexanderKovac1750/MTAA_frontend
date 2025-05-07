@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Butt
 import { useRouter } from 'expo-router'; 
 import { useState } from 'react';
 import { getBaseUrl, setBaseUrl } from '../../config';
+import React from 'react';
 
 export default function E_FoodPicScreen() {
   const router = useRouter();

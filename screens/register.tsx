@@ -1,78 +1,56 @@
+// app/register.tsx
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router'; 
+import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const { theme } = useThemeColors();
+  const { theme, fontScale } = useThemeColors();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={[styles.backButtonText, { color: theme.text }]}>◀</Text>
+        <Text style={{ fontSize: 24 * fontScale, color: theme.text }}>◀</Text>
       </TouchableOpacity>
 
-      {/* Title */}
-      <Text style={[styles.title, { color: theme.text }]}>U slepeho orla</Text>
+      <Text style={{ fontSize: 24 * fontScale, color: theme.text, marginBottom: 20 }}>
+        U slepeho orla
+      </Text>
 
-      {/* Logo */}
       <View style={styles.logoPlaceholder}>
-        <Text style={styles.logoText}>🦅</Text>
+        <Text style={{ fontSize: 48 * fontScale }}>🦅</Text>
       </View>
 
-      {/* Inputs */}
-      <TextInput
-        style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
-        placeholder="meno"
-        placeholderTextColor={theme.secondary}
-      />
-      <TextInput
-        style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
-        placeholder="heslo"
-        placeholderTextColor={theme.secondary}
-        secureTextEntry
-      />
-      <TextInput
-        style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
-        placeholder="heslo znova"
-        placeholderTextColor={theme.secondary}
-        secureTextEntry
-      />
+      {['meno', 'heslo', 'heslo znova'].map((ph, idx) => (
+        <TextInput
+          key={idx}
+          placeholder={ph}
+          placeholderTextColor={theme.secondary}
+          secureTextEntry={ph.includes('heslo')}
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.surface,
+              color: theme.text,
+              borderColor: theme.border,
+              fontSize: 16 * fontScale,
+            },
+          ]}
+        />
+      ))}
 
-      {/* Button */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => router.push('/screens/main_menu')}>
-        <Text style={[styles.buttonText, { color: theme.text }]}>Registruj</Text>
+      <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]}>
+        <Text style={{ fontSize: 18 * fontScale, color: theme.text }}>Registruj</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 100,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-  },
-  backButtonText: {
-    fontSize: 24,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  logoPlaceholder: {
-    marginVertical: 20,
-  },
-  logoText: {
-    fontSize: 48,
-  },
+  container: { flex: 1, alignItems: 'center', paddingTop: 100 },
+  backButton: { position: 'absolute', top: 50, left: 20 },
+  logoPlaceholder: { marginVertical: 20 },
   input: {
     width: 250,
     padding: 10,
@@ -85,8 +63,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 8,
     marginTop: 20,
-  },
-  buttonText: {
-    fontSize: 18,
   },
 });

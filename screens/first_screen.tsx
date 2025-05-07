@@ -3,15 +3,17 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
+import i18n from '../localisation/localisation';
 import { FontAwesome } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginChoiceScreen() {
   const router = useRouter();
-  const { theme, toggleTheme, mode } = useThemeColors();
+  const { theme, toggleTheme, mode, fontScale } = useThemeColors();
+  const { t } = useTranslation();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Theme Toggle Buttons */}
       <View style={styles.topBar}>
         <TouchableOpacity onPress={toggleTheme}>
           <FontAwesome
@@ -22,45 +24,50 @@ export default function LoginChoiceScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Language Flags as Buttons */}
       <View style={styles.languageContainer}>
-        {['🇸🇰', '🇨🇿', '🇬🇧'].map((flag, idx) => (
-          <TouchableOpacity key={idx} style={styles.flagButton}>
-            <Text style={[styles.flag, { color: theme.text }]}>{flag}</Text>
+        {['sk', 'rus', 'en'].map(lang => (
+          <TouchableOpacity key={lang} onPress={() => i18n.changeLanguage(lang)} style={styles.flagButton}>
+            <Text style={{ fontSize: 26 * fontScale, color: theme.text }}>
+              {lang === 'sk' ? '🇸🇰' : lang === 'rus' ? '🇷🇺' : '🇬🇧'}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* Title */}
-      <Text style={[styles.title, { color: theme.text }]}>U slepého orla</Text>
+      <Text style={{ fontSize: 28 * fontScale, fontWeight: '600', color: theme.text, marginBottom: 20 }}>
+        {t('account.pubName')}
+      </Text>
 
-      {/* Logo */}
       <View style={styles.logoPlaceholder}>
-        <Text style={styles.logoText}>🦅</Text>
+        <Text style={{ fontSize: 48 * fontScale }}>🦅</Text>
       </View>
 
-      {/* Main Login Button */}
       <TouchableOpacity
         style={[styles.button, { backgroundColor: theme.primary }]}
         onPress={() => router.push('/screens/login')}
       >
-        <Text style={[styles.buttonText, { color: theme.surface }]}>Prihlás sa</Text>
+        <Text style={{ fontSize: 18 * fontScale, fontWeight: 'bold', color: theme.surface }}>
+          {t('account.login')}
+        </Text>
       </TouchableOpacity>
 
-      {/* Anon/Register Buttons */}
       <View style={styles.bottomButtons}>
         <TouchableOpacity
           style={[styles.smallButton, { borderColor: theme.border }]}
           onPress={() => router.push('/screens/experimental/E_MM')}
         >
-          <Text style={[styles.smallButtonText, { color: theme.accent }]}>anonymný mód</Text>
+          <Text style={{ fontSize: 14 * fontScale, color: theme.accent }}>
+            {t('account.anonymous')}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.smallButton, { borderColor: theme.border }]}
           onPress={() => router.push('/screens/register')}
         >
-          <Text style={[styles.smallButtonText, { color: theme.accent }]}>zaregistruj sa</Text>
+          <Text style={{ fontSize: 14 * fontScale, color: theme.accent }}>
+            {t('account.register')}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -72,10 +79,7 @@ const styles = StyleSheet.create({
   topBar: { position: 'absolute', top: 50, right: 30 },
   languageContainer: { flexDirection: 'row', marginBottom: 30 },
   flagButton: { marginHorizontal: 10, padding: 10, borderRadius: 8 },
-  flag: { fontSize: 26 },
-  title: { fontSize: 28, fontWeight: '600', marginBottom: 20 },
   logoPlaceholder: { marginVertical: 20 },
-  logoText: { fontSize: 48 },
   button: {
     paddingVertical: 12,
     paddingHorizontal: 40,
@@ -83,7 +87,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     elevation: 2,
   },
-  buttonText: { fontSize: 18, fontWeight: 'bold' },
   bottomButtons: {
     flexDirection: 'row',
     marginTop: 20,
@@ -96,5 +99,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     marginHorizontal: 5,
   },
-  smallButtonText: { fontSize: 14 },
 });

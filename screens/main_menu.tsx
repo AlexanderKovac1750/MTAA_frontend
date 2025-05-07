@@ -1,6 +1,7 @@
 // app/login.tsx or app/(auth)/login.tsx
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router'; 
+import React from 'react';
 
 export default function MainMenuScreen() {
   const router = useRouter();
