@@ -1,18 +1,96 @@
 import { SafeAreaView, View, Text, TextInput, Image, FlatList, TouchableOpacity, ScrollView, 
-  Dimensions, TouchableWithoutFeedback, StyleSheet} from 'react-native';
+  Dimensions, TouchableWithoutFeedback, StyleSheet,
+  ActivityIndicator} from 'react-native';
 import { useThemeColors } from '../resources/themes//themeProvider';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { Food } from '../food';
 
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
+const screenWidth = Dimensions.get('window').width;
+const numColumns = 2;
+const itemSize = screenWidth / numColumns;
 
 export default function MainMenu() {
   const router = useRouter();
 
   const { theme } = useThemeColors();
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [meals, setMeals] = useState<Food[]>([])
+  const [fetchingFood, setFetchingFood] = useState(true);
+
+  const getFilteredMeals= async () => {
+    setFetchingFood(true);
+    // Simulate fetch delay
+    //get from server
+    setTimeout(() => {
+      const mockData = Array.from({ length: 20 }, (_, i) => ({
+        id: `${i + 1}`,
+        name: `Person ${i + 1}`,
+        image: require('../resources/images/beer.png'),
+      }));
+      setMeals(mockData);
+      setFetchingFood(false);
+    }, 1500);
+  };
+
+  useEffect(() => {
+    getFilteredMeals();
+  }, []);
+
+  const renderItem = ({item}) => {
+    if(item==='__HEADER__'){
+      return (
+        <View style={{width:'100%'}}>
+          {renderHeader()}
+        </View>
+      );
+    }
+    if(item==='__STICKY__HEADER__'){
+      return (
+        <View style={{width:'100%'}}>
+          {renderStickyHeader()}
+        </View>
+      );
+    }
+    if(item==='__FILLER__'){
+      return(
+        <View style={{opacity: 0}}></View>
+      );
+    }
+    
+    return (
+      <TouchableOpacity
+        style={{
+        backgroundColor: theme.surface,
+        padding: 8,
+        borderRadius: 8,
+        width: '48%',
+        alignItems: 'center',
+        }}
+      >
+        <Image
+          source={require('../resources/images/beer.png')}
+          style={{ width: '100%', height: 80, borderRadius: 6 }}
+          resizeMode="cover"
+        />
+        <Text
+          numberOfLines={1}
+          style={{ color: theme.text, marginTop: 4, fontSize: 14, textAlign: 'center' }}
+        >
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+
+  if (fetchingFood) {
+    return (
+      <View>
+        <ActivityIndicator size="large" color="#666" />
+      </View>
+    );
+  }
 
   const dishes = [
     { id: '1', title: 'borsc po slovensky', image: require('../resources/images/beer.png') },
@@ -49,7 +127,7 @@ export default function MainMenu() {
   const renderHeader = () => (
     <>
       {/* Account icon top-left */}
-      <View style={{ position: 'absolute', top: 32, right: 16, zIndex: 10 }}>
+      <View style={{ position: 'absolute', top: 32, right: 16, zIndex: 10}}>
         <TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}>
           <Ionicons name="person-circle" size={48} color={theme.text} />
         </TouchableOpacity>
@@ -111,49 +189,20 @@ export default function MainMenu() {
     </View>
   );
 
+  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       {sidebarVisible && <Sidebar />}
-      <ScrollView stickyHeaderIndices={[1]}>
-        <View>
-          {renderHeader()}
-        </View>
-        <View>
-          {renderStickyHeader()}
-        </View>
-        <FlatList
-        data={dishes}
-        keyExtractor={(item) => item.id}
+      <FlatList
+        data={['__HEADER__', '__FILLER__', '__STICKY__HEADER__', '__FILLER__', ...dishes]}
+        keyExtractor={(item) => typeof item === 'string' ? item : item.id}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 12 }}
         contentContainerStyle={{ paddingBottom: 32, paddingHorizontal: 16 }}
-
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{
-              backgroundColor: theme.surface,
-              padding: 8,
-              borderRadius: 8,
-              width: '48%',
-              alignItems: 'center',
-            }}
-          >
-            <Image
-              source={item.image}
-              style={{ width: '100%', height: 80, borderRadius: 6 }}
-              resizeMode="cover"
-            />
-            <Text
-              numberOfLines={1}
-              style={{ color: theme.text, marginTop: 4, fontSize: 14, textAlign: 'center' }}
-            >
-              {item.title}
-            </Text>
-          </TouchableOpacity>
-        )}
+        stickyHeaderIndices={[1]}
+        
+        renderItem={renderItem}
       />
-      </ScrollView>
-      
     </SafeAreaView>
   );
 }
@@ -163,7 +212,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: SCREEN_WIDTH,
+    width: screenWidth,
     height: '100%',
     backgroundColor: 'rgba(0,0,0,0.3)',
     zIndex: 100,
