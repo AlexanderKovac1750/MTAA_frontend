@@ -48,8 +48,8 @@ export default function FoodDescriptionScreen() {
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.backTriangle} onPress={() => router.back()} />
         <View style={styles.cartContainer}>
-          <TouchableOpacity>
-            <FontAwesome name="shopping-cart" size={24} color={theme.text} />
+          <TouchableOpacity onPress={() => router.push('./shopping_cart')}>
+            <FontAwesome name="shopping-cart" size={24 * fontScale} color={theme.text} />
           </TouchableOpacity>
           {cartCount > 0 && (
             <View style={styles.cartBadge}>

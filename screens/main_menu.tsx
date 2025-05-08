@@ -76,12 +76,14 @@ export default function MainMenu() {
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, paddingTop: 20 }}>
         <TouchableOpacity onPress={toggleSidebar}>
           <Ionicons name="menu" size={28} color={theme.text} />
-        </TouchableOpacity>
+        </TouchableOpacity> 
 
         <Text style={[{ fontSize: 18, color: theme.text }]}>menu</Text>
 
         <View style={{ position: 'relative' }}>
+          <TouchableOpacity onPress={() => router.push('/screens/shopping_cart')}>
           <Ionicons name="cart" size={28} color={theme.accent} />
+          </TouchableOpacity>
           <View>
             <Text style={{ color: theme.surface, fontSize: 10, position: 'absolute', right: -6, top: -6,}}>1</Text>
           </View>
