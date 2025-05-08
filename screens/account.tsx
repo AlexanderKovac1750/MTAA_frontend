@@ -9,7 +9,7 @@ import i18n from '../localisation/localisation';
 const languages = [
   { code: 'sk', label: 'Slovenčina', emoji: '🇸🇰' },
   { code: 'en', label: 'English', emoji: '🇬🇧' },
-  { code: 'ru', label: 'Русский', emoji: '🇷🇺' },
+  { code: 'rus', label: 'Русский', emoji: '🇷🇺' },
 ];
 
 export default function AccountScreen() {
