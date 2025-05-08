@@ -50,7 +50,7 @@ export default function MainMenu() {
     <>
       {/* Account icon top-left */}
       <View style={{ position: 'absolute', top: 32, right: 16, zIndex: 10 }}>
-        <TouchableOpacity onPress={() => console.log('Account pressed')}>
+        <TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}>
           <Ionicons name="person-circle" size={48} color={theme.text} />
         </TouchableOpacity>
       </View>

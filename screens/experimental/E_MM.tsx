@@ -2,7 +2,7 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router'; 
 import { useState } from 'react';
-import { getBaseUrl, setBaseUrl } from '../../config';
+import { getBaseUrl, setBaseUrl, setToken } from '../../config';
 import React from 'react';
 
 export default function E_MainMenuScreen() {
@@ -26,6 +26,7 @@ export default function E_MainMenuScreen() {
         });
     
         const responseText = await response.text(); // Use `.text()` instead of `.json()`
+        const data: any = JSON.parse(responseText);
     
         if (!response.ok) {
           console.log('❌ Error response:', responseText);
@@ -34,8 +35,9 @@ export default function E_MainMenuScreen() {
           return;
         }
     
+        setToken(data.token);
         router.push('/screens/experimental/E_MM_food_pic');
-        console.log('✅ Login successful !!:', responseText);
+        console.log('✅ Login successful !!:', data.token);
         //Alert.alert('Success', responseText);
       } catch (error) {
         console.error('🚨 Login error:', error.message);
