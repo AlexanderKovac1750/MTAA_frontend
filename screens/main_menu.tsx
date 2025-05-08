@@ -58,7 +58,7 @@ export default function MainMenu() {
       {/* Special dish section */}
       <View style={{ paddingTop: 48, paddingHorizontal: 16 }}>
         <Text style={{ color: theme.text, fontSize: 18, textAlign: 'center', paddingTop: 32 }}>dnesna specialita</Text>
-        <TouchableOpacity OnPress={router.push('/screens/item_desc')}>
+        <TouchableOpacity onPress={() => router.push('/screens/item_desc')}>
           <Image
             source={require('../resources/images/beer.png')}
             style={{ width: '100%', height: 140, borderRadius: 8, marginTop: 8 }}
