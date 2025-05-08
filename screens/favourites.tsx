@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
-import { Feather, Ionicons, FontAwesome } from '@expo/vector-icons';
-
-const windowWidth = Dimensions.get('window').width;
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 const dummyFavourites = [
     {
@@ -30,7 +28,6 @@ const dummyFavourites = [
 export default function FavouriteMealsScreen() {
     const { theme, fontScale } = useThemeColors();
     const router = useRouter();
-
     const [favourites, setFavourites] = useState(dummyFavourites);
 
     const removeFromFavourites = (id: number) => {
@@ -38,37 +35,47 @@ export default function FavouriteMealsScreen() {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background, paddingTop: 50 }]}>
-        
-        {/* Triangle Back Button */}
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Text style={{ fontSize: 36 * fontScale, color: theme.text }}>◀</Text>
-        </TouchableOpacity>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+        {/* Back triangle top-left */}
+        <View style={styles.topBar}>
+            <TouchableOpacity style={styles.backTriangle} onPress={() => router.back()} />
+        </View>
 
-        {/* Profile Icon */}
-        <TouchableOpacity style={styles.profileIcon} onPress={() => router.push('./screens/account')}>
-            <Feather name="user" size={28 * fontScale} color={theme.text} />
-        </TouchableOpacity>
+        {/* Account icon top-right */}
+        <View style={{ position: 'absolute', top: 32, right: 16, zIndex: 10 }}>
+            <TouchableOpacity
+            onPress={() => {
+                console.log('Account pressed');
+                router.push('/screens/account');
+            }}
+            >
+            <Ionicons name="person-circle" size={48} color={theme.text} />
+            </TouchableOpacity>
+        </View>
 
         {/* Title */}
         <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>
             Obľúbené jedlá ({favourites.length})
         </Text>
 
-        {/* Scrollable Favourites */}
+        {/* Scrollable favourites list */}
         <ScrollView contentContainerStyle={styles.scrollArea}>
             {favourites.map(item => (
             <View key={item.id} style={[styles.card, { backgroundColor: theme.card }]}>
                 <View style={styles.imageWrapper}>
+                    <TouchableOpacity onPress={() => router.push({ pathname: '/screens/item_desc', params: { id: item.id } })}>                 
                 <Image source={item.image} style={styles.image} resizeMode="cover" />
-                
-                {/* Discount Overlay */}
+                </TouchableOpacity>
+                {/* Discount tag */}
                 <View style={styles.discountTag}>
                     <Text style={styles.discountText}>{item.discount}</Text>
                 </View>
 
-                {/* Star Icon (Remove) */}
-                <TouchableOpacity onPress={() => removeFromFavourites(item.id)} style={styles.starIcon}>
+                {/* Remove from favourites icon */}
+                <TouchableOpacity
+                    onPress={() => removeFromFavourites(item.id)}
+                    style={styles.starIcon}
+                >
                     <FontAwesome name="star" size={28 * fontScale} color="#FFD700" />
                 </TouchableOpacity>
                 </View>
@@ -78,7 +85,7 @@ export default function FavouriteMealsScreen() {
             ))}
         </ScrollView>
 
-        {/* Add More Favourites Button */}
+        {/* Add More Button */}
         <TouchableOpacity
             onPress={() => router.push('/screens/main_menu')}
             style={[styles.addMoreBtn, { backgroundColor: theme.surface }]}
@@ -95,18 +102,25 @@ export default function FavouriteMealsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingTop: 60,
     },
-    backButton: {
+    topBar: {
         position: 'absolute',
-        top: 50,
-        left: 20,
-        zIndex: 2,
+        top: 36,
+        left: 16,
+        zIndex: 10,
     },
-    profileIcon: {
-        position: 'absolute',
-        top: 50,
-        right: 20,
-        zIndex: 2,
+    backTriangle: {
+        width: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        borderStyle: 'solid',
+        borderTopWidth: 12,
+        borderBottomWidth: 12,
+        borderRightWidth: 18,
+        borderTopColor: 'transparent',
+        borderBottomColor: 'transparent',
+        borderRightColor: '#f4e4d4',
     },
     title: {
         textAlign: 'center',
