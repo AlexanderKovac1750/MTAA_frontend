@@ -1,12 +1,54 @@
 // app/register.tsx
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
+import { useState } from 'react';
+import { getBaseUrl, setToken } from '../config';
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { theme, fontScale } = useThemeColors();
+  const [inputs, setInputs] = useState(['', '', '']); // [meno, heslo, heslo znova]
+
+  const handleChange = (text, index) => {
+    const newInputs = [...inputs];
+    newInputs[index] = text;
+    setInputs(newInputs);
+  };
+
+  const handleRegister = async () => {
+    if(inputs[1]!=inputs[2]){
+      Alert.alert('Passwords need to be same');
+      return;
+    }
+
+    try {
+      const query = `?name=${encodeURIComponent(inputs[0])}&password=${encodeURIComponent(inputs[1])}`;
+      const url = `http://${getBaseUrl()}/register${query}`;
+      const response = await fetch(url, {
+        method: 'POST',
+      });
+    
+      const responseText = await response.text(); // Use `.text()` instead of `.json()`
+      const data: any = JSON.parse(responseText);
+    
+      if (!response.ok) {
+        console.log('❌ Error response:', data.message);
+        Alert.alert('failed: ', data.message);
+        return;
+      }
+        
+      setToken(data.token);
+      router.push('/screens/main_menu');
+      console.log('✅ Register successful !!:', data.token);
+          
+    } catch (error) {
+      console.error('🚨 Register error:', error.message);
+      Alert.alert('Register Error', error.message);
+    }
+    
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -26,6 +68,8 @@ export default function RegisterScreen() {
         <TextInput
           key={idx}
           placeholder={ph}
+          value={inputs[idx]}
+        onChangeText={(text) => handleChange(text, idx)}
           placeholderTextColor={theme.secondary}
           secureTextEntry={ph.includes('heslo')}
           style={[
@@ -40,7 +84,7 @@ export default function RegisterScreen() {
         />
       ))}
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]}>
+      <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleRegister}>
         <Text style={{ fontSize: 18 * fontScale, color: theme.text }}>Registruj</Text>
       </TouchableOpacity>
     </View>

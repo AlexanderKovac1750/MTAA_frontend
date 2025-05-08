@@ -1,6 +1,5 @@
 // app/login.tsx or app/(auth)/login.tsx
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
 import { useRouter } from 'expo-router'; 
 import { useState, useEffect } from 'react';
 import { getBaseUrl, setBaseUrl, setToken } from '../../config';
@@ -91,16 +90,15 @@ export default function E_MainMenuScreen() {
       const data: any = JSON.parse(responseText);
   
       if (!response.ok) {
-        console.log('❌ Error response:', responseText);
-        Alert.alert('failed: ', responseText);
-        //throw new Error(`Login failed: ${responseText}`);
+        console.log('❌ Error response:', data.message);
+        Alert.alert('failed: ', data.message);
         return;
       }
     
       setToken(data.token);
       router.push('/screens/main_menu');
       console.log('✅ Login successful !!:', data.token);
-      //Alert.alert('Success', responseText);
+      
     } catch (error) {
       console.error('🚨 Login error:', error.message);
       Alert.alert('Login Error', error.message);
