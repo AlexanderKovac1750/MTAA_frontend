@@ -1,0 +1,278 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, KeyboardAvoidingView, Platform, TouchableOpacity, Alert } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
+import { useThemeColors } from '../resources/themes/themeProvider';
+import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+export default function DeliveryScreen() {
+    const { theme, fontScale } = useThemeColors();
+    const router = useRouter();
+
+    const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
+    const [marker, setMarker] = useState<{ latitude: number; longitude: number } | null>(null);
+
+    const [street, setStreet] = useState('');
+    const [number, setNumber] = useState('');
+    const [postcode, setPostcode] = useState('');
+
+    const [comment, setComment] = useState('');
+    const [tab, setTab] = useState<'delivery' | 'reservation'>('delivery');
+
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimeFromPicker, setShowTimeFromPicker] = useState(false);
+    const [showTimeToPicker, setShowTimeToPicker] = useState(false);
+
+    const [date, setDate] = useState<Date | null>(null);
+    const [timeFrom, setTimeFrom] = useState<Date | null>(null);
+    const [timeTo, setTimeTo] = useState<Date | null>(null);
+
+    const [guestCount, setGuestCount] = useState(1);
+    const maxGuests = 8;
+
+    useEffect(() => {
+        (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') return;
+
+        let current = await Location.getCurrentPositionAsync({});
+        setLocation(current.coords);
+        setMarker({
+            latitude: current.coords.latitude,
+            longitude: current.coords.longitude,
+        });
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (street && number && postcode) {
+        (async () => {
+            try {
+            const geocode = await Location.geocodeAsync(`${street} ${number}, ${postcode}`);
+            if (geocode.length > 0) {
+                const { latitude, longitude } = geocode[0];
+                setMarker({ latitude, longitude });
+            }
+            } catch {}
+        })();
+        }
+    }, [street, number, postcode]);
+
+    const handleMarkerDragEnd = async (e: any) => {
+        const { latitude, longitude } = e.nativeEvent.coordinate;
+        setMarker({ latitude, longitude });
+        const result = await Location.reverseGeocodeAsync({ latitude, longitude });
+        if (result.length > 0) {
+        const place = result[0];
+        setStreet(place.street || '');
+        setNumber(place.name || '');
+        setPostcode(place.postalCode || '');
+        }
+    };
+
+    const handleDateChange = (event: any, selectedDate?: Date) => {
+        setShowDatePicker(false);
+        if (selectedDate) setDate(selectedDate);
+    };
+
+    const handleTimeFromChange = (event: any, selectedTime?: Date) => {
+        setShowTimeFromPicker(false);
+        if (selectedTime) setTimeFrom(selectedTime);
+    };
+
+    const handleTimeToChange = (event: any, selectedTime?: Date) => {
+        setShowTimeToPicker(false);
+        if (selectedTime) setTimeTo(selectedTime);
+    };
+
+    const incrementGuests = () => {
+        if (guestCount < maxGuests) setGuestCount(guestCount + 1);
+        else Alert.alert('Upozornenie', 'Maximálny počet hostí je 8.');
+    };
+
+    const decrementGuests = () => {
+        if (guestCount > 1) setGuestCount(guestCount - 1);
+    };
+
+    return (
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+
+            <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()}>
+                <View style={styles.backTriangle} />
+            </TouchableOpacity>
+
+            <Text style={[styles.title, { color: theme.text }]}>spôsob doručenia</Text>
+
+            <TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}>
+                <Ionicons name="person-circle" size={36 * fontScale} color={theme.text} />
+            </TouchableOpacity>
+            </View>
+
+            <View style={styles.row}>
+            <Pressable style={[styles.option, tab === 'reservation' ? { backgroundColor: theme.primary } : { backgroundColor: theme.secondary }]} onPress={() => setTab('reservation')}>
+                <Text style={{ color: tab === 'reservation' ? theme.background : theme.text }}>rezervácia</Text>
+            </Pressable>
+            <Pressable style={[styles.option, tab === 'delivery' ? { backgroundColor: theme.primary } : { backgroundColor: theme.secondary }]} onPress={() => setTab('delivery')}>
+                <Text style={{ color: tab === 'delivery' ? theme.background : theme.text }}>donáška</Text>
+            </Pressable>
+            </View>
+
+            {tab === 'delivery' && (
+            <>
+                <TextInput
+                style={[styles.input, { backgroundColor: theme.card, color: theme.text }]} placeholder="ulica" placeholderTextColor={theme.placeholder} value={street} onChangeText={setStreet} />
+                <View style={styles.row}>
+                <TextInput
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="číslo" placeholderTextColor={theme.placeholder} value={number} onChangeText={setNumber} />
+                <TextInput
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="PSČ" placeholderTextColor={theme.placeholder} value={postcode} onChangeText={setPostcode} />
+                </View>
+
+                {location && (
+                <MapView
+                    style={styles.map}
+                    region={{
+                    latitude: marker?.latitude || location.latitude,
+                    longitude: marker?.longitude || location.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                    }}
+                    onPress={(e) => handleMarkerDragEnd(e)}
+                >
+                    {marker && <Marker coordinate={marker} draggable onDragEnd={handleMarkerDragEnd} />}
+                </MapView>
+                )}
+
+                <TextInput
+                style={[styles.commentInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="komentár" placeholderTextColor={theme.placeholder} value={comment} onChangeText={setComment} multiline />
+            </>
+            )}
+
+            {tab === 'reservation' && (
+            <>
+                <View style={styles.row}>
+                <TextInput
+                    style={[styles.input, { flex: 1, backgroundColor: theme.card, color: theme.text }]} placeholder="Vyber dátum" placeholderTextColor={theme.placeholder} value={date ? date.toLocaleDateString() : ''} editable={false} />
+                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                    <Ionicons name="calendar" size={28 * fontScale} color={theme.text} style={{ marginLeft: 8, marginTop: 20 }} />
+                </TouchableOpacity>
+                </View>
+                <View style={styles.row}>
+                <TextInput
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="od" placeholderTextColor={theme.placeholder} value={timeFrom ? timeFrom.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''} editable={false} />
+                <TouchableOpacity onPress={() => setShowTimeFromPicker(true)}>
+                    <Ionicons name="time" size={28 * fontScale} color={theme.text} style={{ marginTop: 20 }} />
+                </TouchableOpacity>
+                <TextInput
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="do" placeholderTextColor={theme.placeholder} value={timeTo ? timeTo.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''} editable={false} />
+                <TouchableOpacity onPress={() => setShowTimeToPicker(true)}>
+                    <Ionicons name="time" size={28 * fontScale} color={theme.text} style={{ marginTop: 20 }} />
+                </TouchableOpacity>
+                </View>
+                <View style={[styles.row, { alignItems: 'center', marginTop: 16 }]}>
+                <Text style={{ color: theme.text }}>Počet hostí:</Text>
+                <TouchableOpacity style={styles.option} onPress={decrementGuests}><Text>-</Text></TouchableOpacity>
+                <Text style={{ color: theme.text }}>{guestCount}</Text>
+                <TouchableOpacity style={styles.option} onPress={incrementGuests}><Text>+</Text></TouchableOpacity>
+                </View>
+                <TextInput
+                style={[styles.commentInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="komentár" placeholderTextColor={theme.placeholder} value={comment} onChangeText={setComment} multiline />
+            </>
+            )}
+
+            {showDatePicker && (
+            <DateTimePicker value={date || new Date()} mode="date" display="default" onChange={handleDateChange} />
+            )}
+
+            {showTimeFromPicker && (
+            <DateTimePicker value={timeFrom || new Date()} mode="time" display="default" onChange={handleTimeFromChange} />
+            )}
+
+            {showTimeToPicker && (
+            <DateTimePicker value={timeTo || new Date()} mode="time" display="default" onChange={handleTimeToChange} />
+            )}
+
+            <Pressable
+            style={[styles.payBtn, { backgroundColor: theme.card }]}
+            onPress={() => router.push('/payment')}
+            >
+            <Text style={{ color: theme.text }}>zaplať</Text>
+            </Pressable>
+
+        </View>
+        </KeyboardAvoidingView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingTop: 60,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    backTriangle: {
+        width: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        borderStyle: 'solid',
+        borderTopWidth: 12,
+        borderBottomWidth: 12,
+        borderRightWidth: 18,
+        borderTopColor: 'transparent',
+        borderBottomColor: 'transparent',
+        borderRightColor: '#f4e4d4',
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: '600',
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 16,
+    },
+    option: {
+        padding: 10,
+        borderRadius: 6,
+        alignItems: 'center',
+        backgroundColor: '#ccc',
+        minWidth: 40,
+    },
+    input: {
+        marginTop: 16,
+        borderRadius: 6,
+        padding: 12,
+    },
+    halfInput: {
+        flex: 1,
+        marginHorizontal: 4,
+    },
+    map: {
+        height: 250,
+        width: '100%',
+        marginTop: 16,
+        borderRadius: 6,
+    },
+    commentInput: {
+        marginTop: 16,
+        borderRadius: 6,
+        padding: 12,
+        height: 100,
+    },
+    payBtn: {
+        marginTop: 'auto',
+        padding: 16,
+        alignItems: 'center',
+        borderRadius: 6,
+        marginBottom: 16,
+    },
+});
