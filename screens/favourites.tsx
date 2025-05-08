@@ -10,19 +10,19 @@ const dummyFavourites = [
     {
         id: 1,
         name: 'Zemiaky na smotane',
-        image: require('../resources/images/sample-dish.jpg'),
+        image: require('../resources/images/sample-dish.png'),
         discount: '-20%',
     },
     {
         id: 2,
         name: 'Bryndzové halušky',
-        image: require('../resources/images/sample-dish.jpg'),
+        image: require('../resources/images/sample-dish.png'),
         discount: '-10%',
     },
     {
         id: 3,
         name: 'Vyprážaný syr',
-        image: require('../resources/images/sample-dish.jpg'),
+        image: require('../resources/images/sample-dish.png'),
         discount: '-15%',
     },
 ];
