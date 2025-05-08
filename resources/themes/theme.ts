@@ -7,6 +7,8 @@ export const Colors = {
     surface: '#fffaf5',
     accent: '#a47551',
     border: '#d9bca2',
+    card: '#e9dbce',
+    placeholder: '#a08c7a',
   },
   dark: {
     background: '#2e1f16',
@@ -16,6 +18,8 @@ export const Colors = {
     surface: '#3c2e23',
     accent: '#d9b18f',
     border: '#5e4533',
+    card: '#4a3629',
+    placeholder: '#bba89a',
   },
   highContrast: {
     background: '#000000',
@@ -25,6 +29,8 @@ export const Colors = {
     surface: '#222222',
     accent: '#FF00FF',
     border: '#FFFFFF',
+    card: '#333333',
+    placeholder: '#AAAAAA',
   },
 };
 
