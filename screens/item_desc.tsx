@@ -124,7 +124,7 @@ export default function FoodDescriptionScreen() {
             <Text style={styles.quantityButton}>+</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton} onPress={() => router.push('./delivery')}>
           <Text style={styles.addButtonText}>Pridať do košíka</Text>
         </TouchableOpacity>
       </View>
