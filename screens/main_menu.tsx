@@ -3,11 +3,13 @@ import { SafeAreaView, View, Text, TextInput, Image, FlatList, TouchableOpacity,
 import { useThemeColors } from '../resources/themes//themeProvider';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function MainMenu() {
+  const router = useRouter();
 
   const { theme } = useThemeColors();
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -56,11 +58,14 @@ export default function MainMenu() {
       {/* Special dish section */}
       <View style={{ paddingTop: 48, paddingHorizontal: 16 }}>
         <Text style={{ color: theme.text, fontSize: 18, textAlign: 'center', paddingTop: 32 }}>dnesna specialita</Text>
-        <Image
-          source={require('../resources/images/beer.png')}
-          style={{ width: '100%', height: 140, borderRadius: 8, marginTop: 8 }}
-          resizeMode="cover"
-        />
+        <TouchableOpacity OnPress={router.push('/screens/item_desc')}>
+          <Image
+            source={require('../resources/images/beer.png')}
+            style={{ width: '100%', height: 140, borderRadius: 8, marginTop: 8 }}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
+       
       </View>
     </>
   );
@@ -123,7 +128,6 @@ export default function MainMenu() {
         columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 12 }}
         contentContainerStyle={{ paddingBottom: 32, paddingHorizontal: 16 }}
 
-        //stickyHeaderIndices={[0]} // index within ListHeaderComponent (renderStickyHeader)
         renderItem={({ item }) => (
           <TouchableOpacity
             style={{
