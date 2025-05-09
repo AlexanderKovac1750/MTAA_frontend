@@ -21,8 +21,9 @@ export default function MainMenu() {
   const [meals, setMeals] = useState<Food[]>([])
   const [fetchingFood, setFetchingFood] = useState(true);
   const [phrase, setPhrase] = useState('');
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState<string | null>(null);
   const [imageFetched, setImageFetched] = useState(false);
+  const [searchNeeded, setSearchNeeded] = useState(true);
 
   const getFilteredMeals= async () => {
     setFetchingFood(true);
@@ -30,7 +31,8 @@ export default function MainMenu() {
     
     try {
       const query = `?token=${getToken()}&phrase=${phrase}`;
-      const url = `http://${getBaseUrl()}/dish${query}`;
+      const cat_query = (category===null) ? ``: `&category=${category}`;
+      const url = `http://${getBaseUrl()}/dish${query}${cat_query}`;
       const response = await fetch(url, {
         method: 'GET',
       });
@@ -65,15 +67,18 @@ export default function MainMenu() {
   };
 
   useEffect(() => {
-    getFilteredMeals();
-  }, []);
+    if(searchNeeded){
+      getFilteredMeals();
+      setSearchNeeded(false);
+    }
+  }, [searchNeeded]);
 
   useEffect(() => {
     if(meals.length>0 && !fetchingFood && !imageFetched){
       loadImages();
       setImageFetched(true);
     }
-  })
+  },  [meals])
 
   const fetchWithTimeout = (url: string, timeout = 5000): Promise<Response> => {
     return Promise.race([
@@ -196,14 +201,31 @@ export default function MainMenu() {
   const toggleSidebar = () => setSidebarVisible((v) => !v);
   const closeSidebar = () => setSidebarVisible(false);
 
+  const setCategoryFilter = (cat : string) => {
+    setPhrase('');
+    if(category===cat){
+      setCategory(null);
+    }
+    else{
+      setCategory(cat);
+    }
+    setSearchNeeded(true);
+  }
+
   const Sidebar = () => (
     <TouchableWithoutFeedback onPress={closeSidebar}>
       <View style={styles.sidebarOverlay}>
         <TouchableWithoutFeedback>
           <View style={[styles.sidebarPanel, { backgroundColor: theme.primary }]}>
-            <MaterialCommunityIcons name="noodles" size={32} color={theme.text} style={styles.sidebarIcon} />
-            <MaterialCommunityIcons name="food-steak" size={32} color={theme.text} style={styles.sidebarIcon} />
-            <MaterialCommunityIcons name="beer" size={32} color={theme.text} style={styles.sidebarIcon} />
+            <TouchableOpacity onPress={() => setCategoryFilter('polievka')}>
+              <MaterialCommunityIcons name="noodles" size={32} color={category==='polievka'?theme.background:theme.text} style={styles.sidebarIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setCategoryFilter('hlavne')}>
+              <MaterialCommunityIcons name="food-steak" size={32} color={category==='hlavne'?theme.background:theme.text} style={styles.sidebarIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setCategoryFilter('drink')}>
+              <MaterialCommunityIcons name="beer" size={32} color={category==='drink'?theme.background:theme.text} style={styles.sidebarIcon} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push('/screens/favourites')}>
               <MaterialCommunityIcons name="silverware-fork-knife" size={32} color={theme.text} style={styles.sidebarIcon} />
             </TouchableOpacity>
