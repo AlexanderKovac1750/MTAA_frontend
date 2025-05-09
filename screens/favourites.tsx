@@ -181,7 +181,7 @@ export default function FavouriteMealsScreen() {
             {favourites.map(item => (
             <View key={item.id} style={[styles.card, { backgroundColor: theme.card }]}>
                 <View style={styles.imageWrapper}>
-                    <TouchableOpacity onPress={() =>{selectFood(item); router.push('/screens/item_desc'); setWasInFavourites(true);}}>                 
+                    <TouchableOpacity onPress={() =>{selectFood(item); router.push('/screens/item_desc');}}>                 
                 
                 <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
                 </TouchableOpacity>
