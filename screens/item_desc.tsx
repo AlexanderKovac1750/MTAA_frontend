@@ -11,7 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { FontAwesome } from '@expo/vector-icons';
-import { resetSelectedFood, getSelectedFood, selectFood, setWasInFavourites } from '../config';
+import { resetSelectedFood, getSelectedFood, selectFood } from '../config';
 import { addFavourite, Food, removeFavourite} from '../food';
 import { isFav } from '../food';
 

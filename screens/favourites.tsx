@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { Food, removeFavourite, setFavs } from '../food';
-import { getBaseUrl, getToken, selectFood, setWasInFavourites } from '../config';
+import { getBaseUrl, getToken, selectFood } from '../config';
 
 const dummyFavourites = [
     {
