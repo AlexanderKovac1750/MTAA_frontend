@@ -126,7 +126,7 @@ export default function PaymentScreen() {
                 </Text>
             </View>
 
-            
+
             {/* QR Section - just in case!!!*/}
             {paymentMethod === 'cash' && isRegisteredUser && (
                 <View style={[styles.qrContainer, { borderWidth: 1, borderColor: theme.border, borderRadius: 8, padding: 10 }]}>
@@ -139,10 +139,15 @@ export default function PaymentScreen() {
                 </View>
             )}
 
-            {/* Pay Button - moved to very bottom */}
+            {/* Pay Button  */}
             <View style={{ marginTop: 'auto' }}>
                 <TouchableOpacity
-                    onPress={handlePayment}
+                    onPress={() => {
+                        handlePayment();
+                        if (isRegisteredUser) {
+                            router.push('/screens/add_bonus');
+                        }
+                    }}
                     style={[styles.payButton, { backgroundColor: theme.primary }]}
                 >
                     <Text style={[styles.payText, { fontSize: 16 * fontScale }]}>Zaplatiť</Text>
