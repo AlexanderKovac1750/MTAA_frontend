@@ -1,5 +1,5 @@
 
-type order_item = {
+export type order_item = {
     name: string;
     size: string;
     count: number;

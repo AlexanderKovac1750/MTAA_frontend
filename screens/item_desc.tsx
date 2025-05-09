@@ -14,6 +14,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { resetSelectedFood, getSelectedFood, selectFood } from '../config';
 import { addFavourite, Food, removeFavourite} from '../food';
 import { isFav } from '../food';
+import { addOrMergeItem, order_item } from '../cart'; 
 
 const { width } = Dimensions.get('window');
 
@@ -27,7 +28,6 @@ export default function FoodDescriptionScreen() {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('stredné');
   const [meal, setMeal] = useState<Food|null>(null)
-  const [portion, setPortion] = useState(null);
 
   // Replace with actual API call
   useEffect(() => { 
@@ -54,6 +54,18 @@ export default function FoodDescriptionScreen() {
     }
     else{
       removeFavourite(meal);
+    }
+  }
+
+  const buy = () =>{
+    if(meal===null){
+      return;
+    }
+    else{
+      const item: order_item = { name:meal.title, size:selectedSize, count:quantity };
+      addOrMergeItem(item);
+      router.back();
+      //add to cart
     }
   }
 
@@ -138,9 +150,9 @@ export default function FoodDescriptionScreen() {
 
         {/* Size Options */}
         <View style={styles.sizesContainer}>
-            {getPortionBoxElement('male', meal.small_size, meal.small_price, meal.unit)}
-            {getPortionBoxElement('stredne', meal.medium_size, meal.medium_price, meal.unit)}
-            {getPortionBoxElement('velke', meal.large_size, meal.large_price, meal.unit)}
+            {getPortionBoxElement('malé', meal.small_size, meal.small_price, meal.unit)}
+            {getPortionBoxElement('stredné', meal.medium_size, meal.medium_price, meal.unit)}
+            {getPortionBoxElement('veľké', meal.large_size, meal.large_price, meal.unit)}
         </View>
       </ScrollView>)}
 
@@ -155,7 +167,7 @@ export default function FoodDescriptionScreen() {
             <Text style={styles.quantityButton}>+</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={() => router.push('./delivery')}>
+        <TouchableOpacity style={styles.addButton} onPress={buy}>
           <Text style={styles.addButtonText}>Pridať do košíka</Text>
         </TouchableOpacity>
       </View>)}
