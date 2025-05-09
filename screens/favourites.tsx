@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Dimensions
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import { Food, removeFavourite } from '../food';
-import { getBaseUrl, getToken } from '../config';
+import { Food, removeFavourite, setFavs } from '../food';
+import { getBaseUrl, getToken, selectFood, setWasInFavourites } from '../config';
 
 const dummyFavourites = [
     {
@@ -58,6 +58,7 @@ export default function FavouriteMealsScreen() {
         
                 if (Array.isArray(data.dishes)) {
                 setFavourites(data.dishes as Food[]);
+                setFavs(data.dishes as Food[]);
                 } else {
                 console.error('Invalid food data');
                 }
@@ -87,7 +88,7 @@ export default function FavouriteMealsScreen() {
 
     const removeFromFavourites = (favourite_meal : Food) => {
         setFavourites(prev => prev.filter(item => item.id !== favourite_meal.id));
-        removeFavourite(favourite_meal.title);
+        removeFavourite(favourite_meal);
     };
 
     const fetchWithTimeout = (url: string, timeout = 5000): Promise<Response> => {
@@ -180,7 +181,7 @@ export default function FavouriteMealsScreen() {
             {favourites.map(item => (
             <View key={item.id} style={[styles.card, { backgroundColor: theme.card }]}>
                 <View style={styles.imageWrapper}>
-                    <TouchableOpacity onPress={() => router.push({ pathname: '/screens/item_desc', params: { id: item.id } })}>                 
+                    <TouchableOpacity onPress={() =>{selectFood(item); router.push('/screens/item_desc'); setWasInFavourites(true);}}>                 
                 
                 <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
                 </TouchableOpacity>

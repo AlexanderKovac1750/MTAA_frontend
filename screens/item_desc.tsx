@@ -11,8 +11,9 @@ import {
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { FontAwesome } from '@expo/vector-icons';
-import { resetSelectedFood, getSelectedFood, selectFood } from '../config';
-import { Food} from '../food';
+import { resetSelectedFood, getSelectedFood, selectFood, setWasInFavourites } from '../config';
+import { addFavourite, Food, removeFavourite} from '../food';
+import { isFav } from '../food';
 
 const { width } = Dimensions.get('window');
 
@@ -31,9 +32,30 @@ export default function FoodDescriptionScreen() {
   // Replace with actual API call
   useEffect(() => { 
     setMeal(getSelectedFood());
+    
     // Simulate fetch
     setCartCount(3); // Example: 3 items in cart
-  }, []);
+  }, []); 
+
+  useEffect(() =>{
+    if(meal!==null){
+      setIsFavorite(isFav(meal));
+    }
+  }, [meal])
+
+  const setIsFavoriteFood = (new_val: boolean) => {
+    setIsFavorite(new_val);
+    if(meal===null){
+      return;
+    }
+
+    if(new_val){
+      addFavourite(meal);
+    }
+    else{
+      removeFavourite(meal);
+    }
+  }
 
 /*
   const dish = {
@@ -75,7 +97,7 @@ export default function FoodDescriptionScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Triangle Arrow + Cart */}
       <View style={styles.topBar}>
-        <TouchableOpacity style={styles.backTriangle} onPress={() => router.back()} />
+        <TouchableOpacity style={styles.backTriangle} onPress={() => {router.back();}} />
         <View style={styles.cartContainer}>
           <TouchableOpacity onPress={() => router.push('./shopping_cart')}>
             <FontAwesome name="shopping-cart" size={24 * fontScale} color={theme.text} />
@@ -95,7 +117,7 @@ export default function FoodDescriptionScreen() {
             {meal.title}
           </Text>
           <TouchableOpacity
-            onPress={() => setIsFavorite(!isFavorite)}
+            onPress={() => setIsFavoriteFood(!isFavorite)}
             style={styles.starWrapper}
           >
             <FontAwesome
@@ -116,81 +138,9 @@ export default function FoodDescriptionScreen() {
 
         {/* Size Options */}
         <View style={styles.sizesContainer}>
-          
-            {/*{meal.small_portion && (<TouchableOpacity
-                  onPress={() => setSelectedSize(meal.small_portion!.name)}
-                  style={[
-                  styles.sizeOption,
-                  {
-                    borderColor: (selectedSize===meal.small_portion!.name) ? '#c79a55' : theme.border,
-                    backgroundColor: (selectedSize===meal.small_portion!.name) ? '#c79a5520' : 'transparent',
-                  },
-                ]}>
-                <View style={styles.checkboxOuter}>
-                  {(selectedSize===meal.small_portion!.name) && <View style={styles.checkboxInner} />}
-                </View>
-                <Text style={[styles.sizeText, { color: theme.text }]}>
-                  male – {size.weight} – {size.price}
-                </Text>
-            </TouchableOpacity>)};
-            {meal.medium_portion && (<TouchableOpacity
-                  onPress={() => setSelectedSize(meal.medium_portion!.name)}style={[
-                  styles.sizeOption,
-                  {
-                    borderColor: (selectedSize===meal.medium_portion!.name) ? '#c79a55' : theme.border,
-                    backgroundColor: (selectedSize===meal.medium_portion!.name) ? '#c79a5520' : 'transparent',
-                  },
-                ]}>
-                <View style={styles.checkboxOuter}>
-                  {(selectedSize===meal.medium_portion!.name) && <View style={styles.checkboxInner} />}
-                </View>
-                <Text style={[styles.sizeText, { color: theme.text }]}>
-                  stredne – {size.weight} – {size.price}
-                </Text>
-            </TouchableOpacity>)};
-            {meal.large_portion && (<TouchableOpacity
-                  onPress={() => setSelectedSize(meal.large_portion!.name)}style={[
-                  styles.sizeOption,
-                  {
-                    borderColor: (selectedSize===meal.large_portion!.name) ? '#c79a55' : theme.border,
-                    backgroundColor: (selectedSize===meal.large_portion!.name) ? '#c79a5520' : 'transparent',
-                  },
-                ]}>
-                <View style={styles.checkboxOuter}>
-                  {(selectedSize===meal.large_portion!.name) && <View style={styles.checkboxInner} />}
-                </View>
-                <Text style={[styles.sizeText, { color: theme.text }]}>
-                  velke – {size.weight} – {size.price}
-                </Text>
-            </TouchableOpacity>)};*/}
-
             {getPortionBoxElement('male', meal.small_size, meal.small_price, meal.unit)}
             {getPortionBoxElement('stredne', meal.medium_size, meal.medium_price, meal.unit)}
             {getPortionBoxElement('velke', meal.large_size, meal.large_price, meal.unit)}
-          
-          {/*meal.sizes.map((size, idx) => {
-            const isSelected = selectedSize === size.label;
-            return (
-              <TouchableOpacity
-                key={idx}
-                onPress={() => setSelectedSize(size.label)}
-                style={[
-                  styles.sizeOption,
-                  {
-                    borderColor: isSelected ? '#c79a55' : theme.border,
-                    backgroundColor: isSelected ? '#c79a5520' : 'transparent',
-                  },
-                ]}
-              >
-                <View style={styles.checkboxOuter}>
-                  {isSelected && <View style={styles.checkboxInner} />}
-                </View>
-                <Text style={[styles.sizeText, { color: theme.text }]}>
-                  {size.label} – {size.weight} – {size.price}
-                </Text>
-              </TouchableOpacity>
-            );
-          })*/}
         </View>
       </ScrollView>)}
 

@@ -14,12 +14,36 @@ export type Food = {
     unit: string;
 };
 
+let favourites: Food[] = [];
+
+const addFav = (newFood: Food): void => {
+  if (!favourites.includes(newFood)) {
+    favourites.push(newFood);
+  }
+};
+
+const removeFav = (remFood: Food): void => {
+  favourites = favourites.filter(food => food !== remFood);
+};
+
+export const getFavs = (): Food[] => {
+  return [...favourites]; // return a copy to avoid external mutation
+};
+
+export const isFav = (food: Food): boolean => {
+  return favourites.some(fav_food => fav_food.id === food.id);;
+  
+};
+
+export const setFavs = (favs: Food[]) => {
+  favourites=favs;
+};
 
 import { Alert } from 'react-native';
 import { getBaseUrl, getToken } from './config';
-export const removeFavourite = async(dish_name: string) => {
+export const removeFavourite = async(remFood: Food) => {
         try {
-            const query = `?token=${getToken()}&dish_name=${dish_name}`;
+            const query = `?token=${getToken()}&dish_name=${remFood.title}`;
             const url = `http://${getBaseUrl()}/favourite${query}`;
             const response = await fetch(url, {
                 method: 'DELETE',
@@ -30,10 +54,14 @@ export const removeFavourite = async(dish_name: string) => {
             
             if (!response.ok) {
                 console.log('❌ Error response:', data.message);
-                Alert.alert('failed to remove dish_name: ', data.message);
+                Alert.alert('failed to remove fav dish_name: ', data.message);
+                if(response.status===404){
+                    addFav(remFood);
+                }
             }
             else{
                 console.log('✅ favorite removal successful !!:', data.dishes);
+                removeFav(remFood);
             }
 
         } catch (error) {
@@ -41,3 +69,34 @@ export const removeFavourite = async(dish_name: string) => {
             Alert.alert('favorite removal Error', error.message);
         }
     }
+
+export const addFavourite = async(addFood: Food) => {
+        try {
+            const query = `?token=${getToken()}&dish_name=${addFood.title}`;
+            const url = `http://${getBaseUrl()}/favourite${query}`;
+            const response = await fetch(url, {
+                method: 'POST',
+            });
+                
+            const responseText = await response.text(); 
+            const data: any = JSON.parse(responseText);
+            
+            if (!response.ok) {
+                console.log('❌ Error response:', data.message);
+                Alert.alert('failed to add fav dish_name: ', data.message);
+                if(response.status===409){
+                    addFav(addFood);
+                }
+            }
+            else{
+                console.log('✅ favorite add successful !!:', data.dishes);
+                addFav(addFood);
+            }
+
+        } catch (error) {
+            console.error('🚨 favorite add error:', error.message);
+            Alert.alert('favorite add Error', error.message);
+        }
+    }
+
+
