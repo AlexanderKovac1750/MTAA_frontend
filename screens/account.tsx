@@ -81,10 +81,11 @@ export default function AccountScreen() {
         }
       }
 
-
-      setName(user.name || 'Anonymous');
-      setUserPoints(user.loyalty_points || 0);
-      setLoyaltyLevel(user.loyalty_level || 0);
+      const account_info=user.account_info;
+      const reservations=reservationData.reservations;
+      setName(account_info.name || 'Anonymous');
+      setUserPoints(account_info.loyalty_points || 0);
+      setLoyaltyLevel(account_info.loyalty_level || 0);
       setReservations(reservationData.reservations || []);
     } catch (err) {
       console.error('❌ [ERROR] Failed to fetch user data:', err.message);
