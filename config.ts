@@ -13,3 +13,14 @@ export const setToken = (new_token: string) => {
 };
 
 export const getToken = () => token;
+
+
+import {Food} from './food'
+let selectedFood: Food|null=null;
+export const selectFood = (new_SF: Food) => {
+  selectedFood = new_SF;
+};
+export const resetSelectedFood = () =>{
+  selectedFood=null;
+}
+export const getSelectedFood = () => selectedFood;

@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Food } from '../food';
 import { getBaseUrl, getToken } from '../config';
+import { selectFood } from '../config';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -165,7 +166,7 @@ export default function MainMenu() {
     const temp_item : Food = item;
     const imageURI = item.image;
     return (
-      <TouchableOpacity
+      <TouchableOpacity onPress={() =>{selectFood(item); router.push('/screens/item_desc');}}
         style={{
         backgroundColor: theme.surface,
         padding: 8,

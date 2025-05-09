@@ -11,6 +11,8 @@ import {
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { FontAwesome } from '@expo/vector-icons';
+import { resetSelectedFood, getSelectedFood } from '../config';
+import { Food } from '../food';
 
 const { width } = Dimensions.get('window');
 
@@ -23,9 +25,11 @@ export default function FoodDescriptionScreen() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('stredné');
+  const [meal, setMeal] = useState<Food|null>(null)
 
   // Replace with actual API call
-  useEffect(() => {
+  useEffect(() => { 
+    setMeal(getSelectedFood());
     // Simulate fetch
     setCartCount(3); // Example: 3 items in cart
   }, []);
@@ -59,11 +63,11 @@ export default function FoodDescriptionScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      {meal && (<ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Title + Star ABOVE the image */}
         <View style={styles.titleRow}>
           <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>
-            {dish.name}
+            {meal.title}
           </Text>
           <TouchableOpacity
             onPress={() => setIsFavorite(!isFavorite)}
@@ -111,10 +115,10 @@ export default function FoodDescriptionScreen() {
             );
           })}
         </View>
-      </ScrollView>
+      </ScrollView>)}
 
       {/* Sticky Bottom Bar */}
-      <View style={styles.bottomBar}>
+      {meal && (<View style={styles.bottomBar}>
         <View style={styles.quantityContainer}>
           <TouchableOpacity onPress={() => setQuantity(q => Math.max(1, q - 1))}>
             <Text style={styles.quantityButton}>−</Text>
@@ -127,7 +131,7 @@ export default function FoodDescriptionScreen() {
         <TouchableOpacity style={styles.addButton} onPress={() => router.push('./delivery')}>
           <Text style={styles.addButtonText}>Pridať do košíka</Text>
         </TouchableOpacity>
-      </View>
+      </View>)}
     </View>
   );
 }
