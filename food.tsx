@@ -1,5 +1,6 @@
 export type Food = {
     id: string;
-    name: string;
+    title: string;
+    description: string;
     image: string;
 };

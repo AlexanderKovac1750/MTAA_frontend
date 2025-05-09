@@ -149,6 +149,14 @@ export default function E_MainMenuScreen() {
           />
           <Text style={{ marginLeft: 10 }}>Remember me</Text>
         </View>
+        <TouchableOpacity
+            style={{
+              width: 24,
+              height: 24,
+              borderColor: 'gray',
+            }}
+            onPress={() => {router.push('/screens/experimental/E_MM_food_pic');}}
+          />
     
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Prihlas sa for real</Text>

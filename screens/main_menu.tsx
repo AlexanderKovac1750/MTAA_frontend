@@ -1,11 +1,12 @@
 import { SafeAreaView, View, Text, TextInput, Image, FlatList, TouchableOpacity, ScrollView, 
   Dimensions, TouchableWithoutFeedback, StyleSheet,
-  ActivityIndicator} from 'react-native';
+  ActivityIndicator, Alert} from 'react-native';
 import { useThemeColors } from '../resources/themes//themeProvider';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Food } from '../food';
+import { getBaseUrl, getToken } from '../config';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -19,26 +20,122 @@ export default function MainMenu() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [meals, setMeals] = useState<Food[]>([])
   const [fetchingFood, setFetchingFood] = useState(true);
+  const [phrase, setPhrase] = useState('');
+  const [category, setCategory] = useState(null);
+  const [imageFetched, setImageFetched] = useState(false);
 
   const getFilteredMeals= async () => {
     setFetchingFood(true);
-    // Simulate fetch delay
-    //get from server
-    setTimeout(() => {
-      const mockData = Array.from({ length: 20 }, (_, i) => ({
-        id: `${i + 1}`,
-        name: `Person ${i + 1}`,
-        image: require('../resources/images/beer.png'),
-      }));
-      setMeals(mockData);
-      setFetchingFood(false);
-    }, 1500);
+    setMeals([]);
+    
+    try {
+      const query = `?token=${getToken()}&phrase=${phrase}`;
+      const url = `http://${getBaseUrl()}/dish${query}`;
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+        
+      const responseText = await response.text(); 
+      const data: any = JSON.parse(responseText);
+        
+      if (!response.ok) {
+        console.log('❌ Error response:', data.message);
+        Alert.alert('failed to load food: ', data.message);
+        setMeals([]);
+      }
+      else{
+        console.log('✅ dish load successful !!:', data.dishes);
+
+        if (Array.isArray(data.dishes)) {
+          setMeals(data.dishes as Food[]);
+        } else {
+          console.error('Invalid food data');
+        }
+      }
+            
+              
+    } catch (error) {
+      console.error('🚨 dish load error:', error.message);
+      Alert.alert('dish load Error', error.message);
+      setMeals([]);
+    }
+
+    setFetchingFood(false);
+    setImageFetched(false);
   };
 
   useEffect(() => {
     getFilteredMeals();
   }, []);
 
+  useEffect(() => {
+    if(meals.length>0 && !fetchingFood && !imageFetched){
+      loadImages();
+      setImageFetched(true);
+    }
+  })
+
+  const fetchWithTimeout = (url: string, timeout = 5000): Promise<Response> => {
+    return Promise.race([
+      fetch(url),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), timeout)
+      )
+    ]);
+  };
+
+  // Convert binary data to base64
+  const convertToBase64 = (binaryData: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string); // The result is the base64 string
+      };
+      reader.onerror = () => {
+        reject('Error converting binary to base64');
+      };
+      reader.readAsDataURL(binaryData); // Convert the binary Blob to base64
+    });
+  };
+
+  // Load image URIs for the fetched photo names
+  const loadImages = async () => {
+    try {
+      // Create a copy of the photos array to update with image URIs
+      const updatedMeals = [...meals];
+
+      for (let i = 0; i < updatedMeals.length; i++) {
+        try{
+          const meal = updatedMeals[i];
+          const query = `/picture?dish=${meal.title}`;
+          const url = `http://${getBaseUrl()}/dish${query}`;
+          const response = await fetchWithTimeout(url,1000);
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch image for ${meal.title}`);
+          }
+
+          // The response should return binary data (e.g., a Blob)
+          const binaryData = await response.blob();
+
+          // Convert binary data to base64
+          const imageURI = await convertToBase64(binaryData);
+
+          // Update the imageURI of the corresponding photo
+          
+          updatedMeals[i].image = imageURI;
+        } catch (error) {
+          console.error('Error loading 1 image:', error);
+        }
+      }
+
+      // Update the state once all images are loaded
+      setMeals(updatedMeals);
+    } catch (error) {
+      console.error('Error loading images:', error);
+    }
+  };
+  
   const renderItem = ({item}) => {
     if(item==='__HEADER__'){
       return (
@@ -60,6 +157,8 @@ export default function MainMenu() {
       );
     }
     
+    const temp_item : Food = item;
+    const imageURI = item.image;
     return (
       <TouchableOpacity
         style={{
@@ -70,41 +169,29 @@ export default function MainMenu() {
         alignItems: 'center',
         }}
       >
-        <Image
-          source={require('../resources/images/beer.png')}
-          style={{ width: '100%', height: 80, borderRadius: 6 }}
-          resizeMode="cover"
-        />
+        {item.image ? (
+              <Image
+              source={{ uri: imageURI }}
+              style={styles.image}
+              resizeMode="contain"
+              />      
+            ) : (
+              <Image
+              source={require('../resources/images/beer.png')}
+              style={styles.image}
+              resizeMode="cover"
+            />
+            )}
+
         <Text
           numberOfLines={1}
           style={{ color: theme.text, marginTop: 4, fontSize: 14, textAlign: 'center' }}
         >
+          {item.title}
         </Text>
       </TouchableOpacity>
     );
   }
-
-  if (fetchingFood) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color="#666" />
-      </View>
-    );
-  }
-
-  const dishes = [
-    { id: '1', title: 'borsc po slovensky', image: require('../resources/images/beer.png') },
-    { id: '2', title: 'Domáce bryndzov...', image: require('../resources/images/beer.png') },
-    { id: '3', title: 'grilovane krídelká', image: require('../resources/images/beer.png') },
-    { id: '4', title: 'bravčový steak', image: require('../resources/images/beer.png') },
-    { id: '5', title: 'halušky s kapustou', image: require('../resources/images/beer.png') },
-    { id: '6', title: 'zemiakové placky', image: require('../resources/images/beer.png') },
-    { id: '7', title: 'pečené koleno', image: require('../resources/images/beer.png') },
-    { id: '8', title: 'zemiakové placky', image: require('../resources/images/beer.png') },
-    { id: '9', title: 'pečené koleno', image: require('../resources/images/beer.png') },
-    { id: '10', title: 'zemiakové placky', image: require('../resources/images/beer.png') },
-    { id: '11', title: 'pečené koleno', image: require('../resources/images/beer.png') },
-  ];
 
   const toggleSidebar = () => setSidebarVisible((v) => !v);
   const closeSidebar = () => setSidebarVisible(false);
@@ -117,7 +204,9 @@ export default function MainMenu() {
             <MaterialCommunityIcons name="noodles" size={32} color={theme.text} style={styles.sidebarIcon} />
             <MaterialCommunityIcons name="food-steak" size={32} color={theme.text} style={styles.sidebarIcon} />
             <MaterialCommunityIcons name="beer" size={32} color={theme.text} style={styles.sidebarIcon} />
-            <MaterialCommunityIcons name="silverware-fork-knife" size={32} color={theme.text} style={styles.sidebarIcon} />
+            <TouchableOpacity onPress={() => router.push('/screens/favourites')}>
+              <MaterialCommunityIcons name="silverware-fork-knife" size={32} color={theme.text} style={styles.sidebarIcon} />
+            </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -127,14 +216,16 @@ export default function MainMenu() {
   const renderHeader = () => (
     <>
       {/* Account icon top-left */}
-      <View style={{ position: 'absolute', top: 32, right: 16, zIndex: 10}}>
-        <TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}>
-          <Ionicons name="person-circle" size={48} color={theme.text} />
-        </TouchableOpacity>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={{ position: 'absolute', top: 32, right: 1, zIndex: 10 }}>
+          <TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}>
+            <Ionicons name="person-circle" size={48} color={theme.text} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Special dish section */}
-      <View style={{ paddingTop: 48, paddingHorizontal: 16 }}>
+      <View style={{ paddingTop: 0, paddingHorizontal: 16 }}>
         <Text style={{ color: theme.text, fontSize: 18, textAlign: 'center', paddingTop: 32 }}>dnesna specialita</Text>
         <TouchableOpacity onPress={() => router.push('/screens/item_desc')}>
           <Image
@@ -182,30 +273,38 @@ export default function MainMenu() {
         <TextInput
           placeholder="Search"
           placeholderTextColor={theme.text}
-          style={{ flex: 1, color: theme.text, height: 40 }}
+          style={{ flex: 1, color: theme.text, height: 40}}
+          value={phrase}
+          onChangeText={setPhrase}
         />
-        <TouchableOpacity>
+        <TouchableOpacity onPress={getFilteredMeals}>
           <MaterialIcons name="search" size={24} color={theme.accent} />
         </TouchableOpacity>
       </View>
     </View>
   );
 
-  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      {sidebarVisible && <Sidebar />}
-      <FlatList
-        data={['__HEADER__', '__FILLER__', '__STICKY__HEADER__', '__FILLER__', ...dishes]}
-        keyExtractor={(item) => typeof item === 'string' ? item : item.id}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 12 }}
-        contentContainerStyle={{ paddingBottom: 32, paddingHorizontal: 16 }}
-        stickyHeaderIndices={[1]}
-        
-        renderItem={renderItem}
-      />
-    </SafeAreaView>
+        {sidebarVisible && <Sidebar />}
+        <FlatList
+          data={['__HEADER__', '__FILLER__', '__STICKY__HEADER__', '__FILLER__', ...meals]}
+          keyExtractor={(item) => typeof item === 'string' ? item : item.id}
+          numColumns={2}
+          columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 12 }}
+          contentContainerStyle={{ paddingBottom: 32, paddingHorizontal: 16 }}
+          stickyHeaderIndices={[1]}
+
+          renderItem={renderItem} 
+          ListFooterComponent={
+            fetchingFood ? (
+              <View style={{ paddingVertical: 20 }}>
+                <ActivityIndicator size="large" color={theme.accent}/>
+              </View>
+            ) : null
+          }
+          />
+      </SafeAreaView>
   );
 }
 
@@ -227,5 +326,14 @@ const styles = StyleSheet.create({
   },
   sidebarIcon: {
     marginVertical: 20,
+  },
+  image: {
+    width: '100%', 
+    height: 80, 
+    borderRadius: 6 ,
+  },
+  container: {
+    flex: 1,
+    paddingTop: 60,
   },
 });
