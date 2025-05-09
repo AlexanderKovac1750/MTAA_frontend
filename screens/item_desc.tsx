@@ -11,8 +11,8 @@ import {
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { FontAwesome } from '@expo/vector-icons';
-import { resetSelectedFood, getSelectedFood } from '../config';
-import { Food } from '../food';
+import { resetSelectedFood, getSelectedFood, selectFood } from '../config';
+import { Food} from '../food';
 
 const { width } = Dimensions.get('window');
 
@@ -26,6 +26,7 @@ export default function FoodDescriptionScreen() {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('stredné');
   const [meal, setMeal] = useState<Food|null>(null)
+  const [portion, setPortion] = useState(null);
 
   // Replace with actual API call
   useEffect(() => { 
@@ -34,7 +35,7 @@ export default function FoodDescriptionScreen() {
     setCartCount(3); // Example: 3 items in cart
   }, []);
 
-
+/*
   const dish = {
     name: 'Zemiaky na šľahačke',
     description: 'Zemiaky, šľahačka, párky, zelenina. Tradičné jedlo z regiónu...',
@@ -44,6 +45,30 @@ export default function FoodDescriptionScreen() {
       { label: 'stredné', weight: '240g', price: '4.21€' },
       { label: 'veľké', weight: '500g', price: '6.35€' },
     ],
+  };*/
+
+  const getPortionBoxElement = (name: string, portion_size: number|null, portion_price: GLfloat|null, unit: string) => {
+    if(portion_size===null || portion_price===null){
+      return null;
+    }
+    else{
+      return (<TouchableOpacity
+                  onPress={() => setSelectedSize(name)}
+                  style={[
+                  styles.sizeOption,
+                  {
+                    borderColor: (selectedSize===name) ? '#c79a55' : theme.border,
+                    backgroundColor: (selectedSize===name) ? '#c79a5520' : 'transparent',
+                  },
+                ]}>
+                <View style={styles.checkboxOuter}>
+                  {(selectedSize===name) && <View style={styles.checkboxInner} />}
+                </View>
+                <Text style={[styles.sizeText, { color: theme.text }]}>
+                  {name} – {portion_size} {unit} – {portion_price}
+                </Text>
+            </TouchableOpacity>)
+    }
   };
 
   return (
@@ -82,16 +107,68 @@ export default function FoodDescriptionScreen() {
         </View>
 
         {/* Dish Image */}
-        <Image source={{ uri: dish.imageUrl }} style={styles.image} />
+        <Image source={{ uri: meal.image }} style={styles.image} />
 
         {/* Description */}
         <Text style={[styles.description, { color: theme.text, fontSize: 14 * fontScale }]}>
-          {dish.description}
+          {meal.description}
         </Text>
 
         {/* Size Options */}
         <View style={styles.sizesContainer}>
-          {dish.sizes.map((size, idx) => {
+          
+            {/*{meal.small_portion && (<TouchableOpacity
+                  onPress={() => setSelectedSize(meal.small_portion!.name)}
+                  style={[
+                  styles.sizeOption,
+                  {
+                    borderColor: (selectedSize===meal.small_portion!.name) ? '#c79a55' : theme.border,
+                    backgroundColor: (selectedSize===meal.small_portion!.name) ? '#c79a5520' : 'transparent',
+                  },
+                ]}>
+                <View style={styles.checkboxOuter}>
+                  {(selectedSize===meal.small_portion!.name) && <View style={styles.checkboxInner} />}
+                </View>
+                <Text style={[styles.sizeText, { color: theme.text }]}>
+                  male – {size.weight} – {size.price}
+                </Text>
+            </TouchableOpacity>)};
+            {meal.medium_portion && (<TouchableOpacity
+                  onPress={() => setSelectedSize(meal.medium_portion!.name)}style={[
+                  styles.sizeOption,
+                  {
+                    borderColor: (selectedSize===meal.medium_portion!.name) ? '#c79a55' : theme.border,
+                    backgroundColor: (selectedSize===meal.medium_portion!.name) ? '#c79a5520' : 'transparent',
+                  },
+                ]}>
+                <View style={styles.checkboxOuter}>
+                  {(selectedSize===meal.medium_portion!.name) && <View style={styles.checkboxInner} />}
+                </View>
+                <Text style={[styles.sizeText, { color: theme.text }]}>
+                  stredne – {size.weight} – {size.price}
+                </Text>
+            </TouchableOpacity>)};
+            {meal.large_portion && (<TouchableOpacity
+                  onPress={() => setSelectedSize(meal.large_portion!.name)}style={[
+                  styles.sizeOption,
+                  {
+                    borderColor: (selectedSize===meal.large_portion!.name) ? '#c79a55' : theme.border,
+                    backgroundColor: (selectedSize===meal.large_portion!.name) ? '#c79a5520' : 'transparent',
+                  },
+                ]}>
+                <View style={styles.checkboxOuter}>
+                  {(selectedSize===meal.large_portion!.name) && <View style={styles.checkboxInner} />}
+                </View>
+                <Text style={[styles.sizeText, { color: theme.text }]}>
+                  velke – {size.weight} – {size.price}
+                </Text>
+            </TouchableOpacity>)};*/}
+
+            {getPortionBoxElement('male', meal.small_size, meal.small_price, meal.unit)}
+            {getPortionBoxElement('stredne', meal.medium_size, meal.medium_price, meal.unit)}
+            {getPortionBoxElement('velke', meal.large_size, meal.large_price, meal.unit)}
+          
+          {/*meal.sizes.map((size, idx) => {
             const isSelected = selectedSize === size.label;
             return (
               <TouchableOpacity
@@ -113,7 +190,7 @@ export default function FoodDescriptionScreen() {
                 </Text>
               </TouchableOpacity>
             );
-          })}
+          })*/}
         </View>
       </ScrollView>)}
 
