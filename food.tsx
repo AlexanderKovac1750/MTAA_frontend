@@ -3,4 +3,5 @@ export type Food = {
     title: string;
     description: string;
     image: string;
+    discount_base: GLfloat;
 };

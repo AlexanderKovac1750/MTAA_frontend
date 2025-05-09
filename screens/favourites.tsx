@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Dimensions, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Food } from '../food';
+import { getBaseUrl, getToken } from '../config';
 
 const dummyFavourites = [
     {
@@ -28,11 +30,153 @@ const dummyFavourites = [
 export default function FavouriteMealsScreen() {
     const { theme, fontScale } = useThemeColors();
     const router = useRouter();
-    const [favourites, setFavourites] = useState(dummyFavourites);
+    const [favourites, setFavourites] = useState<Food[]>([]);
+    const [fetchingFood, setFetchingFood] = useState(true);
+    const [imageFetched, setImageFetched] = useState(false);
 
-    const removeFromFavourites = (id: number) => {
-        setFavourites(prev => prev.filter(item => item.id !== id));
+    const getFavourites = async () => {
+        setFetchingFood(true);
+        setFavourites([]);
+        
+        try {
+            const query = `?token=${getToken()}`;
+            const url = `http://${getBaseUrl()}/favourite${query}`;
+            const response = await fetch(url, {
+                method: 'GET',
+            });
+                
+            const responseText = await response.text(); 
+            const data: any = JSON.parse(responseText);
+            
+            if (!response.ok) {
+                console.log('❌ Error response:', data.message);
+                Alert.alert('failed to load favourites: ', data.message);
+                setFavourites([]);
+            }
+            else{
+                console.log('✅ favourites load successful !!:', data.dishes);
+        
+                if (Array.isArray(data.dishes)) {
+                setFavourites(data.dishes as Food[]);
+                } else {
+                console.error('Invalid food data');
+                }
+            }
+                
+                  
+        } catch (error) {
+            console.error('🚨 favourites load error:', error.message);
+            Alert.alert('favourites load Error', error.message);
+            setFavourites([]);
+        }
+    
+        setFetchingFood(false);
+        setImageFetched(false);
     };
+
+    const removeFavourite = async(dish_name: string) => {
+        try {
+            const query = `?token=${getToken()}&dish_name=${dish_name}`;
+            const url = `http://${getBaseUrl()}/favourite${query}`;
+            const response = await fetch(url, {
+                method: 'DELETE',
+            });
+                
+            const responseText = await response.text(); 
+            const data: any = JSON.parse(responseText);
+            
+            if (!response.ok) {
+                console.log('❌ Error response:', data.message);
+                Alert.alert('failed to remove dish_name: ', data.message);
+                setFavourites([]);
+            }
+            else{
+                console.log('✅ favorite removal successful !!:', data.dishes);
+            }
+
+        } catch (error) {
+            console.error('🚨 favorite removal error:', error.message);
+            Alert.alert('favorite removal Error', error.message);
+            setFavourites([]);
+        }
+    }
+
+    useEffect(() => {
+        getFavourites();
+      }, []);
+
+    useEffect(() => {
+        if(favourites.length>0 && !fetchingFood && !imageFetched){
+            loadImages();
+            setImageFetched(true);
+        }
+      },  [favourites])
+
+    const removeFromFavourites = (favourite_meal : Food) => {
+        setFavourites(prev => prev.filter(item => item.id !== favourite_meal.id));
+        removeFavourite(favourite_meal.title);
+    };
+
+    const fetchWithTimeout = (url: string, timeout = 5000): Promise<Response> => {
+        return Promise.race([
+          fetch(url),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeout)
+          )
+        ]);
+      };
+    
+      // Convert binary data to base64
+      const convertToBase64 = (binaryData: Blob): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result as string); // The result is the base64 string
+          };
+          reader.onerror = () => {
+            reject('Error converting binary to base64');
+          };
+          reader.readAsDataURL(binaryData); // Convert the binary Blob to base64
+        });
+      };
+    
+      // Load image URIs for the fetched photo names
+      const loadImages = async () => {
+        try {
+          // Create a copy of the photos array to update with image URIs
+          const updatedFavourites = [...favourites];
+    
+          for (let i = 0; i < updatedFavourites.length; i++) {
+            try{
+              const meal = updatedFavourites[i];
+              const query = `/picture?dish=${meal.title}`;
+              const url = `http://${getBaseUrl()}/dish${query}`;
+              const response = await fetchWithTimeout(url,1000);
+    
+              if (!response.ok) {
+                throw new Error(`Failed to fetch image for ${meal.title}`);
+              }
+    
+              // The response should return binary data (e.g., a Blob)
+              const binaryData = await response.blob();
+    
+              // Convert binary data to base64
+              const imageURI = await convertToBase64(binaryData);
+    
+              // Update the imageURI of the corresponding photo
+              
+              updatedFavourites[i].image = imageURI;
+            } catch (error) {
+              console.error('Error loading 1 image:', error);
+            }
+          }
+    
+          // Update the state once all images are loaded
+          setFavourites(updatedFavourites);
+        } catch (error) {
+          console.error('Error loading images:', error);
+        }
+      };
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -64,23 +208,24 @@ export default function FavouriteMealsScreen() {
             <View key={item.id} style={[styles.card, { backgroundColor: theme.card }]}>
                 <View style={styles.imageWrapper}>
                     <TouchableOpacity onPress={() => router.push({ pathname: '/screens/item_desc', params: { id: item.id } })}>                 
-                <Image source={item.image} style={styles.image} resizeMode="cover" />
+                
+                <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
                 </TouchableOpacity>
                 {/* Discount tag */}
                 <View style={styles.discountTag}>
-                    <Text style={styles.discountText}>{item.discount}</Text>
+                    <Text style={styles.discountText}>{item.discount_base}</Text>
                 </View>
 
                 {/* Remove from favourites icon */}
                 <TouchableOpacity
-                    onPress={() => removeFromFavourites(item.id)}
+                    onPress={() => removeFromFavourites(item)}
                     style={styles.starIcon}
                 >
                     <FontAwesome name="star" size={28 * fontScale} color="#FFD700" />
                 </TouchableOpacity>
                 </View>
 
-                <Text style={[styles.dishName, { color: theme.text }]}>{item.name}</Text>
+                <Text style={[styles.dishName, { color: theme.text }]}>{item.title}</Text>
             </View>
             ))}
         </ScrollView>
