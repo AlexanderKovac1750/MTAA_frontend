@@ -12,6 +12,7 @@ const ThemeContext = createContext<{
   setFontScale: (scale: number) => void;
   highContrastMode: boolean;
   toggleHighContrast: () => void;
+  setInitialMode: (newMode: ThemeType) => void;
 }>({
   theme: Colors.dark,
   mode: 'dark',
@@ -20,19 +21,20 @@ const ThemeContext = createContext<{
   setFontScale: () => {},
   highContrastMode: false,
   toggleHighContrast: () => {},
+  setInitialMode: () => {},
 });
 
 export const useThemeColors = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const systemColorScheme = Appearance.getColorScheme();
-  const initialMode: ThemeType = systemColorScheme === 'dark' ? 'dark' : 'dark'; // fallback to dark
-  const [mode, setMode] = useState<ThemeType>(initialMode);
+  const [mode, setMode] = useState<ThemeType>(systemColorScheme === 'dark' ? 'dark' : 'light');
   const [fontScale, setFontScale] = useState(1.0);
   const [highContrastMode, setHighContrastMode] = useState(false);
 
   const toggleTheme = () => setMode(prev => (prev === 'light' ? 'dark' : 'light'));
   const toggleHighContrast = () => setHighContrastMode(prev => !prev);
+  const setInitialMode = (newMode: ThemeType) => setMode(newMode); // allows external override
 
   const theme = highContrastMode ? Colors.highContrast : mode === 'dark' ? Colors.dark : Colors.light;
 
@@ -46,6 +48,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         setFontScale,
         highContrastMode,
         toggleHighContrast,
+        setInitialMode,
       }}
     >
       {children}
