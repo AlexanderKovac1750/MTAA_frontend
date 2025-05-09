@@ -1,92 +1,144 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Switch, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Switch, StyleSheet, Image, ScrollView, Alert, useColorScheme } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
+import { MaterialIcons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as Animatable from 'react-native-animatable';
 import i18n from '../localisation/localisation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { getBaseUrl, getToken } from '../config';
+import { UserAccountInfo } from '../user';
+import { Reservation } from '../reservation';
 
 const languages = [
-    { code: 'sk', label: 'Slovenčina', emoji: '🇸🇰' },
-    { code: 'en', label: 'English', emoji: '🇬🇧' },
-    { code: 'rus', label: 'Русский', emoji: '🇷🇺' },
+  { code: 'sk', label: 'Slovenčina', emoji: '🇸🇰' },
+  { code: 'en', label: 'English', emoji: '🇬🇧' },
+  { code: 'rus', label: 'Русский', emoji: '🇷🇺' },
 ];
 
 export default function AccountScreen() {
   const router = useRouter();
-    const { theme, toggleTheme, mode, fontScale, setFontScale, highContrastMode, toggleHighContrast } =
-      useThemeColors();
-    const { t } = useTranslation();
-    const [accessExpanded, setAccessExpanded] = useState(false);
+  const { theme, toggleTheme, mode, fontScale, setFontScale, highContrastMode, toggleHighContrast, setInitialMode } = useThemeColors();
+  const { t } = useTranslation();
+  const systemTheme = useColorScheme();
 
-    const userPoints = 10; // this should come from your backend
-    const loyaltyLevel = 4; // this should also be fetched from backend
-    const maxPoints = 20;
+  const [accessExpanded, setAccessExpanded] = useState(false);
+  const [name, setName] = useState('Anonymous');
+  const [userPoints, setUserPoints] = useState(0);
+  const [loyaltyLevel, setLoyaltyLevel] = useState(0);
+  const [reservations, setReservations] = useState<{ table: string; date: string; time: string }[]>([]);
 
-    const currentDiscountLevel =
-      userPoints >= 20 ? 20 : userPoints >= 10 ? 10 : userPoints >= 5 ? 5 : 0;
+  const [reservationsExpanded, setReservationsExpanded] = useState(false);
 
-    const freeFavoriteSpaces = Math.floor(loyaltyLevel / 3);
+  const maxPoints = 20;
+  const currentDiscountLevel =
+    userPoints >= 20 ? 20 : userPoints >= 10 ? 10 : userPoints >= 5 ? 5 : 0;
+  const freeFavoriteSpaces = Math.floor(loyaltyLevel / 3);
 
+  const fetchUserData = async () => {
+    const token = getToken();
 
-    return (
-  <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: 60 }} style={{ flex: 1, backgroundColor: theme.background }}>
-    {/* Top Row */}
-    <View style={styles.topRow}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
-        <MaterialIcons name="arrow-back-ios" size={24 * fontScale} color={theme.text} />
-      </TouchableOpacity>
-      <Text style={[styles.nameText, { color: theme.text, fontSize: 20 * fontScale }]}>
-        Peter Jamek
-      </Text>
-      <Feather name="user" size={30 * fontScale} color={theme.text} />
-    </View>
+    if (!token) {
+      console.log('[INFO] Anonymous user – using device theme and defaults');
 
-    {/* Discount Section */}
-    <View style={styles.loyaltyContainer}>
-      <View style={styles.discountRow}>
-        {/* Discount Labels */}
-        <View style={styles.discountColumn}>
-          {[20, 10, 5].map((level) => (
-            <Text
-              key={level}
-              style={[
-                styles.discountText,
-                {
-                  opacity: userPoints >= level ? 1 : 0.4,
-                  color: theme.text,
-                  fontSize: 14 * fontScale,
-                },
-              ]}
-            >
-              zľava {level}%
-            </Text>
-          ))}
-        </View>
+      setName('Anonymous');
+      setUserPoints(0);
+      setLoyaltyLevel(0);
+      setReservations([]);
+      i18n.changeLanguage('sk');
 
-        {/* Progress Bar */}
-        <View style={styles.barContainer}>
-          <View
-            style={[
-              styles.barFill,
-              {
-                height: `${(userPoints / maxPoints) * 100}%`,
-                backgroundColor: theme.primary,
-              },
-            ]}
-          />
-        </View>
+      if (systemTheme && systemTheme !== mode) {
+        setInitialMode(systemTheme);
+      }
 
-        {/* Beer Image */}
-        <Image
-          source={require('../resources/images/beer.png')}
-          style={styles.beerImage}
-          resizeMode="contain"
-        />
+      return;
+    }
+
+    try {
+      const config = {
+        headers: {
+          Authorization: `User ${token}`,
+        },
+      };
+
+      const baseUrl = getBaseUrl();
+      const accountRes = await fetch(`http://${baseUrl}/account_info`, config);
+      const resRes = await fetch(`http://${baseUrl}/reservation`, config);
+
+      if (!accountRes.ok || !resRes.ok) {
+        throw new Error('⚠️ Server returned non-OK status');
+      }
+
+      const user = await accountRes.json();
+      const reservationData = await resRes.json();
+
+      setName(user.name || 'Anonymous');
+      setUserPoints(user.loyalty_points || 0);
+      setLoyaltyLevel(user.loyalty_level || 0);
+      setReservations(reservationData.reservations || []);
+    } catch (err) {
+      console.error('❌ [ERROR] Failed to fetch user data:', err.message);
+      setName('Anonymous');
+      setUserPoints(0);
+      setLoyaltyLevel(0);
+      setReservations([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+   return (
+    <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: 60 }} style={{ flex: 1, backgroundColor: theme.background }}>
+      <View style={styles.topRow}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
+          <MaterialIcons name="arrow-back-ios" size={24 * fontScale} color={theme.text} />
+        </TouchableOpacity>
+        <Text style={[styles.nameText, { color: theme.text, fontSize: 20 * fontScale }]}>
+          {name}
+        </Text>
+        <Feather name="user" size={30 * fontScale} color={theme.text} />
       </View>
 
-        {/* Loyalty Info Text */}
+      <View style={styles.loyaltyContainer}>
+        <View style={styles.discountRow}>
+          <View style={styles.discountColumn}>
+            {[20, 10, 5].map((level) => (
+              <Text
+                key={level}
+                style={[
+                  styles.discountText,
+                  {
+                    opacity: userPoints >= level ? 1 : 0.4,
+                    color: theme.text,
+                    fontSize: 14 * fontScale,
+                  },
+                ]}
+              >
+                zľava {level}%
+              </Text>
+            ))}
+          </View>
+          <View style={styles.barContainer}>
+            <View
+              style={[
+                styles.barFill,
+                {
+                  height: `${(userPoints / maxPoints) * 100}%`,
+                  backgroundColor: theme.primary,
+                },
+              ]}
+            />
+          </View>
+          <Image
+            source={require('../resources/images/beer.png')}
+            style={styles.beerImage}
+            resizeMode="contain"
+          />
+        </View>
         <Text style={[styles.levelText, { color: theme.text, fontSize: 14 * fontScale }]}>
           Aktuálna lojalitná úroveň: {loyaltyLevel}
         </Text>
@@ -98,109 +150,118 @@ export default function AccountScreen() {
         </Text>
       </View>
 
+      {/* Reservations toggle */}
+      <TouchableOpacity
+        style={[styles.section, { backgroundColor: theme.surface }]}
+        onPress={() => setReservationsExpanded(!reservationsExpanded)}
+      >
+        <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
+          {t('account.myReservations')}
+        </Text>
+        <Text style={{ color: theme.accent }}>{reservationsExpanded ? '▲' : '▼'}</Text>
+      </TouchableOpacity>
 
-        {/* Reservations */}
-        <TouchableOpacity style={[styles.section, { backgroundColor: theme.surface }]}>
-          <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
-            {t('account.myReservations')}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Theme Toggle */}
-        <View style={[styles.sectionRow, { backgroundColor: theme.surface }]}>
-          <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
-            {t('account.darkMode')}
-          </Text>
-          <TouchableOpacity onPress={toggleTheme} style={styles.modeButton}>
-            {mode === 'dark' ? (
-              <Feather name="sun" size={24 * fontScale} color={theme.accent} />
-            ) : (
-              <Feather name="moon" size={24 * fontScale} color={theme.accent} />
-            )}
+      {reservationsExpanded && reservations.length > 0 && (
+        reservations.map((res, idx) => (
+          <TouchableOpacity key={idx} style={[styles.section, { backgroundColor: theme.card }]}>
+            <Text style={{ color: theme.text }}>{res.table}</Text>
+            <Text style={{ color: theme.placeholder }}>{res.date} {res.time}</Text>
           </TouchableOpacity>
-        </View>
+        ))
+      )}
 
-        {/* Language Picker */}
-        <View style={[styles.sectionRow, { backgroundColor: theme.surface, flexDirection: 'column', alignItems: 'flex-start' }]}>
-          <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
-            {t('account.language')}
-          </Text>
-          <View style={styles.languageRow}>
-            {languages.map((lang) => (
-              <TouchableOpacity
-                key={lang.code}
-                onPress={() => i18n.changeLanguage(lang.code)}
-                style={{ marginHorizontal: 5, padding: 4 }}
-              >
-                <Text style={{ color: theme.accent, fontSize: 16 * fontScale }}>
-                  {lang.emoji} {lang.label}
-                </Text>
+      {/* Theme Toggle */}
+      <View style={[styles.sectionRow, { backgroundColor: theme.surface }]}>
+        <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
+          {t('account.darkMode')}
+        </Text>
+        <TouchableOpacity onPress={toggleTheme} style={styles.modeButton}>
+          {mode === 'dark' ? (
+            <Feather name="sun" size={24 * fontScale} color={theme.accent} />
+          ) : (
+            <Feather name="moon" size={24 * fontScale} color={theme.accent} />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* Language */}
+      <View style={[styles.sectionRow, { backgroundColor: theme.surface, flexDirection: 'column', alignItems: 'flex-start' }]}>
+        <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
+          {t('account.language')}
+        </Text>
+        <View style={styles.languageRow}>
+          {languages.map((lang) => (
+            <TouchableOpacity
+              key={lang.code}
+              onPress={() => i18n.changeLanguage(lang.code)}
+              style={{ marginHorizontal: 5, padding: 4 }}
+            >
+              <Text style={{ color: theme.accent, fontSize: 16 * fontScale }}>
+                {lang.emoji} {lang.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Accessibility */}
+      <TouchableOpacity
+        style={[styles.sectionRow, { backgroundColor: theme.surface }]}
+        onPress={() => setAccessExpanded(!accessExpanded)}
+      >
+        <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
+          {t('account.accessibility')}
+        </Text>
+        <Text style={[styles.sectionText, { color: theme.accent, fontSize: 16 * fontScale }]}>
+          {accessExpanded ? '▲' : '▼'}
+        </Text>
+      </TouchableOpacity>
+
+      {accessExpanded && (
+        <>
+          <View style={[styles.switchRow, { backgroundColor: theme.surface }]}>
+            <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
+              {t('account.fontSize')}
+            </Text>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity onPress={() => setFontScale(Math.max(0.8, fontScale - 0.1))}>
+                <Text style={{ fontSize: 18 * fontScale, color: theme.accent, marginHorizontal: 10 }}>A−</Text>
               </TouchableOpacity>
-            ))}
+              <TouchableOpacity onPress={() => setFontScale(Math.min(2, fontScale + 0.1))}>
+                <Text style={{ fontSize: 18 * fontScale, color: theme.accent, marginHorizontal: 10 }}>A+</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
+          <View style={[styles.switchRow, { backgroundColor: theme.surface }]}>
+            <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
+              {t('account.highContrast')}
+            </Text>
+            <Switch value={highContrastMode} onValueChange={toggleHighContrast} />
+          </View>
+        </>
+      )}
 
-        {/* Accessibility */}
-        <TouchableOpacity
-          style={[styles.sectionRow, { backgroundColor: theme.surface }]}
-          onPress={() => setAccessExpanded(!accessExpanded)}
-        >
-          <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
-            {t('account.accessibility')}
-          </Text>
-          <Text style={[styles.sectionText, { color: theme.accent, fontSize: 16 * fontScale }]}>
-            {accessExpanded ? '▲' : '▼'}
-          </Text>
-        </TouchableOpacity>
+      {/* Actions */}
+      <TouchableOpacity style={[styles.section, { backgroundColor: theme.surface }]}>
+        <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
+          {t('account.changePassword')}
+        </Text>
+      </TouchableOpacity>
 
-        {accessExpanded && (
-          <>
-            {/* Font Size */}
-            <View style={[styles.switchRow, { backgroundColor: theme.surface }]}>
-              <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
-                {t('account.fontSize')}
-              </Text>
-              <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity onPress={() => setFontScale(Math.max(0.8, fontScale - 0.1))}>
-                  <Text style={{ fontSize: 18 * fontScale, color: theme.accent, marginHorizontal: 10 }}>A−</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setFontScale(Math.min(2, fontScale + 0.1))}>
-                  <Text style={{ fontSize: 18 * fontScale, color: theme.accent, marginHorizontal: 10 }}>A+</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* High Contrast */}
-            <View style={[styles.switchRow, { backgroundColor: theme.surface }]}>
-              <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
-                {t('account.highContrast')}
-              </Text>
-              <Switch value={highContrastMode} onValueChange={toggleHighContrast} />
-            </View>
-          </>
-        )}
-
-        {/* Password & Logout */}
-        <TouchableOpacity style={[styles.section, { backgroundColor: theme.surface }]}>
-          <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
-            {t('account.changePassword')}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={() => router.push('/screens/first_screen')}
-        >
-          <Feather name="log-out" size={20 * fontScale} color="white" />
-          <Text style={[styles.logoutText, { fontSize: 16 * fontScale }]}>
-            {t('account.logout')}
-          </Text>
-        </TouchableOpacity>
-
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => router.push('/screens/first_screen')}
+      >
+        <Feather name="log-out" size={20 * fontScale} color="white" />
+        <Text style={[styles.logoutText, { fontSize: 16 * fontScale }]}>
+          {t('account.logout')}
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
-    );
-  }
+  );
+}
+
 
   const styles = StyleSheet.create({
     container: {
