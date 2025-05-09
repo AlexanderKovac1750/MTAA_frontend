@@ -57,18 +57,24 @@ export default function AccountScreen() {
     }
 
     try {
-      const config = {
-        headers: {
-          Authorization: `User ${token}`,
-        },
-      };
+      const accountRes = await fetch(`http://${getBaseUrl()}/account_info?token=${token}`, {
+        method: 'GET',
+      });
+      const resRes = await fetch(`http://${getBaseUrl()}/reservation?token=${token}`, {
+        method: 'GET',
+      });
 
-      const baseUrl = getBaseUrl();
-      const accountRes = await fetch(`http://${baseUrl}/account_info`, config);
-      const resRes = await fetch(`http://${baseUrl}/reservation`, config);
-
-      if (!accountRes.ok || !resRes.ok) {
-        throw new Error('⚠️ Server returned non-OK status');
+      if (!accountRes.ok) {
+        console.warn('❌ [ERROR] with response:', accountRes);
+        if(accountRes.status!==404){
+          throw new Error('⚠️ Server returned non-OK or non 404 status for account info');
+        }
+      }
+      if (!resRes.ok) {
+        console.warn('❌ [ERROR] with response:', resRes);
+        if(resRes.status!==404){
+          throw new Error('⚠️ Server returned non-OK or non 404 status for reservation info');
+        }
       }
 
       const user = await accountRes.json();
