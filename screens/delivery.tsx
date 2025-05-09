@@ -198,9 +198,9 @@ export default function DeliveryScreen() {
 
             <Pressable
             style={[styles.payBtn, { backgroundColor: theme.card }]}
-            onPress={() => router.push('/payment')}
+            onPress={() => router.push('./payment')}
             >
-            <Text style={{ color: theme.text }}>zaplať</Text>
+            <Text style={{ color: theme.text }}>Zaplatiť</Text>
             </Pressable>
 
         </View>

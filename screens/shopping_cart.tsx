@@ -69,7 +69,7 @@ export default function ShoppingCartScreen() {
                 router.push('/screens/account');
             }}
             >
-            <Ionicons name="person-circle" size={48} color={theme.text} />
+            <Ionicons name="person-circle" size={50} color={theme.text} />
             </TouchableOpacity>
         </View>
 
@@ -117,8 +117,8 @@ export default function ShoppingCartScreen() {
             </Text>
             <TouchableOpacity
             style={[styles.orderButton, { backgroundColor: theme.primary }]}
-              // onPress={() => router.push('/screens/delivery')}
-              onPress={() => router.push('/screens/favourites')} //just for now, to be changed later
+            onPress={() => router.push('/screens/delivery')}
+            //   onPress={() => router.push('/screens/favourites')} //just for now, to be changed later
             >
             <Text style={[styles.orderText, { color: theme.text, fontSize: 16 * fontScale }]}>
                 Objednať
