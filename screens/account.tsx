@@ -64,21 +64,23 @@ export default function AccountScreen() {
         method: 'GET',
       });
 
+      
+      const user = await accountRes.json();
+      const reservationData = await resRes.json();
+
       if (!accountRes.ok) {
-        console.warn('❌ [ERROR] with response:', accountRes);
+        console.warn('❌ [ERROR] with response:', user.message);
         if(accountRes.status!==404){
           throw new Error('⚠️ Server returned non-OK or non 404 status for account info');
         }
       }
       if (!resRes.ok) {
-        console.warn('❌ [ERROR] with response:', resRes);
+        console.warn('❌ [ERROR] with response:', reservationData.message);
         if(resRes.status!==404){
           throw new Error('⚠️ Server returned non-OK or non 404 status for reservation info');
         }
       }
 
-      const user = await accountRes.json();
-      const reservationData = await resRes.json();
 
       setName(user.name || 'Anonymous');
       setUserPoints(user.loyalty_points || 0);
