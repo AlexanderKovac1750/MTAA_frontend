@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Dimensions, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { Food, removeFavourite, setFavs } from '../food';
@@ -27,12 +27,25 @@ const dummyFavourites = [
     },
 ];
 
+
+
 export default function FavouriteMealsScreen() {
     const { theme, fontScale } = useThemeColors();
     const router = useRouter();
     const [favourites, setFavourites] = useState<Food[]>([]);
     const [fetchingFood, setFetchingFood] = useState(true);
     const [imageFetched, setImageFetched] = useState(false);
+
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            getFavourites()
+            console.log('📌 Screen is focused');
+        });
+
+        return unsubscribe;
+    }, [navigation]);
 
     const getFavourites = async () => {
         setFetchingFood(true);
