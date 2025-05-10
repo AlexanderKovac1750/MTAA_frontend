@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getBaseUrl, getToken } from '../config';
 
 export default function DeliveryScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -96,16 +97,87 @@ export default function DeliveryScreen() {
         if (guestCount > 1) setGuestCount(guestCount - 1);
     };
 
+    const formatDate = (rawDate: string | Date): string => {
+        const date = new Date(rawDate);
+
+        const day = String(date.getDate()).padStart(2, '0');        // DD
+        const month = String(date.getMonth() + 1).padStart(2, '0');  // MM (0-indexed)
+        const year = date.getFullYear();                             // YYYY
+
+        return `${day}.${month}.${year}`;
+    };
+
+    const formatTime = (rawDate: string | Date): string => {
+        const date = new Date(rawDate);
+
+        const hours = String(date.getHours()).padStart(2, '0');   // HH
+        const minutes = String(date.getMinutes()).padStart(2, '0'); // MM
+
+        return `${hours}:${minutes}`;
+    };
+
     const pay = () => {
         //create order
         if(tab==='delivery'){
             console.log('requesting delivery');
         }
         if(tab==='reservation'){
-            console.log('making reservation');
+
+            if(date===null){
+                Alert.alert('please choose day');
+                return;
+            }
+            if(timeFrom===null){
+                Alert.alert('please choose timeFrom');
+                return;
+            }
+            if(timeTo===null){
+                Alert.alert('please choose timeTo');
+                return;
+            }
+            
+            const body ={
+                "items": [],
+                "people": 4,
+                "datetime": {
+                    "date": formatDate(date),
+                    "from": formatTime(timeFrom),
+                    "until": formatTime(timeTo),
+                }
+            }
+            sendOrder(body, 'reservation')
+
+            console.log('making reservation', body);
         }
-        router.push('./payment');
+        //router.push('./payment');
     }
+
+    const sendOrder = async (body, type) => {
+        try {
+            const query = `?token=${getToken()}`;
+            const url = `http://${getBaseUrl()}/${type}${query}`;
+            console.log('asdas', url);
+            const response = await fetch(`${url}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ body }), // wrapping inside an object is optional, depending on API
+            });
+
+            const result = await response.json();
+            if(response.status<500 && response.status>=400){
+                Alert.alert('reservation issue:',result.message);
+            }
+            console.log('Server response:', result.message);
+
+            if(response.ok){
+                router.push('./payment');
+            }
+        } catch (error) {
+            console.error('Error sending data:', error);
+        }
+    };
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
