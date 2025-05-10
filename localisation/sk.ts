@@ -21,6 +21,7 @@ export default {
         setting3: "Nastavenie 3",
         changePassword: "Zmeniť heslo",
         myReservations: "Moje rezervácie",
+        save: "Uložiť zmeny"
     },
     // ...
   };
