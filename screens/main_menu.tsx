@@ -4,10 +4,11 @@ import { SafeAreaView, View, Text, TextInput, Image, FlatList, TouchableOpacity,
 import { useThemeColors } from '../resources/themes//themeProvider';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { Food } from '../food';
 import { getBaseUrl, getToken } from '../config';
 import { selectFood } from '../config';
+import { getTotalCount } from '../cart';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -25,6 +26,7 @@ export default function MainMenu() {
   const [category, setCategory] = useState<string | null>(null);
   const [imageFetched, setImageFetched] = useState(false);
   const [searchNeeded, setSearchNeeded] = useState(true);
+  const [cartCount, setCartCount] = useState(0);
 
   const getFilteredMeals= async () => {
     setFetchingFood(true);
@@ -66,6 +68,16 @@ export default function MainMenu() {
     setFetchingFood(false);
     setImageFetched(false);
   };
+
+  const navigation = useNavigation();
+    
+        useEffect(() => {
+            const unsubscribe = navigation.addListener('focus', () => {
+                console.log('📌 item desc is focused');
+                setCartCount(getTotalCount()); 
+            });
+            return unsubscribe;
+        }, [navigation]);
 
   useEffect(() => {
     if(searchNeeded){
@@ -277,7 +289,7 @@ export default function MainMenu() {
           <Ionicons name="cart" size={28} color={theme.accent} />
           </TouchableOpacity>
           <View>
-            <Text style={{ color: theme.surface, fontSize: 10, position: 'absolute', right: -6, top: -6,}}>1</Text>
+            <Text style={{ color: theme.secondary, fontSize: 10, position: 'absolute', right: -6, top: -6,}}>{getTotalCount()}</Text>
           </View>
         </View>
       </View>

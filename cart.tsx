@@ -52,3 +52,7 @@ export const setItemQuantity = (item: order_item, quantity: number) => {
 export const getCartItems =(): order_item[] => {
     return cart;
 }
+
+export const getTotalCount = (): number => {
+    return cart.reduce((sum, item) => sum + item.count, 0);
+} 

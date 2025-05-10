@@ -9,13 +9,13 @@ import {
   Dimensions,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { FontAwesome } from '@expo/vector-icons';
 import { resetSelectedFood, getSelectedFood, selectFood } from '../config';
 import { addFavourite, Food, removeFavourite} from '../food';
 import { isFav } from '../food';
-import { addOrMergeItem, order_item } from '../cart'; 
+import { addOrMergeItem, getTotalCount, order_item } from '../cart'; 
 
 const { width } = Dimensions.get('window');
 
@@ -24,7 +24,7 @@ export default function FoodDescriptionScreen() {
   const router = useRouter();
 
   // States
-  const [cartCount, setCartCount] = useState(3);// fetched from backend
+  const [cartCount, setCartCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('medium');
@@ -33,10 +33,18 @@ export default function FoodDescriptionScreen() {
   // Replace with actual API call
   useEffect(() => { 
     setMeal(getSelectedFood());
-    
-    // Simulate fetch
-    setCartCount(3); // Example: 3 items in cart
+    setCartCount(getTotalCount()); 
   }, []); 
+
+  const navigation = useNavigation();
+  
+      useEffect(() => {
+          const unsubscribe = navigation.addListener('focus', () => {
+              console.log('📌 item desc is focused');
+              setCartCount(getTotalCount()); 
+          });
+          return unsubscribe;
+      }, [navigation]);
 
   useEffect(() =>{
     if(meal!==null){
@@ -73,8 +81,8 @@ export default function FoodDescriptionScreen() {
       console.log('val',float_price)
       const item: order_item = { name:meal.title, size:selectedSize, price:float_price, count:quantity, meal:meal };
       addOrMergeItem(item);
-      //router.back();
-      //add to cart
+
+      setCartCount(cartCount+quantity);
     }
   }
 
