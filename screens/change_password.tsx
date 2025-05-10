@@ -7,6 +7,8 @@ import { useRouter } from 'expo-router';
 
 
 const ChangePasswordScreen = () => {
+    const router = useRouter();
+    
     const { theme, fontScale } = useThemeColors();
     const { t } = useTranslation();
     const token = getToken();
