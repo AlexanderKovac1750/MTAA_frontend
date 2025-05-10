@@ -1,8 +1,11 @@
+import { Food } from "./food";
 
 export type order_item = {
     name: string;
     size: string;
+    price: GLfloat;
     count: number;
+    meal: Food;
 }
 
 let cart: order_item[] = [];
@@ -37,8 +40,15 @@ export const addOrMergeItem = (item: order_item) => {
     } else {
         addItem(item);
     }
-  }
+}
 
-export const getItems =(): order_item[] => {
+export const setItemQuantity = (item: order_item, quantity: number) => {
+    const existing = cart.find(cart_item=> cart_item.name === item.name);
+    if (existing) {
+        existing.count = quantity;
+    }
+}
+
+export const getCartItems =(): order_item[] => {
     return cart;
-  }
+}

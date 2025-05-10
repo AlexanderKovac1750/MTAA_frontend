@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
@@ -26,7 +27,7 @@ export default function FoodDescriptionScreen() {
   const [cartCount, setCartCount] = useState(3);// fetched from backend
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('stredné');
+  const [selectedSize, setSelectedSize] = useState('medium');
   const [meal, setMeal] = useState<Food|null>(null)
 
   // Replace with actual API call
@@ -62,9 +63,17 @@ export default function FoodDescriptionScreen() {
       return;
     }
     else{
-      const item: order_item = { name:meal.title, size:selectedSize, count:quantity };
+      const portion_price = (selectedSize==='large') ? meal.large_price : (selectedSize==='medium' ? meal.medium_price : (selectedSize==='small' ? meal.small_price : null));
+      if(portion_price===null){
+        Alert.alert('invalid portion size');
+        return;
+      }
+      const string_price: string = String(portion_price);
+      const float_price = parseFloat(string_price.replace('$', ''))
+      console.log('val',float_price)
+      const item: order_item = { name:meal.title, size:selectedSize, price:float_price, count:quantity, meal:meal };
       addOrMergeItem(item);
-      router.back();
+      //router.back();
       //add to cart
     }
   }
@@ -150,9 +159,9 @@ export default function FoodDescriptionScreen() {
 
         {/* Size Options */}
         <View style={styles.sizesContainer}>
-            {getPortionBoxElement('malé', meal.small_size, meal.small_price, meal.unit)}
-            {getPortionBoxElement('stredné', meal.medium_size, meal.medium_price, meal.unit)}
-            {getPortionBoxElement('veľké', meal.large_size, meal.large_price, meal.unit)}
+            {getPortionBoxElement('small', meal.small_size, meal.small_price, meal.unit)}
+            {getPortionBoxElement('medium', meal.medium_size, meal.medium_price, meal.unit)}
+            {getPortionBoxElement('large', meal.large_size, meal.large_price, meal.unit)}
         </View>
       </ScrollView>)}
 

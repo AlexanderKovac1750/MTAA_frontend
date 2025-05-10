@@ -1,58 +1,69 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
 import { useThemeColors } from '../resources/themes/themeProvider';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { decItem, getCartItems, incItem, order_item, removeItem, setItemQuantity } from '../cart';
+import { selectFood } from '../config';
 
 export default function ShoppingCartScreen() {
-    const { theme, fontScale } = useThemeColors();
     const router = useRouter();
+    const { theme, fontScale } = useThemeColors();
 
     // Sample cart data (to be replaced by backend)
-    const [cartItems, setCartItems] = useState([
-        {
-        id: 1,
-        title: 'Zemiaky na smotane',
-        quantity: 2,
-        price: 4.2,
-        image: require('../resources/images/sample-dish.png'),
-        },
-        {
-        id: 2,
-        title: 'Grilované kura',
-        quantity: 3,
-        price: 6.5,
-        image: require('../resources/images/sample-dish.png'),
-        },
-    ]);
-
     const MAX_QUANTITY = 15;
+    const [cartItems, setCartItems] = useState<order_item[]>([]);
+    const [reloading, setReloading] = useState(false);
+    const navigation = useNavigation();
 
-    const updateQuantity = (id: number, delta: number) => {
-        setCartItems(prevItems =>
-        prevItems.map(item => {
-            if (item.id === id) {
-            const newQty = item.quantity + delta;
-            if (newQty > MAX_QUANTITY) {
-                Alert.alert('Limit', 'Maximálny počet porcií na objednávku je 15.');
-                return item;
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            console.log('📌 cart screen is focused');
+            reloadCart();
+        });
+        return unsubscribe;
+    }, [navigation]);
+
+    useEffect(() => { 
+        if(reloading){
+            setCartItems(getCartItems());
+            setReloading(false);
+        }
+    },[reloading]);
+
+    const reloadCart = async() => {
+        setReloading(true);
+        console.log('📌 reloading items in shopping cart');
+        setCartItems([]);
+        await setCartItems(getCartItems());
+    }
+
+    const updateQuantity = (changed_item: order_item, delta: number) => {
+        if(changed_item.count+delta>MAX_QUANTITY){
+            Alert.alert('Limit', `Maximálny počet porcií na objednávku je ${MAX_QUANTITY}.`);
+            setItemQuantity(changed_item,MAX_QUANTITY);
+        }
+        else{
+            if(delta===1){
+                incItem(changed_item);
             }
-            return { ...item, quantity: Math.max(1, newQty) };
+            if(delta===-1){
+                decItem(changed_item);
             }
-            return item;
-        })
-        );
+        }
+        reloadCart();
     };
 
-    const deleteItem = (id: number) => {
-        setCartItems(prev => prev.filter(item => item.id !== id));
+    const deleteItem = (remItem: order_item) => {
+        setCartItems(prev => prev.filter(item => item.name !== remItem.name));
+        removeItem(remItem);
     };
 
     const totalPrice = cartItems
-        .reduce((sum, item) => sum + item.price * item.quantity, 0)
+        .reduce((sum, item) => sum + item.price * item.count, 0)
         .toFixed(2);
 
-    const totalItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const totalItemCount = cartItems.reduce((sum, item) => sum + item.count, 0);
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -81,8 +92,50 @@ export default function ShoppingCartScreen() {
         {/* Scrollable cart items */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             {cartItems.map(item => (
+                <View key={item.name} style={[styles.itemCard, { backgroundColor: theme.card }]}>
+                    <TouchableOpacity onPress={() => {selectFood(item.meal),router.push('/screens/item_desc')}}>
+                    <Image source={{uri: item.meal.image}} style={styles.itemImage} resizeMode="cover" />
+                    </TouchableOpacity>
+
+                    <View style={styles.itemDetails}>
+                    <Text style={[styles.itemTitle, { color: theme.text, fontSize: 16 * fontScale }]}>
+                        {item.name}
+                    </Text>
+                    <View style={styles.controls}>
+                        <TouchableOpacity onPress={() => updateQuantity(item, -1)}>
+                        <Ionicons name="remove-circle-outline" size={26} color={theme.accent} />
+                        </TouchableOpacity>
+                        <Text style={[styles.quantity, { color: theme.text }]}>{item.count}</Text>
+                        <TouchableOpacity onPress={() => updateQuantity(item, 1)}>
+                        <Ionicons name="add-circle-outline" size={26} color={theme.accent} />
+                        </TouchableOpacity>
+                    </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'column', justifyContent: 'space-between', height: 60 }}>
+                        <View style={{marginLeft:15}}>
+                        <TouchableOpacity onPress={() => deleteItem(item)}>
+                            <Ionicons name="close" size={24} color={theme.primary} />
+                        </TouchableOpacity>
+                        </View>
+
+                        <View>
+                        <Text
+                            style={[styles.itemTitle,{
+                                color: theme.text,
+                                fontSize: 16 * fontScale,
+                                alignSelf: 'flex-start', // Optional: align to left
+                                bottom: -10
+                            },]}>
+                            {item.price * item.count}
+                        </Text>
+                        </View>
+                        
+                    </View>
+                </View>
+                /*
             <View key={item.id} style={[styles.itemCard, { backgroundColor: theme.card }]}>
-                {/* Image clickable to item_desc */}
+                
                 <TouchableOpacity onPress={() => router.push({ pathname: '/screens/item_desc', params: { id: item.id } })}>
                 <Image source={item.image} style={styles.itemImage} resizeMode="cover" />
                 </TouchableOpacity>
@@ -102,11 +155,11 @@ export default function ShoppingCartScreen() {
                 </View>
                 </View>
 
-                {/* Remove item */}
+                
                 <TouchableOpacity onPress={() => deleteItem(item.id)}>
                 <Ionicons name="close" size={24} color={theme.primary} />
                 </TouchableOpacity>
-            </View>
+            </View>*/
             ))}
         </ScrollView>
 
