@@ -258,7 +258,47 @@ export default function AccountScreen() {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
+<View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', marginTop: 30 }}>
+  <TouchableOpacity
+    style={[styles.saveButton, { backgroundColor: theme.primary }]}
+    onPress={async () => {
+      const token = getToken();
+      if (!token) {
+        Alert.alert('Anonymous user', 'Please log in to save your preferences.');
+        return;
+      }
+      try {
+        const res = await fetch(`http://${getBaseUrl()}/change_preferences`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            token,
+            language: i18n.language,
+            darkmode: mode === 'dark',
+            high_contrast: highContrastMode,
+          }),
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          Alert.alert('✅', 'Preferences saved successfully!');
+        } else {
+          throw new Error(result.message || 'Failed to save preferences');
+        }
+      } catch (err) {
+        console.error('Error saving preferences:', err);
+        Alert.alert('Error', err.message);
+      }
+    }}
+  >
+      <Text style={[styles.saveText, { fontSize: 16 * fontScale }]}>
+        {t('account.save')}
+      </Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
         style={styles.logoutButton}
         onPress={() => router.push('/screens/first_screen')}
       >
@@ -267,6 +307,7 @@ export default function AccountScreen() {
           {t('account.logout')}
         </Text>
       </TouchableOpacity>
+    </View>
     </ScrollView>
   );
 }
@@ -393,4 +434,25 @@ export default function AccountScreen() {
       marginTop: 6,
       fontWeight: '500',
     },
+
+    saveButton: {
+      marginTop: 30,
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 10,
+      alignItems: 'center',
+    },
+    saveText: {
+      color: 'white',
+      fontWeight: '600',
+    },
+    // logoutButtonSmall: {
+    //   backgroundColor: '#a33',
+    //   paddingVertical: 10,
+    //   paddingHorizontal: 12,
+    //   borderRadius: 10,
+    //   alignItems: 'center',
+    //   justifyContent: 'center',
+    // },
+
   });

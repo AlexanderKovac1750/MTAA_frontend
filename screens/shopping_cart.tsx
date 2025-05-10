@@ -127,7 +127,7 @@ export default function ShoppingCartScreen() {
                                 alignSelf: 'flex-start', // Optional: align to left
                                 bottom: -10
                             },]}>
-                            {item.price * item.count}
+                            {(item.price * item.count).toFixed(2)}
                         </Text>
                         </View>
                         
