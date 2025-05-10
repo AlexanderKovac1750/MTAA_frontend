@@ -124,7 +124,8 @@ export default function AccountScreen() {
                 console.error('🚨 logout error:', error.message);
                 Alert.alert('logout Error', error.message);
             }
-            router.push('/screens/first_screen')
+            router.dismissAll();
+            router.replace('/screens/first_screen');
 
   }
 

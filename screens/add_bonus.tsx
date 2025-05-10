@@ -96,7 +96,7 @@ export default function LoyaltyScreen() {
             {/* Bottom Button */}
             <TouchableOpacity
                 style={[styles.skipButton, { backgroundColor: theme.primary, width: screenWidth }]}
-                onPress={() => router.push('/screens/main_menu')}
+                onPress={() =>  {router.dismissAll();router.replace('/screens/main_menu');}}
             >
                 <Text style={[styles.skipText, { fontSize: 16 * fontScale }]}>Preskočiť</Text>
             </TouchableOpacity>
