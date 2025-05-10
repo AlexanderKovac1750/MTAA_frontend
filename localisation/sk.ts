@@ -23,5 +23,19 @@ export default {
         myReservations: "Moje rezervácie",
         save: "Uložiť zmeny"
     },
-    // ...
+    changePassword: {
+      title: 'Zmeniť heslo',
+      old: 'Staré heslo',
+      new: 'Nové heslo',
+      confirm: 'Potvrďte nové heslo',
+      save: 'Zmeniť heslo',
+      success: 'Heslo bolo úspešne zmenené.',
+      errorMismatch: 'Nové heslá sa nezhodujú.',
+      errorEmpty: 'Vyplňte všetky požadované polia.',
+      errorAnon: 'Anonymní používatelia nemôžu meniť heslo.',
+      errorServer: 'Nepodarilo sa pripojiť k serveru.',
+      errorUnknown: 'Nepodarilo sa zmeniť heslo.',
+      saving: 'Ukladá sa...',
+  }
+
   };
