@@ -8,9 +8,10 @@ import * as Animatable from 'react-native-animatable';
 import i18n from '../localisation/localisation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { getBaseUrl, getToken } from '../config';
+import { getBaseUrl, getToken, getUserType } from '../config';
 import { UserAccountInfo } from '../user';
 import { Reservation } from '../reservation';
+import { Discount, fetchDiscounts, getAvaiableDiscounts } from '../discount';
 
 const languages = [
   { code: 'sk', label: 'Slovenčina', emoji: '🇸🇰' },
@@ -29,7 +30,8 @@ export default function AccountScreen() {
   const [userPoints, setUserPoints] = useState(0);
   const [loyaltyLevel, setLoyaltyLevel] = useState(0);
   const [reservations, setReservations] = useState<{ table: string; date: string; time: string }[]>([]);
-
+  const [discountOptions, setDiscountOptions] = useState<Discount[]>([]);
+  const [userType, setUserType] = useState('registered');
   const [reservationsExpanded, setReservationsExpanded] = useState(false);
 
   const maxPoints = 20;
@@ -98,7 +100,34 @@ export default function AccountScreen() {
 
   useEffect(() => {
     fetchUserData();
+    setUserType(getUserType());
+    setDiscountOptions(getAvaiableDiscounts());
   }, []);
+
+  const logout_call = async() => {
+    try {
+                const query = `?token=${getToken()}`;
+                const url = `http://${getBaseUrl()}/logout${query}`;
+                const response = await fetch(url, {
+                    method: 'post',
+                });
+                    
+                const responseText = await response.text(); 
+                const data: any = JSON.parse(responseText);
+                
+                if (!response.ok) {
+                    console.log('❌ Error response:', data.message);
+                    Alert.alert('failed invalidate token: ', data.message);
+                }
+    
+            } catch (error) {
+                console.error('🚨 logout error:', error.message);
+                Alert.alert('logout Error', error.message);
+            }
+            router.push('/screens/first_screen')
+
+  }
+
 
    return (
     <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: 60 }} style={{ flex: 1, backgroundColor: theme.background }}>
@@ -115,19 +144,19 @@ export default function AccountScreen() {
       <View style={styles.loyaltyContainer}>
         <View style={styles.discountRow}>
           <View style={styles.discountColumn}>
-            {[20, 10, 5].map((level) => (
+            {discountOptions.map((discOpt) => (
               <Text
-                key={level}
+                key={discOpt.id}
                 style={[
                   styles.discountText,
                   {
-                    opacity: userPoints >= level ? 1 : 0.4,
+                    opacity: userPoints >= discOpt.cost ? 1 : 0.4,
                     color: theme.text,
                     fontSize: 14 * fontScale,
                   },
                 ]}
               >
-                zľava {level}%
+                zľava {discOpt.effectivness}%
               </Text>
             ))}
           </View>
@@ -262,11 +291,12 @@ export default function AccountScreen() {
         <TouchableOpacity
           style={[styles.saveButton, { backgroundColor: theme.primary }]}
           onPress={async () => {
-            const token = getToken();
-            if (!token) {
+            if (userType==='anonymous') {
               Alert.alert('Anonymous user', 'Please log in to save your preferences.');
               return;
             }
+
+            const token =getToken();
             try {
               const res = await fetch(`http://${getBaseUrl()}/change_preferences`, {
                 method: 'POST',
@@ -284,11 +314,11 @@ export default function AccountScreen() {
               });
 
               // const result = await res.json();
+              const text = await res.text();
               let result;
               try {
-                result = await res.json();
+                result =  JSON.parse(text);
               } catch (err) {
-                const text = await res.text();
                 console.error('Non-JSON response:', text);
                 throw new Error('Server returned non-JSON data');
             }
@@ -311,7 +341,7 @@ export default function AccountScreen() {
 
     <TouchableOpacity
         style={styles.logoutButton}
-        onPress={() => router.push('/screens/first_screen')}
+        onPress={() => {logout_call();}}
       >
         <Feather name="log-out" size={20 * fontScale} color="white" />
         <Text style={[styles.logoutText, { fontSize: 16 * fontScale }]}>
@@ -322,6 +352,8 @@ export default function AccountScreen() {
     </ScrollView>
   );
 }
+
+
 
 
   const styles = StyleSheet.create({

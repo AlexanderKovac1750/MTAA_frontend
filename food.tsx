@@ -40,7 +40,7 @@ export const setFavs = (favs: Food[]) => {
 };
 
 import { Alert } from 'react-native';
-import { getBaseUrl, getToken } from './config';
+import { getBaseUrl, getToken, sleep } from './config';
 export const removeFavourite = async(remFood: Food) => {
         try {
             const query = `?token=${getToken()}&dish_name=${remFood.title}`;
@@ -98,8 +98,6 @@ export const addFavourite = async(addFood: Food) => {
             Alert.alert('favorite add Error', error.message);
         }
     }
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const pullFavs = async () => {
         await sleep(500);

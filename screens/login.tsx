@@ -4,8 +4,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useRouter } from 'expo-router';
 import { useThemeColors, ThemeProvider } from '../resources/themes/themeProvider';
 import theme from '../resources/themes/theme';
-import { getBaseUrl, setBaseUrl, setToken } from '../config';
+import { getBaseUrl, setBaseUrl, setToken, setUserType } from '../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchDiscounts } from '../discount';
 
 export default function LoginScreen() {
   const { theme, fontScale } = useThemeColors();
@@ -90,7 +91,7 @@ export default function LoginScreen() {
     
       const responseText = await response.text(); // Use `.text()` instead of `.json()`
       const data: any = JSON.parse(responseText);
-  
+      console.log('the role is',data.type);
       if (!response.ok) {
         console.log('❌ Error response:', data.message);
         Alert.alert('failed: ', data.message);
@@ -98,6 +99,8 @@ export default function LoginScreen() {
       }
     
       setToken(data.token);
+      fetchDiscounts();
+      setUserType(data.type);
       router.push('/screens/main_menu');
       console.log('✅ Login successful !!:', data.token);
       

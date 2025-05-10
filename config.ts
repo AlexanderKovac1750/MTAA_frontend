@@ -40,3 +40,5 @@ export const setUserType = (newUserType: string) => {
 };
 
 export const getUserType = () => userType;
+
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
