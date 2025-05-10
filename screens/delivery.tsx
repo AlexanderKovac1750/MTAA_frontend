@@ -138,7 +138,7 @@ export default function DeliveryScreen() {
             
             const body ={
                 "items": [],
-                "people": 4,
+                "people": guestCount,
                 "datetime": {
                     "date": formatDate(date),
                     "from": formatTime(timeFrom),
