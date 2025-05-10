@@ -21,6 +21,7 @@ export default {
     setting3: "Setting 3",
     changePassword: "Change Password",
     myReservations: "My Reservations",
+    save: "Save changes"
   },
   // ...
 };

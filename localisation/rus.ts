@@ -21,6 +21,7 @@ export default {
         setting3: "Настройка 3",
         changePassword: "Сменить пароль",
         myReservations: "Мои бронирования",
+        save: "Сохранить изменения"
     },
     // ...
   };
