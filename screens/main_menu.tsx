@@ -294,8 +294,11 @@ export default function MainMenu() {
           <TouchableOpacity onPress={() => router.push('/screens/shopping_cart')}>
           <Ionicons name="cart" size={28} color={theme.accent} />
           </TouchableOpacity>
-          {cartCount && <View>
-            <Text style={{ color: theme.secondary, fontSize: 10, position: 'absolute', right: -6, top: -6,}}>{cartCount}</Text>
+          
+          {cartCount!=0 && <View>
+            <Text style={{ color: theme.secondary, fontSize: 10, position: 'absolute', right: -6, top: -6,}}>
+              {cartCount}
+            </Text>
           </View>}
         </View>
       </View>
