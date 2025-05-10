@@ -252,7 +252,7 @@ export default function AccountScreen() {
       )}
 
       {/* Actions */}
-      <TouchableOpacity style={[styles.section, { backgroundColor: theme.surface }]}>
+      <TouchableOpacity style={[styles.section, { backgroundColor: theme.surface }]} onPress={() => router.push('/screens/change_password')}>
         <Text style={[styles.sectionText, { color: theme.text, fontSize: 16 * fontScale }]}>
           {t('account.changePassword')}
         </Text>
