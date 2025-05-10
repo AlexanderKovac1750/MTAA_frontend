@@ -7,6 +7,8 @@ import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getBaseUrl, getToken } from '../config';
+import { getCartItems } from '../cart';
+import { Discount, getChosenDiscount } from '../discount';
 
 export default function DeliveryScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -118,45 +120,78 @@ export default function DeliveryScreen() {
 
     const pay = () => {
         //create order
-        if(tab==='delivery'){
-            console.log('requesting delivery');
-        }
-        if(tab==='reservation'){
+        const items = getCartItems().map(({ name, size, count }) => ({ name:name, size:size, count:count}));
+        const discount: Discount|null = getChosenDiscount();
 
-            if(date===null){
-                Alert.alert('please choose day');
-                return;
+        const body:any ={
+            "items": items,
+        }
+
+        if(true){
+            if(tab==='delivery'){
+                if(street===''){
+                    Alert.alert('please choose street');
+                    return;
+                }
+                if(number===''){
+                    Alert.alert('please choose house number');
+                    return;
+                }
+                if(postcode===''){
+                    Alert.alert('please choose post code');
+                    return;
+                }
+
+                body['address']={
+                        "postal code": "831 46",
+                        "street": "urbanova",
+                        "number": 41
+                    }
+
+                console.log('requesting delivery', body);
             }
-            if(timeFrom===null){
-                Alert.alert('please choose timeFrom');
-                return;
-            }
-            if(timeTo===null){
-                Alert.alert('please choose timeTo');
-                return;
-            }
-            
-            const body ={
-                "items": [],
-                "people": guestCount,
-                "datetime": {
+            if(tab==='reservation'){
+
+                if(date===null){
+                    Alert.alert('please choose day');
+                    return;
+                }
+                if(timeFrom===null){
+                    Alert.alert('please choose timeFrom');
+                    return;
+                }
+                if(timeTo===null){
+                    Alert.alert('please choose timeTo');
+                    return;
+                }
+
+                body.people=guestCount;
+
+                body["datetime"]= {
                     "date": formatDate(date),
                     "from": formatTime(timeFrom),
                     "until": formatTime(timeTo),
-                }
-            }
-            sendOrder(body, 'reservation')
+                    }
 
-            console.log('making reservation', body);
+                console.log('making reservation', body);
+            }
         }
-        //router.push('./payment');
+        
+        if(comment!==''){
+            body.comment = comment;
+        }
+        if(discount!==null){
+            body['discount used']=discount.id;
+        }
+        
+        sendOrder(body, tab)
     }
 
     const sendOrder = async (body, type) => {
         try {
             const query = `?token=${getToken()}`;
             const url = `http://${getBaseUrl()}/${type}${query}`;
-            console.log('asdas', url);
+            
             const response = await fetch(`${url}`, {
                 method: 'POST',
                 headers: {

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert} from 'react-native';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { getChosenDiscount, Discount } from '../discount';
 
 export default function PaymentScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -14,12 +15,17 @@ export default function PaymentScreen() {
     const totalPrice = 27.40;
     const itemCount = 5;
     const deliveryType = 'delivery';
-    const discount = 0.10;
+    //const discount = 0.10;
 
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash'>('card');
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
     const [cvc, setCVC] = useState('');
+    const [discount, setUsedDisc] = useState<Discount|null>(null);
+
+    useEffect(() => {
+        setUsedDisc(getChosenDiscount());
+    },);
 
     const handlePayment = () => {
         if (paymentMethod === 'card' && (!cardNumber || !expiryDate || !cvc)) {
@@ -36,7 +42,7 @@ export default function PaymentScreen() {
         router.push('/screens/account');
     };
 
-    const discountedPrice = totalPrice - totalPrice * discount;
+    const discountedPrice = totalPrice - totalPrice * (discount? discount.effectivness: 0);
     const deliveryFee = deliveryType === 'delivery' ? 2.50 : 0;
 
     return (
@@ -115,8 +121,8 @@ export default function PaymentScreen() {
             <View style={styles.summarySection}>
                 <Text style={[styles.summaryText, { color: theme.text }]}>Počet položiek: {itemCount}</Text>
                 <Text style={[styles.summaryText, { color: theme.text }]}>Cena: {totalPrice.toFixed(2)} €</Text>
-                {discount > 0 && (
-                    <Text style={[styles.summaryText, { color: theme.text }]}>Zľava: -{(discount * 100).toFixed(0)}%</Text>
+                {discount && (
+                    <Text style={[styles.summaryText, { color: theme.text }]}>Zľava: -{(discount.effectivness * 100).toFixed(0)}%</Text>
                 )}
                 <Text style={[styles.summaryText, { color: theme.text }]}>
                     {deliveryType === 'delivery' ? 'Doručenie: 2.50 €' : 'Rezervácia: 1.00 €'}
