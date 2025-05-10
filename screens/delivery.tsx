@@ -96,6 +96,17 @@ export default function DeliveryScreen() {
         if (guestCount > 1) setGuestCount(guestCount - 1);
     };
 
+    const pay = () => {
+        //create order
+        if(tab==='delivery'){
+            console.log('requesting delivery');
+        }
+        if(tab==='reservation'){
+            console.log('making reservation');
+        }
+        router.push('./payment');
+    }
+
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -198,7 +209,7 @@ export default function DeliveryScreen() {
 
             <Pressable
             style={[styles.payBtn, { backgroundColor: theme.card }]}
-            onPress={() => router.push('./payment')}
+            onPress={pay}
             >
             <Text style={{ color: theme.text }}>Zaplatiť</Text>
             </Pressable>
