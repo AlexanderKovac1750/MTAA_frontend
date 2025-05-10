@@ -55,7 +55,7 @@ export default function ShoppingCartScreen() {
     };
 
     const deleteItem = (remItem: order_item) => {
-        setCartItems(prev => prev.filter(item => item.name !== remItem.name));
+        setCartItems(prev => prev.filter(item => item.name !== remItem.name  || remItem.size !== item.size));
         removeItem(remItem);
     };
 
@@ -64,6 +64,20 @@ export default function ShoppingCartScreen() {
         .toFixed(2);
 
     const totalItemCount = cartItems.reduce((sum, item) => sum + item.count, 0);
+
+    const sizeToString = (size: string): string => {
+        
+        if(size==='small'){
+            return 'malé';
+        }
+        if(size==='medium'){
+            return 'stredné';
+        }
+        if(size==='large'){
+            return 'veľké';
+        }
+        return 'neplatné'
+    }
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -92,14 +106,14 @@ export default function ShoppingCartScreen() {
         {/* Scrollable cart items */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             {cartItems.map(item => (
-                <View key={item.name} style={[styles.itemCard, { backgroundColor: theme.card }]}>
+                <View key={`${item.name}+(${item.size}`} style={[styles.itemCard, { backgroundColor: theme.card }]}>
                     <TouchableOpacity onPress={() => {selectFood(item.meal),router.push('/screens/item_desc')}}>
                     <Image source={{uri: item.meal.image}} style={styles.itemImage} resizeMode="cover" />
                     </TouchableOpacity>
 
                     <View style={styles.itemDetails}>
                     <Text style={[styles.itemTitle, { color: theme.text, fontSize: 16 * fontScale }]}>
-                        {item.name}
+                        {item.name} ({sizeToString(item.size)})
                     </Text>
                     <View style={styles.controls}>
                         <TouchableOpacity onPress={() => updateQuantity(item, -1)}>
@@ -133,33 +147,6 @@ export default function ShoppingCartScreen() {
                         
                     </View>
                 </View>
-                /*
-            <View key={item.id} style={[styles.itemCard, { backgroundColor: theme.card }]}>
-                
-                <TouchableOpacity onPress={() => router.push({ pathname: '/screens/item_desc', params: { id: item.id } })}>
-                <Image source={item.image} style={styles.itemImage} resizeMode="cover" />
-                </TouchableOpacity>
-
-                <View style={styles.itemDetails}>
-                <Text style={[styles.itemTitle, { color: theme.text, fontSize: 16 * fontScale }]}>
-                    {item.title}
-                </Text>
-                <View style={styles.controls}>
-                    <TouchableOpacity onPress={() => updateQuantity(item.id, -1)}>
-                    <Ionicons name="remove-circle-outline" size={26} color={theme.accent} />
-                    </TouchableOpacity>
-                    <Text style={[styles.quantity, { color: theme.text }]}>{item.quantity}</Text>
-                    <TouchableOpacity onPress={() => updateQuantity(item.id, 1)}>
-                    <Ionicons name="add-circle-outline" size={26} color={theme.accent} />
-                    </TouchableOpacity>
-                </View>
-                </View>
-
-                
-                <TouchableOpacity onPress={() => deleteItem(item.id)}>
-                <Ionicons name="close" size={24} color={theme.primary} />
-                </TouchableOpacity>
-            </View>*/
             ))}
         </ScrollView>
 

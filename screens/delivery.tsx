@@ -7,7 +7,7 @@ import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getBaseUrl, getToken } from '../config';
-import { getCartItems } from '../cart';
+import { getCartItems, getTotalCount } from '../cart';
 import { Discount, getChosenDiscount } from '../discount';
 
 export default function DeliveryScreen() {
@@ -129,12 +129,14 @@ export default function DeliveryScreen() {
 
         if(true){
             if(tab==='delivery'){
-                if(street===''){
-                    Alert.alert('please choose street');
+
+                if(getTotalCount()===0){
+                    Alert.alert('Shopping cart is empty, delivery requires items to deliver');
                     return;
                 }
-                if(number===''){
-                    Alert.alert('please choose house number');
+
+                if(street===''){
+                    Alert.alert('please choose street');
                     return;
                 }
                 if(postcode===''){
@@ -142,13 +144,26 @@ export default function DeliveryScreen() {
                     return;
                 }
 
-                body['address']={
-                        "postal code": "831 46",
-                        "street": "urbanova",
-                        "number": 41
-                    }
+                if(number===''){
+                    Alert.alert('please choose house number');
+                    return;
+                }
+                try{
+                    const house_number:number = parseInt(number);
 
-                console.log('requesting delivery', body);
+                    body['address']={
+                            "postal code": postcode,
+                            "street": street,
+                            "number": house_number
+                        }
+
+                    console.log('requesting delivery', body);
+                }
+                catch{
+                    Alert.alert('please choose valid house number');
+                    return;
+                }
+                
             }
             if(tab==='reservation'){
 
