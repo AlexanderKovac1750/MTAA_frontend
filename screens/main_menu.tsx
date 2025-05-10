@@ -6,7 +6,7 @@ import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-ic
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
 import { Food, pullFavs } from '../food';
-import { checkFavePulled, getBaseUrl, getToken } from '../config';
+import { checkFavePulled, getBaseUrl, getToken, getUserType } from '../config';
 import { selectFood } from '../config';
 import { getTotalCount } from '../cart';
 
@@ -27,6 +27,7 @@ export default function MainMenu() {
   const [imageFetched, setImageFetched] = useState(false);
   const [searchNeeded, setSearchNeeded] = useState(true);
   const [cartCount, setCartCount] = useState(0);
+  const [role, setRole]= useState('registered');
 
   const getFilteredMeals= async () => {
     setFetchingFood(true);
@@ -80,6 +81,7 @@ export default function MainMenu() {
   }, [navigation]);
 
   useEffect(()=> {
+    setRole(getUserType());
     if(!checkFavePulled()){
       pullFavs();
     }
