@@ -258,45 +258,56 @@ export default function AccountScreen() {
         </Text>
       </TouchableOpacity>
 
-<View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', marginTop: 30 }}>
-  <TouchableOpacity
-    style={[styles.saveButton, { backgroundColor: theme.primary }]}
-    onPress={async () => {
-      const token = getToken();
-      if (!token) {
-        Alert.alert('Anonymous user', 'Please log in to save your preferences.');
-        return;
-      }
-      try {
-        const res = await fetch(`http://${getBaseUrl()}/change_preferences`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            token,
-            language: i18n.language,
-            darkmode: mode === 'dark',
-            high_contrast: highContrastMode,
-          }),
-        });
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', marginTop: 30 }}>
+        <TouchableOpacity
+          style={[styles.saveButton, { backgroundColor: theme.primary }]}
+          onPress={async () => {
+            const token = getToken();
+            if (!token) {
+              Alert.alert('Anonymous user', 'Please log in to save your preferences.');
+              return;
+            }
+            try {
+              const res = await fetch(`http://${getBaseUrl()}/change_preferences`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                },
 
-        const result = await res.json();
-        if (res.ok) {
-          Alert.alert('✅', 'Preferences saved successfully!');
-        } else {
-          throw new Error(result.message || 'Failed to save preferences');
-        }
-      } catch (err) {
-        console.error('Error saving preferences:', err);
-        Alert.alert('Error', err.message);
-      }
-    }}
-  >
-      <Text style={[styles.saveText, { fontSize: 16 * fontScale }]}>
-        {t('account.save')}
-      </Text>
-    </TouchableOpacity>
+                body: JSON.stringify({
+                  token,
+                  language: i18n.language,
+                  darkmode: mode === 'dark',
+                  high_contrast: highContrastMode,
+                }),
+              });
+
+              // const result = await res.json();
+              let result;
+              try {
+                result = await res.json();
+              } catch (err) {
+                const text = await res.text();
+                console.error('Non-JSON response:', text);
+                throw new Error('Server returned non-JSON data');
+            }
+
+              if (res.ok) {
+                Alert.alert('✅', 'Preferences saved successfully!');
+              } else {
+                throw new Error(result.message || 'Failed to save preferences');
+              }
+            } catch (err) {
+              console.error('Error saving preferences:', err);
+              Alert.alert('Error', err.message);
+            }
+          }}
+        >
+            <Text style={[styles.saveText, { fontSize: 16 * fontScale }]}>
+              {t('account.save')}
+            </Text>
+          </TouchableOpacity>
 
     <TouchableOpacity
         style={styles.logoutButton}
