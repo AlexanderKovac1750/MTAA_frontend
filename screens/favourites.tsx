@@ -89,7 +89,7 @@ export default function FavouriteMealsScreen() {
     };
 
     useEffect(() => {
-        getFavourites();
+        //getFavourites();
       }, []);
 
     useEffect(() => {

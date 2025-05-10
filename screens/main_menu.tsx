@@ -5,8 +5,8 @@ import { useThemeColors } from '../resources/themes//themeProvider';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
-import { Food } from '../food';
-import { getBaseUrl, getToken } from '../config';
+import { Food, pullFavs } from '../food';
+import { checkFavePulled, getBaseUrl, getToken } from '../config';
 import { selectFood } from '../config';
 import { getTotalCount } from '../cart';
 
@@ -71,13 +71,19 @@ export default function MainMenu() {
 
   const navigation = useNavigation();
     
-        useEffect(() => {
-            const unsubscribe = navigation.addListener('focus', () => {
-                console.log('📌 item desc is focused');
-                setCartCount(getTotalCount()); 
-            });
-            return unsubscribe;
-        }, [navigation]);
+    useEffect(() => {
+      const unsubscribe = navigation.addListener('focus', () => {
+        console.log('📌 item desc is focused');
+        setCartCount(getTotalCount()); 
+      });
+      return unsubscribe;
+  }, [navigation]);
+
+  useEffect(()=> {
+    if(!checkFavePulled()){
+      pullFavs();
+    }
+  })
 
   useEffect(() => {
     if(searchNeeded){
@@ -288,9 +294,9 @@ export default function MainMenu() {
           <TouchableOpacity onPress={() => router.push('/screens/shopping_cart')}>
           <Ionicons name="cart" size={28} color={theme.accent} />
           </TouchableOpacity>
-          <View>
-            <Text style={{ color: theme.secondary, fontSize: 10, position: 'absolute', right: -6, top: -6,}}>{getTotalCount()}</Text>
-          </View>
+          {cartCount && <View>
+            <Text style={{ color: theme.secondary, fontSize: 10, position: 'absolute', right: -6, top: -6,}}>{cartCount}</Text>
+          </View>}
         </View>
       </View>
 

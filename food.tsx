@@ -99,4 +99,38 @@ export const addFavourite = async(addFood: Food) => {
         }
     }
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const pullFavs = async () => {
+        await sleep(500);
+        try {
+            const query = `?token=${getToken()}`;
+            const url = `http://${getBaseUrl()}/favourite${query}`;
+            const response = await fetch(url, {
+                method: 'GET',
+            });
+                
+            const responseText = await response.text(); 
+            const data: any = JSON.parse(responseText);
+            
+            if (!response.ok) {
+                console.log('❌ Error response:', data.message);
+                Alert.alert('failed to load favourites: ', data.message);
+            }
+            else{
+                console.log('✅ favourites load successful !!:', data.dishes);
+        
+                if (Array.isArray(data.dishes)) {
+                setFavs(data.dishes as Food[]);
+                } else {
+                console.error('Invalid food data');
+                }
+            }
+
+        } catch (error) {
+            console.error('🚨 favourites load error:', error.message);
+            Alert.alert('favourites load Error', error.message);
+        }
+    };
+
 

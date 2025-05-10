@@ -1,5 +1,6 @@
 let baseUrl = '192.168.0.102:5000'; // Default
 let token = ''; // Default
+let fav_pulled = false;
 
 export const setBaseUrl = (url: string) => {
   baseUrl = url;
@@ -13,6 +14,13 @@ export const setToken = (new_token: string) => {
 };
 
 export const getToken = () => token;
+
+
+export const checkFavePulled = (): boolean => {
+  const was_pulled=fav_pulled;
+  fav_pulled=true;
+  return was_pulled;
+};
 
 
 import {Food} from './food'
