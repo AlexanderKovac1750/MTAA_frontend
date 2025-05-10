@@ -82,7 +82,7 @@ export default function AccountScreen() {
           throw new Error('⚠️ Server returned non-OK or non 404 status for reservation info');
         }
       }
-
+      console.log('user info fetched');
       const account_info=user.account_info;
       const reservations=reservationData.reservations;
       setName(account_info.name || 'Anonymous');

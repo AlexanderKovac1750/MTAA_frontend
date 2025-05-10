@@ -9,7 +9,7 @@ export type Discount = {
 
 let avaiable_discounts : Discount[]=[];
 let chosen_discount : Discount|null=null;
-let discount_points : number;
+let discount_points : number = 0;
 
 export const setAvaiableDiscounts = (new_avaiable_discounts: Discount[]) => {
   avaiable_discounts = new_avaiable_discounts;
@@ -50,6 +50,10 @@ export const fetchDiscounts = async() => {
                 if (Array.isArray(data.discounts)) {
                   avaiable_discounts=data.discounts;
                 }
+                if(data['owned DPs']!==null){
+                  console.log('  and owned DPs:',data['owned DPs']);
+                  discount_points=data['owned DPs'];
+                }
             }
 
         } catch (error) {
@@ -57,3 +61,5 @@ export const fetchDiscounts = async() => {
             Alert.alert('discount fetch Error', error.message);
         }
 }
+
+export const getDPs = ():number  => { return discount_points };

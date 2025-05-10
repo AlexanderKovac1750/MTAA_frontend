@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert} from
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { getChosenDiscount, Discount } from '../discount';
+import { getChosenDiscount, Discount, getDPs, getAvaiableDiscounts, chooseDiscount } from '../discount';
 
 export default function PaymentScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -21,10 +21,14 @@ export default function PaymentScreen() {
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
     const [cvc, setCVC] = useState('');
-    const [discount, setUsedDisc] = useState<Discount|null>(null);
+    const [discount, setDiscount] = useState<Discount|null>(null);
+    const [discountOptions, setDiscountOptions] = useState<Discount[]>([]);
+    const [availableDPs, setAvailableDPs] = useState<number>(0);
 
     useEffect(() => {
-        setUsedDisc(getChosenDiscount());
+        setDiscount(getChosenDiscount());
+        setDiscountOptions(getAvaiableDiscounts());
+        setAvailableDPs(getDPs());
     },);
 
     const handlePayment = () => {
@@ -118,18 +122,54 @@ export default function PaymentScreen() {
             )}
 
             {/* Summary Section */}
-            <View style={styles.summarySection}>
-                <Text style={[styles.summaryText, { color: theme.text }]}>Počet položiek: {itemCount}</Text>
-                <Text style={[styles.summaryText, { color: theme.text }]}>Cena: {totalPrice.toFixed(2)} €</Text>
-                {discount && (
-                    <Text style={[styles.summaryText, { color: theme.text }]}>Zľava: -{(discount.effectivness * 100).toFixed(0)}%</Text>
-                )}
-                <Text style={[styles.summaryText, { color: theme.text }]}>
-                    {deliveryType === 'delivery' ? 'Doručenie: 2.50 €' : 'Rezervácia: 1.00 €'}
-                </Text>
-                <Text style={[styles.summaryText, { color: theme.text, fontWeight: 'bold' }]}>
-                    Spolu: {(discountedPrice + deliveryFee).toFixed(2)} €
-                </Text>
+            <View style={[styles.summarySection,{flexDirection: 'row', justifyContent: 'space-between'}]}>
+                <View>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>Počet položiek: {itemCount}</Text>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>Cena: {totalPrice.toFixed(2)} €</Text>
+                    {discount && (
+                        <Text style={[styles.summaryText, { color: theme.text }]}>Zľava: -{(discount.effectivness * 100).toFixed(0)}%</Text>
+                    )}
+                    <Text style={[styles.summaryText, { color: theme.text }]}>
+                        {deliveryType === 'delivery' ? 'Doručenie: 2.50 €' : 'Rezervácia: 1.00 €'}
+                    </Text>
+                    <Text style={[styles.summaryText, { color: theme.text, fontWeight: 'bold' }]}>
+                        Spolu: {(discountedPrice + deliveryFee).toFixed(2)} €
+                    </Text>
+                </View>
+
+                <View style={styles.discountColumn}>
+                            {discountOptions.map((discOpt) => (
+                                
+                                <TouchableOpacity
+                                    key={discOpt.id}
+                                onPress = {()=>{
+                                    if(getChosenDiscount() && getChosenDiscount()!.id===discOpt.id){
+                                        chooseDiscount(null);
+                                        setDiscount(null);
+                                    }
+                                    else{
+                                        chooseDiscount(discOpt);
+                                        setDiscount(discOpt);
+                                        console.log('discount chosen',discOpt.id);
+                                    }
+                                }}>
+                                    <Text
+                                        
+                                        style={[
+                                        styles.discountText,
+                                        {
+                                            opacity: availableDPs >= discOpt.cost ? 1 : 0.4,
+                                            color: theme.text,
+                                            fontSize: 14 * fontScale,
+                                            fontWeight: (discount ? 'bold' : 'normal'),
+                                        },
+                                        ]}
+                                    >
+                                        zľava {discOpt.effectivness.toFixed(2)}%
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                          </View>
             </View>
 
 
@@ -264,5 +304,12 @@ const styles = StyleSheet.create({
     payText: {
         fontWeight: '600',
         color: 'white',
+    },
+    discountColumn: {
+      marginRight: 10,
+      alignItems: 'flex-end',
+    },
+    discountText: {
+      marginVertical: 4,
     },
 });

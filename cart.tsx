@@ -9,6 +9,8 @@ export type order_item = {
 }
 
 let cart: order_item[] = [];
+let order_id: string|null = null;
+let price: GLfloat = 0.0;
 
 export const addItem = (new_item: order_item) => {
     cart.push(new_item);
@@ -56,3 +58,16 @@ export const getCartItems =(): order_item[] => {
 export const getTotalCount = (): number => {
     return cart.reduce((sum, item) => sum + item.count, 0);
 } 
+
+export const setOrder_id = (newOrder_id: string) => {
+  order_id = newOrder_id;
+};
+
+export const getOrder_id = () => order_id;
+
+export const setOrder_price = (newPrice: GLfloat) => {
+  price = newPrice;
+};
+
+export const getOrder_price = () => price;
+
