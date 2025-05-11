@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useRouter } from 'expo-router';
 import { useThemeColors, ThemeProvider } from '../resources/themes/themeProvider';
 import theme from '../resources/themes/theme';
-import { getBaseUrl, setBaseUrl, setOfflineMode, setToken, setUserType } from '../config';
+import { getBaseUrl, setBaseUrl, setOfflineMode, setToken, setUserType, sleep } from '../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchDiscounts } from '../discount';
 
@@ -68,6 +68,19 @@ export default function LoginScreen() {
     }
     saveIP();
   }
+
+  const fetchWithTimeout = async (
+  url: string,
+  options: RequestInit = {},
+  timeout: number = 1000
+  ): Promise<Response> => {
+    return await Promise.race<Response>([
+      fetch(url, options),
+      new Promise<Response>((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), timeout)
+      )
+    ]);
+  };
   
   const handleLogin = async () => {
     if (rememberMe) {
@@ -85,22 +98,22 @@ export default function LoginScreen() {
         
       const query = `?name=${encodeURIComponent(name)}&password=${encodeURIComponent(password)}`;
       const url = `http://${address}/login${query}`;
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: 'POST',
-      });
+      }, 1000);
     
       const responseText = await response.text(); // Use `.text()` instead of `.json()`
       const data: any = JSON.parse(responseText);
       console.log('the role is',data.type);
       if (!response.ok) {
         console.log('❌ Error response:', data.message);
-        setOfflineMode(true);
-        Alert.alert('failed to connect: ', 'using offline mode, limited functionality. Please relog to');
-        router.push('/screens/favourites');
+        console.log('status is ',response.status);
+        Alert.alert('login failed',data.message);
         return;
       }
     
       setOfflineMode(false);
+      sleep(100);
       setToken(data.token);
       fetchDiscounts();
       setUserType(data.type);
@@ -109,7 +122,9 @@ export default function LoginScreen() {
       
     } catch (error) {
       console.error('🚨 Login error:', error.message);
-      Alert.alert('Login Error', error.message);
+      setOfflineMode(true);
+      Alert.alert('failed to connect: ', 'using offline mode, limited functionality. Please relog to gain full functionality when connection is regained.');
+      router.push('/screens/favourites');
     }
   };
 

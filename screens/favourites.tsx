@@ -5,6 +5,7 @@ import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { Food, removeFavourite, setFavs } from '../food';
 import { getBaseUrl, getOfflineMode, getToken, selectFood } from '../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const dummyFavourites = [
     {
@@ -52,6 +53,24 @@ export default function FavouriteMealsScreen() {
         setFetchingFood(true);
         setFavourites([]);
         
+        if(getOfflineMode()){
+            console.log('reading favourites from local storage');
+            try{
+                const storedFAVS = await AsyncStorage.getItem('FAVS');
+                if(storedFAVS){
+                    const fav2 = JSON.parse(storedFAVS) as Food[];
+                    setFavourites(fav2);
+                    console.log("success in loading favourites");
+                }
+                
+            }
+            catch{
+                console.warn("failed to load favourites");
+            }
+            setFetchingFood(false);
+            return;
+        }
+        
         try {
             const query = `?token=${getToken()}`;
             const url = `http://${getBaseUrl()}/favourite${query}`;
@@ -71,8 +90,9 @@ export default function FavouriteMealsScreen() {
                 console.log('✅ favourites load successful !!:', data.dishes);
         
                 if (Array.isArray(data.dishes)) {
-                setFavourites(data.dishes as Food[]);
-                setFavs(data.dishes as Food[]);
+                    setFavourites(data.dishes as Food[]);
+                    setFavs(data.dishes as Food[]);
+                    
                 } else {
                 console.error('Invalid food data');
                 }
@@ -85,8 +105,8 @@ export default function FavouriteMealsScreen() {
             setFavourites([]);
         }
     
-        setFetchingFood(false);
         setImageFetched(false);
+        setFetchingFood(false);
     };
 
     useEffect(() => {
@@ -99,7 +119,32 @@ export default function FavouriteMealsScreen() {
             loadImages();
             setImageFetched(true);
         }
+        else{
+            console.log('dsda',favourites.length);
+        }
       },  [favourites])
+
+    useEffect(()=>{
+        console.log("FAVS");
+        if(!fetchingFood && imageFetched){
+            //is done fetching, save
+            saveFAVS();
+        }
+    }, [imageFetched])
+
+    const saveFAVS = async() =>{
+        if(getOfflineMode()){
+            return;
+        }
+        try{
+            const copy = JSON.stringify(favourites);
+            await AsyncStorage.setItem('FAVS', copy);
+            console.log("success in storing favourites");
+        }
+        catch{
+            console.warn("failed to save favourites");
+        }
+    };
 
     const removeFromFavourites = (favourite_meal : Food) => {
         setFavourites(prev => prev.filter(item => item.id !== favourite_meal.id));
@@ -131,6 +176,13 @@ export default function FavouriteMealsScreen() {
     
       // Load image URIs for the fetched photo names
       const loadImages = async () => {
+        if(getOfflineMode()){
+            console.log('favlen',favourites.length);
+            setFavourites(favourites)
+            return;
+        }
+
+
         try {
           // Create a copy of the photos array to update with image URIs
           const updatedFavourites = [...favourites];
