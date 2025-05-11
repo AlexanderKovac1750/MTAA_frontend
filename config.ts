@@ -60,3 +60,12 @@ export const setOfflineMode = (isOffline: boolean) => {
 };
 
 export const getOfflineMode = () => offlineMode;
+
+export function extractNumberFromMoneyString(moneyString: string): number {
+  const numberString = moneyString.replace(/[^\d.-]/g, '');
+  const extractedNumber = parseFloat(numberString);
+  if (isNaN(extractedNumber)) {
+    return 0;
+  }
+  return extractedNumber;
+}

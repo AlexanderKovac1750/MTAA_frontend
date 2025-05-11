@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { getBaseUrl, getToken } from '../config';
+import { extractNumberFromMoneyString, getBaseUrl, getToken } from '../config';
 import { getCartItems, getOrder_id, getOrder_price, getTotalCount, setOrder_id, setOrder_price, setOrder_type } from '../cart';
 import { chooseDiscount, Discount, getChosenDiscount } from '../discount';
 
@@ -222,10 +222,11 @@ export default function DeliveryScreen() {
             console.log('Server response:', result.message);
 
             if(response.ok){
-                setOrder_price(result.price);
+                const price_num=extractNumberFromMoneyString(result.price);
+                setOrder_price(price_num);
                 setOrder_id(result['order id']);
                 setOrder_type(tab);
-                console.log(`Order made [${getOrder_id()}] for ${getOrder_price()}`);
+                console.log(`Order made [${getOrder_id()}] for ${getOrder_price()}`);       
                 router.push('./payment');
             }
         } catch (error) {

@@ -5,7 +5,7 @@ import { useNavigation, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getChosenDiscount, Discount, getDPs, getAvaiableDiscounts, chooseDiscount, addDP } from '../discount';
 import { getBaseUrl, getToken } from '../config';
-import { getOrder_id } from '../cart';
+import { getOrder_id, getOrder_price, getOrder_type, getTotalCount } from '../cart';
 
 export default function PaymentScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -14,9 +14,6 @@ export default function PaymentScreen() {
     // MOCKED DATA
     const isRegisteredUser = true;
     const orderId = 'ORD12345';
-    const totalPrice = 27.40;
-    const itemCount = 5;
-    const deliveryType = 'delivery';
     //const discount = 0.10;
 
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash'>('card');
@@ -24,6 +21,26 @@ export default function PaymentScreen() {
     const [expiryDate, setExpiryDate] = useState('');
     const [cvc, setCVC] = useState('');
     const [discount, setDiscount] = useState<Discount|null>(null);
+    const [totalPrice, setTP] = useState<number>(27.40);
+    const [itemCount, setIC] = useState(5);
+    const [deliveryType, setDT] = useState('delivery');
+
+    useEffect(()=>{
+        let TP = parseFloat(String(getOrder_price()));
+        if(isNaN(TP)){
+            TP=0.00
+        }
+        if(TP!==null){
+            setTP(TP);
+        }
+        
+        setIC(getTotalCount());
+
+        const DT =getOrder_type();
+        if(DT!==null){
+            setDT(DT);
+        }
+    })
 
     const navigation = useNavigation();
     
