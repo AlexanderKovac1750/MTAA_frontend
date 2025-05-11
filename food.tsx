@@ -2,6 +2,8 @@
 export type Food = {
     id: string;
     title: string;
+    category: string;
+    isSpecial: boolean;
     description: string;
     image: string;
     discount_base: GLfloat;
@@ -12,6 +14,7 @@ export type Food = {
     medium_price: GLfloat;
     large_price: GLfloat;
     unit: string;
+    pic: string;
 };
 
 let favourites: Food[] = [];
@@ -70,6 +73,29 @@ export const removeFavourite = async(remFood: Food) => {
         }
     }
 
+export async function getFullFoodInfo(id: string) {
+    try {
+        const token = await getToken();
+        // console.log('Id:', id);
+        const query = `?token=${token}&dish_id=${id}`;
+        const response = await fetch(
+        `http://${getBaseUrl()}/dish_full_info${query}`
+        );
+
+        if (!response.ok) {
+        throw new Error(`❌ Failed to fetch full dish info (id ${id})`);
+        }
+
+        const food = await response.json();
+        console.log('✅ Full dish info:', food);
+        return food;
+    } catch (error) {
+        console.error('🚨 Error fetching full dish info:', error);
+        return null;
+    }
+
+}    
+
 export const addFavourite = async(addFood: Food) => {
         try {
             const query = `?token=${getToken()}&dish_name=${addFood.title}`;
@@ -98,6 +124,8 @@ export const addFavourite = async(addFood: Food) => {
             Alert.alert('favorite add Error', error.message);
         }
     }
+
+// const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const pullFavs = async () => {
         await sleep(500);
