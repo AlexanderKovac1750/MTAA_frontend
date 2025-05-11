@@ -1,12 +1,12 @@
 // app/login-choice.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { router, useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import i18n from '../localisation/localisation';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getBaseUrl, setOfflineMode, setToken, setUserType, sleep } from '../config';
+import { getBaseUrl, setBaseUrl, setOfflineMode, setToken, setUserType, sleep } from '../config';
 import { fetchDiscounts } from '../discount';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,6 +15,17 @@ export default function LoginChoiceScreen() {
   const router = useRouter();
   const { theme, toggleTheme, mode, fontScale } = useThemeColors();
   const { t } = useTranslation();
+  
+  const loadServerURL = async () => {
+      const savedServerURL = await AsyncStorage.getItem('ServerURL');
+      if(savedServerURL){
+        setBaseUrl(savedServerURL);
+      }
+    }
+
+    useEffect(()=>{
+      loadServerURL();
+    })
 
   const anon_login = async() => {
 
@@ -22,6 +33,8 @@ export default function LoginChoiceScreen() {
     let name:string|null = await AsyncStorage.getItem('anon_username');
     let password:string|null = await AsyncStorage.getItem('anon_password');
     let was_loaded = true;
+
+    
     
 
     if(name === null || password ===null){
