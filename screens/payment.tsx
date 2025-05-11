@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { useNavigation, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { getChosenDiscount, Discount, getDPs, getAvaiableDiscounts, chooseDiscount, addDP } from '../discount';
+import { getChosenDiscount, Discount, chooseDiscount } from '../discount';
 import { getBaseUrl, getToken } from '../config';
 import { getOrder_id, getOrder_price, getOrder_type, getTotalCount } from '../cart';
+import { useTranslation } from 'react-i18next';
 
 export default function PaymentScreen() {
     const { theme, fontScale } = useThemeColors();
+    const { t } = useTranslation();
     const router = useRouter();
+
 
     // MOCKED DATA
     const isRegisteredUser = true;
@@ -42,138 +45,136 @@ export default function PaymentScreen() {
         }
     })
 
-    const navigation = useNavigation();
-    
-        useEffect(() => {
-            const unsubscribe = navigation.addListener('focus', () => {
-                setDiscount(getChosenDiscount());
-                console.log('📌 Screen is focused');
+    useEffect(() => {
+        const loadOrderDetails = () => {
+            const order = getCurrentOrder();
+            if (!order) {
+                Alert.alert(t('common.error'), t('payment.noOrder'));
+                router.back();
+                return;
+            }
+
+            setOrderDetails({
+                total: order.price,
+                itemsCount: Number(order.items_end - order.items_start),
+                deliveryType: order.id.startsWith('DEL') ? 'delivery' : 'reservation'
             });
-    
-            return unsubscribe;
-        }, [navigation]);
+        };
 
-    const handlePayment = () => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            setDiscount(getChosenDiscount());
+            loadOrderDetails();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
+    const handlePayment = async () => {
         if (paymentMethod === 'card' && (!cardNumber || !expiryDate || !cvc)) {
-            Alert.alert('Chyba', 'Prosím, vyplňte všetky údaje o karte.');
+            Alert.alert(t('common.error'), t('payment.cardDetails'));
             return;
         }
 
-        if (paymentMethod === 'cash' && !isRegisteredUser) {
-            Alert.alert('Iba pre registrovaných', 'Platba po doručení je dostupná len pre registrovaných používateľov.');
-            return;
-        }
-
-        Alert.alert('Platba prebehla úspešne!', `ID objednávky: ${orderId}`);
-        pay();
-    };
-
-    const discountedPrice = totalPrice - totalPrice * (discount? discount.effectivness: 0);
-    const deliveryFee = deliveryType === 'delivery' ? 2.50 : 0;
-
-    const pay = async() => {
-        console.log('paying with method',paymentMethod);
         try {
-                
             const query = `?token=${getToken()}&order_id=${getOrder_id()}`;
-            const POD = paymentMethod==='cash';
+            const POD = paymentMethod === 'cash';
             const url = `http://${getBaseUrl()}/pay${query}&pay_on_delivery=${POD}`;
+            
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ body:{filler:"123"} }), // wrapping inside an object is optional, depending on API
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    body: {
+                        discount_used: discount?.id || null
+                    }
+                }),
             });
-            
-                const responseText = await response.text(); // Use `.text()` instead of `.json()`
-                const data: any = JSON.parse(responseText);
-                
-                if (!response.ok) {
-                    console.log('❌ Error response:', data.message);
-                    Alert.alert('failed to pay: ', data.message);
-                    return;
-                }
 
-                const disc_DP_cost = discount ? discount.cost : 0;
-                const disc_obtained = data.disc_points ? data.disc_points : 0;
-                addDP(disc_obtained-disc_DP_cost);
+            const result = await response.json();
             
-                chooseDiscount(null);
-                setCardNumber('');
-                setExpiryDate('');
-                setCVC('');
-                console.log('✅ payment successful !!:', data.token);
-                router.push('/screens/add_bonus');
-              
-            } catch (error) {
-                console.error('🚨 payment error:', error.message);
-                Alert.alert('payment Error', error.message);
+            if (!response.ok) {
+                throw new Error(result.message || t('payment.failed'));
             }
-    }
+
+            // Clear application state
+            chooseDiscount(null);
+            setCartItems([]);
+            clearCurrentOrder();
+            
+            router.push('/screens/confirmation');
+        } catch (error) {
+            console.error('Payment error:', error);
+            Alert.alert(t('common.error'), error.message);
+        }
+    };
+
+    if (!orderDetails) return null;
+
+    const deliveryFee = orderDetails.deliveryType === 'delivery' ? 2.50 : 1.00;
+    const discountValue = discount ? orderDetails.total * discount.effectivness : 0;
+    const totalPrice = orderDetails.total + deliveryFee - discountValue;
+
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            {/* Top bar */}
-            <TouchableOpacity onPress={() => router.back()} style={styles.backTriangle} />
-            <View style={styles.accountIcon}>
-                <TouchableOpacity onPress={() => router.push('/screens/account')}>
-                    <Ionicons name="person-circle" size={44} color={theme.text} />
-                </TouchableOpacity>
-            </View>
+            {/* Header */}
+            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                <Ionicons name="arrow-back" size={28 * fontScale} color={theme.text} />
+            </TouchableOpacity>
 
-            <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>Platba</Text>
+            <Text style={[styles.title, { color: theme.text, fontSize: 24 * fontScale }]}>
+                {t('payment.title')}
+            </Text>
 
             {/* Payment Method Selector */}
-            <View style={styles.methodSelector}>
-                {['card', 'cash'].map((method) => (
+            <View style={styles.methodContainer}>
+                {['card', 'cash'].map(method => (
                     <TouchableOpacity
                         key={method}
                         onPress={() => setPaymentMethod(method as 'card' | 'cash')}
                         style={[
                             styles.methodButton,
                             {
-                                backgroundColor: paymentMethod === method ? theme.primary : theme.secondary,
+                                backgroundColor: paymentMethod === method ? theme.primary : theme.card,
                                 borderColor: theme.border,
                             },
                         ]}
                     >
-                        <Text style={{ color: paymentMethod === method ? theme.background : theme.text }}>
-                            {method === 'card' ? 'Kartou' : 'Po doručení'}
+                        <Text style={[
+                            styles.methodText,
+                            { 
+                                color: paymentMethod === method ? theme.background : theme.text,
+                                fontSize: 16 * fontScale
+                            }
+                        ]}>
+                            {t(`payment.methods.${method}`)}
                         </Text>
                     </TouchableOpacity>
                 ))}
             </View>
 
-            {/* Card Payment Fields */}
+            {/* Card Details */}
             {paymentMethod === 'card' && (
-                <View style={[styles.cardSection, { backgroundColor: theme.card }]}>
-                    <View style={styles.cardHeader}>
-                        <Text style={[styles.cardLabel, { color: theme.text }]}>Údaje o karte</Text>
-                        <Image
-                            source={require('../resources/images/card_icon.png')}
-                            style={styles.cardIcons}
-                            resizeMode="contain"
-                        />
-                    </View>
+                <View style={[styles.cardContainer, { backgroundColor: theme.card }]}>
                     <TextInput
-                        style={[styles.input, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                        placeholder="Číslo karty"
+                        style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+                        placeholder={t('payment.cardNumber')}
                         placeholderTextColor={theme.placeholder}
                         keyboardType="numeric"
                         value={cardNumber}
                         onChangeText={setCardNumber}
                     />
+                    
                     <View style={styles.row}>
                         <TextInput
-                            style={[styles.input, styles.halfInput, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                            placeholder="Platnosť (MM/YY)"
+                            style={[styles.input, styles.halfInput, { color: theme.text, borderColor: theme.border }]}
+                            placeholder={t('payment.expiry')}
                             placeholderTextColor={theme.placeholder}
                             value={expiryDate}
                             onChangeText={setExpiryDate}
                         />
                         <TextInput
-                            style={[styles.input, styles.halfInput, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                            placeholder="CVC"
+                            style={[styles.input, styles.halfInput, { color: theme.text, borderColor: theme.border }]}
+                            placeholder={t('payment.cvc')}
                             placeholderTextColor={theme.placeholder}
                             keyboardType="numeric"
                             value={cvc}
@@ -183,48 +184,60 @@ export default function PaymentScreen() {
                 </View>
             )}
 
-            {/* Summary Section */}
-            <View style={[styles.summarySection,{flexDirection: 'row', justifyContent: 'space-between'}]}>
-                <View>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>Počet položiek: {itemCount}</Text>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>Cena: {totalPrice.toFixed(2)} €</Text>
-                    {discount && (
-                        <Text style={[styles.summaryText, { color: theme.text }]}>Zľava: -{(discount.effectivness * 100).toFixed(0)}%</Text>
-                    )}
+            {/* Order Summary */}
+            <View style={[styles.summaryContainer, { backgroundColor: theme.card }]}>
+                <Text style={[styles.summaryTitle, { color: theme.text, fontSize: 18 * fontScale }]}>
+                    {t('payment.summary')}
+                </Text>
+
+                <View style={styles.summaryRow}>
                     <Text style={[styles.summaryText, { color: theme.text }]}>
-                        {deliveryType === 'delivery' ? 'Doručenie: 2.50 €' : 'Rezervácia: 1.00 €'}
+                        {t('payment.items', { count: orderDetails.itemsCount })}
                     </Text>
-                    <Text style={[styles.summaryText, { color: theme.text, fontWeight: 'bold' }]}>
-                        Spolu: {(discountedPrice + deliveryFee).toFixed(2)} €
+                    <Text style={[styles.summaryText, { color: theme.text }]}>
+                        {orderDetails.total.toFixed(2)} €
+                    </Text>
+                </View>
+
+                {discount && (
+                    <View style={styles.summaryRow}>
+                        <Text style={[styles.summaryText, { color: theme.text }]}>
+                            {t('payment.discount', { percent: discount.effectivness * 100 })}
+                        </Text>
+                        <Text style={[styles.summaryText, { color: theme.text }]}>
+                            -{discountValue.toFixed(2)} €
+                        </Text>
+                    </View>
+                )}
+
+                <View style={styles.summaryRow}>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>
+                        {t(`payment.${orderDetails.deliveryType}`)}
+                    </Text>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>
+                        {deliveryFee.toFixed(2)} €
+                    </Text>
+                </View>
+
+                <View style={[styles.summaryRow, { borderTopWidth: 1, borderColor: theme.border }]}>
+                    <Text style={[styles.summaryText, { fontWeight: 'bold', color: theme.text }]}>
+                        {t('payment.total')}
+                    </Text>
+                    <Text style={[styles.summaryText, { fontWeight: 'bold', color: theme.text }]}>
+                        {totalPrice.toFixed(2)} €
                     </Text>
                 </View>
             </View>
 
-
-            {/* QR Section - just in case!!!*/}
-            {paymentMethod === 'cash' && isRegisteredUser && (
-                <View style={[styles.qrContainer, { borderWidth: 1, borderColor: theme.border, borderRadius: 8, padding: 10 }]}>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>Vaše potvrdenie:</Text>
-                    <Image
-                        source={require('../resources/images/beer.png')}
-                        style={styles.qrImage}
-                        resizeMode="contain"
-                    />
-                </View>
-            )}
-
-            {/* Pay Button  */}
-            <View style={{ marginTop: 'auto' }}>
-                <TouchableOpacity
-                    onPress={() => {
-                        handlePayment();
-                    }}
-                    style={[styles.payButton, { backgroundColor: theme.primary }]}
-                >
-                    <Text style={[styles.payText, { fontSize: 16 * fontScale }]}>Zaplatiť</Text>
-                </TouchableOpacity>
-            </View>
-
+            {/* Pay Button */}
+            <TouchableOpacity
+                style={[styles.payButton, { backgroundColor: theme.primary }]}
+                onPress={handlePayment}
+            >
+                <Text style={[styles.payText, { color: theme.background, fontSize: 18 * fontScale }]}>
+                    {t('payment.payButton')}
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -232,64 +245,46 @@ export default function PaymentScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 70,
-        paddingHorizontal: 20,
+        padding: 20,
     },
-    backTriangle: {
+    backButton: {
         position: 'absolute',
-        top: 42,
-        left: 16,
-        width: 0,
-        height: 0,
-        borderStyle: 'solid',
-        borderTopWidth: 12,
-        borderBottomWidth: 12,
-        borderRightWidth: 18,
-        borderTopColor: 'transparent',
-        borderBottomColor: 'transparent',
-        borderRightColor: '#f4e4d4',
-    },
-    accountIcon: {
-        position: 'absolute',
-        top: 38,
-        right: 16,
+        top: 40,
+        left: 20,
+        zIndex: 1,
     },
     title: {
         textAlign: 'center',
         fontWeight: '600',
-        marginBottom: 20,
+        marginTop: 60,
+        marginBottom: 30,
     },
-    methodSelector: {
+    methodContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-around',
         marginBottom: 20,
     },
     methodButton: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        borderWidth: 1,
-    },
-    cardSection: {
-        padding: 16,
+        padding: 15,
         borderRadius: 10,
-        marginBottom: 24,
-    },
-    cardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        borderWidth: 1,
+        minWidth: '40%',
         alignItems: 'center',
-        marginBottom: 12,
     },
-    cardLabel: {
-        fontSize: 16,
-        fontWeight: '600',
+    methodText: {
+        fontWeight: '500',
+    },
+    cardContainer: {
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 20,
     },
     input: {
         borderWidth: 1,
         borderRadius: 8,
         padding: 12,
-        marginBottom: 12,
+        marginBottom: 15,
+        fontSize: 16,
     },
     row: {
         flexDirection: 'row',
@@ -297,44 +292,37 @@ const styles = StyleSheet.create({
     },
     halfInput: {
         flex: 1,
-        marginHorizontal: 4,
+        marginHorizontal: 5,
     },
-    cardIcons: {
-        width: 60,
-        height: 40,
-    },
-    summarySection: {
+    summaryContainer: {
+        borderRadius: 10,
+        padding: 20,
         marginBottom: 20,
+    },
+    summaryTitle: {
+        fontWeight: '600',
+        marginBottom: 15,
+    },
+    summaryRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 5,
+        paddingVertical: 5,
     },
     summaryText: {
         fontSize: 16,
-        marginVertical: 2,
-    },
-    qrContainer: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    qrImage: {
-        width: 100,
-        height: 100,
-        marginTop: 10,
     },
     payButton: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
+        borderRadius: 10,
+        padding: 18,
         alignItems: 'center',
-        marginBottom: 4,
+        marginTop: 'auto',
     },
     payText: {
         fontWeight: '600',
-        color: 'white',
-    },
-    discountColumn: {
-      marginRight: 10,
-      alignItems: 'flex-end',
-    },
-    discountText: {
-      marginVertical: 4,
     },
 });
+
+function setCartItems(arg0: never[]) {
+    throw new Error('Function not implemented.');
+}

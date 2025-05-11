@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } fr
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { useNavigation, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { decItem, getCartItems, incItem, order_item, removeItem, setItemQuantity } from '../cart';
-import { getOfflineMode, selectFood } from '../config';
+import { decItem, getCartItems, incItem, order_item, OrderInfo, removeItem, setCurrentOrder, setItemQuantity,  } from '../cart';
+import { getOfflineMode, selectFood, getUserType, getBaseUrl, getToken } from '../config';
+import { getFavs, isFav } from '../food';
 
 export default function ShoppingCartScreen() {
     const router = useRouter();
@@ -64,6 +65,8 @@ export default function ShoppingCartScreen() {
         removeItem(remItem);
     };
 
+
+
     const totalPrice = cartItems
         .reduce((sum, item) => sum + item.price * item.count, 0)
         .toFixed(2);
@@ -83,6 +86,96 @@ export default function ShoppingCartScreen() {
         }
         return 'neplatné'
     }
+
+    const handleOrderSubmit = async () => {
+    try {
+        const token = getToken();
+        if (!token) {
+            Alert.alert('Error', 'no token');
+            return;
+        }    
+
+        // Prepare order items
+        const orderItems = cartItems.map(item => ({
+            name: item.meal.title,
+            size: item.size,
+            count: item.count
+        }));
+
+        // Create order payload
+        const orderData = {
+            body: {
+                comment: "", // Add any user comment here
+                items: orderItems
+            }
+        };
+
+        const response = await fetch(`http://${getBaseUrl()}/order?token=${token}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        });
+
+        const responseData = await response.json();
+
+        if (!response.ok) throw new Error(responseData.message || 'Order creation failed');
+
+        const orderInfo: OrderInfo = {
+            id: responseData.order_id,
+            user: token,
+            time: new Date().toISOString(),
+            comment: '',
+            price: parseFloat(responseData.total_price),
+            discount_used: '',
+            items_start: BigInt(responseData.items_start),
+            items_end: BigInt(responseData.items_end),
+            is_paid: false,
+            discount_total: totalDiscount
+            };
+
+        setCurrentOrder(orderInfo);
+        router.push('/screens/delivery');
+        
+
+        // Clear cart and handle success
+        setCartItems([]);
+        Alert.alert('Úspech', 'Objednávka bola vytvorená');
+        router.push(`/order-confirmation/${responseData.order_id}`);
+
+    } catch (error) {
+        Alert.alert('Chyba', error.message || 'Neočakávaná chyba');
+    }   
+    };
+
+        const calculatePrices = () => {
+                let originalTotal = 0;
+                let discountedTotal = 0;
+                let totalDiscount = 0;
+
+                const itemsWithDiscounts = cartItems.map(item => {
+                    const originalPrice = item.price * item.count;
+                    let discountedPrice = originalPrice;
+                    let discount = 0;
+
+                    if (getUserType() === 'registered' && isFav(item.meal)) {
+                        discount = originalPrice * item.meal.discount_base;
+                        discountedPrice = originalPrice - discount;
+                        totalDiscount += discount;
+                    }
+
+                    originalTotal += originalPrice;
+                    discountedTotal += discountedPrice;
+
+                    return { ...item, originalPrice, discountedPrice, discount };
+                });
+
+                return { itemsWithDiscounts, originalTotal, discountedTotal, totalDiscount };
+            };
+
+            const { itemsWithDiscounts, originalTotal, discountedTotal, totalDiscount } = calculatePrices();
+
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -162,7 +255,10 @@ export default function ShoppingCartScreen() {
             </Text>
             {!isOffline && <TouchableOpacity
             style={[styles.orderButton, { backgroundColor: theme.primary }]}
-            onPress={() => router.push('/screens/delivery')}
+            onPress={async () => {
+                await handleOrderSubmit();
+                router.push('/screens/delivery');
+            }}
             //   onPress={() => router.push('/screens/favourites')} //just for now, to be changed later
             >
             <Text style={[styles.orderText, { color: theme.text, fontSize: 16 * fontScale }]}>

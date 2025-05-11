@@ -45,5 +45,26 @@ export default {
       search: "Поиск",
       admin_only: "Только для администраторов",
       unauthorized: "Несанкционированный доступ"
+    },
+    DeliveryScreen: {
+      title: "Доставка",
+      order_now: "Заказать сейчас",
+      track_order: "Отслеживать заказ",
+      delivery_time: "Предполагаемое время доставки",
+      address: "Адрес доставки",
+      change_address: "Изменить адрес",
+      delivery_options: "Параметры доставки",
+      contactless: "Бесконтактная доставка",
+      leave_at_door: "Оставить у двери",
+      instructions: "Инструкции по доставке",
+      confirm: "Подтвердить доставку",
+      cancel: "Отменить заказ",
+      status_preparing: "Ваш заказ готовится...",
+      status_out_for_delivery: "Заказ в пути",
+      status_delivered: "Доставлено",
+      error_invalid_address: "Пожалуйста, введите корректный адрес.",
+      error_no_connection: "Нет подключения. Попробуйте снова.",
+      success_confirmed: "Ваша доставка подтверждена.",
+      success_cancelled: "Ваша доставка отменена."
     }
   };
