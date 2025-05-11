@@ -85,6 +85,8 @@ export default function ItemEditScreen() {
       } finally {
         setLoading(false);
       }
+
+      setImage(selected.image)
     };
 
     fetchItem();
@@ -107,6 +109,12 @@ export default function ItemEditScreen() {
     if (!food || !food.id) {
       Alert.alert('Error', 'Meal data is missing.');
       return;
+    }
+
+    const selfod=getSelectedFood();
+    if(imageBase64===null && selfod!=null){
+      //maybe use old image, or use null and add check to not overwrite image to BE.
+      //old image is not however in base 64 format.
     }
 
     try {
@@ -143,7 +151,8 @@ export default function ItemEditScreen() {
       }
 
       Alert.alert('Changes saved');
-      router.push('../screens/main_menu');
+      router.back();
+      //router.push('../screens/main_menu');
     } catch (e) {
       console.error(e);
       Alert.alert('Error saving changes');

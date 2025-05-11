@@ -29,8 +29,8 @@ export default function MainMenu() {
   const [cartCount, setCartCount] = useState(0);
 
   // const [role, setRole] = useState(getUserType());
-  // const [role, setRole] = useState('registered');
-  const [role, setRole] = useState('admin');
+   const [role, setRole] = useState('registered');
+  //const [role, setRole] = useState('admin');
 
   const getFilteredMeals= async () => {
     setFetchingFood(true);
@@ -190,7 +190,7 @@ export default function MainMenu() {
     const imageURI = item.image;
     return (
       <TouchableOpacity
-        onPress={() => { selectFood(item); if(role === 'admin') router.push('/screens/item_edit'); else router.push('/screens/item_edit'); }}
+        onPress={() => { selectFood(item); if(role === 'admin') router.push('/screens/item_edit'); else router.push('/screens/item_desc'); }}
         style={{ backgroundColor: theme.surface, padding: 8, borderRadius: 8, width: '48%', alignItems: 'center' }}>
         {item.image ? (
               <Image
