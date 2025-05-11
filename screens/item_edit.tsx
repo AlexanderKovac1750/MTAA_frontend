@@ -13,7 +13,6 @@ import {
   ActivityIndicator,
   KeyboardTypeOptions,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import {
@@ -21,63 +20,75 @@ import {
   resetSelectedFood,
   getBaseUrl,
   getToken,
+  extractFloat,
 } from '../config';
-import { getFullFoodInfo } from '../food';
+import * as ImagePicker from 'expo-image-picker';
+import { getFullFoodInfo, resetFoodInfo } from '../food';
 
 const { width } = Dimensions.get('window');
 
 export default function ItemEditScreen() {
-  const { theme, fontScale } = useThemeColors();
-  const router = useRouter();
-  const token = getToken();
+    const { theme, fontScale } = useThemeColors();
+    const router = useRouter();
+    const token = getToken();
 
-  const [food, setMeal] = useState<{ id: number; [key: string]: any } | null>(
-    null
-  );
-  const [image, setImage] = useState<string | null>(null);
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
-  const [isSpecial, setIsSpecial] = useState(false);
-  const [loading, setLoading] = useState(true);
+    let [food, setMeal] = useState<{ id: number; [key: string]: any } | null>(
+        null
+    );
+    const [image, setImage] = useState<string | null>(null);
+    const [imageBase64, setImageBase64] = useState<string | null>(null);
+    const [isSpecial, setIsSpecial] = useState(false);
+    const [loading, setLoading] = useState(true);
 
   // Editable fields
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [portionUnit, setPortionUnit] = useState('');
-  const [smallPortion, setSmallPortion] = useState('');
-  const [mediumPortion, setMediumPortion] = useState('');
-  const [largePortion, setLargePortion] = useState('');
-  const [smallPrice, setSmallPrice] = useState('');
-  const [mediumPrice, setMediumPrice] = useState('');
-  const [largePrice, setLargePrice] = useState('');
-  const [discountBase, setDiscountBase] = useState('');
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('');
+    const [portionUnit, setPortionUnit] = useState('');
+    const [smallPortion, setSmallPortion] = useState('');
+    const [mediumPortion, setMediumPortion] = useState('');
+    const [largePortion, setLargePortion] = useState('');
+    const [smallPrice, setSmallPrice] = useState('');
+    const [mediumPrice, setMediumPrice] = useState('');
+    const [largePrice, setLargePrice] = useState('');
+    const [discountBase, setDiscountBase] = useState('');
 
-  useEffect(() => {
-    const fetchItem = async () => {
-      const selected = getSelectedFood();
-      if (!selected || !selected.id) {
-        Alert.alert('Error', 'No item selected.');
-        return;
-      }
+    const [originalImageBase64, setOriginalImageBase64] = useState<string | null>(null);
 
-      try {
-        const food = await getFullFoodInfo(selected.id);
+useEffect(() => {
+  const fetchItem = async () => {
+    const selected = getSelectedFood();
+    if (!selected || !selected.id) {
+      Alert.alert('Error', 'No item selected.');
+      return;
+    }
 
-        if (food) {
-          setMeal(food);
-          setTitle(food.title || '');
-          setDescription(food.description || '');
-          setCategory(food.category || '');
-          setPortionUnit(food.portion_unit || '');
-          setSmallPortion(food.small_portion?.toString() ?? '');
-          setMediumPortion(food.medium_portion?.toString() ?? '');
-          setLargePortion(food.large_portion?.toString() ?? '');
-          setSmallPrice(food.small_price?.toString() ?? '');
-          setMediumPrice(food.medium_price?.toString() ?? '');
-          setLargePrice(food.large_price?.toString() ?? '');
-          setDiscountBase(food.discount_base?.toString() ?? '');
-          setIsSpecial(food.isSpecial || false);
-          setImage(food.pic || null);
+    try {
+      // Clear cached/global info before fetching new
+      resetFoodInfo();
+
+      const fullFoodInfo = await getFullFoodInfo(selected.id);
+
+        if (fullFoodInfo) {
+            const base64Pic = fullFoodInfo.pic ? `data:image/png;base64,${fullFoodInfo.pic}` : null;
+
+            setMeal(fullFoodInfo);
+            setImage(base64Pic);
+            setOriginalImageBase64(fullFoodInfo.pic || null);
+            setOriginalImageBase64(fullFoodInfo.pic || null);
+            setTitle(fullFoodInfo.title || '');
+            setDescription(fullFoodInfo.description || '');
+            setCategory(fullFoodInfo.category || '');
+            setPortionUnit(fullFoodInfo.portion_unit || '');
+            setSmallPortion(fullFoodInfo.small_portion?.toString() ?? '');
+            setMediumPortion(fullFoodInfo.medium_portion?.toString() ?? '');
+            setLargePortion(fullFoodInfo.large_portion?.toString() ?? '');
+            setSmallPrice(fullFoodInfo.small_price?.extractFloat ?? '');
+            setMediumPrice(fullFoodInfo.medium_price?.extractFloat ?? '');
+            setLargePrice(fullFoodInfo.large_price?.extractFloat ?? '');
+            setDiscountBase(fullFoodInfo.discount_base?.toString() ?? '');
+            setIsSpecial(fullFoodInfo.isSpecial || false);
+            setImage(fullFoodInfo.pic || null);
         }
       } catch (error) {
         console.error(error);
@@ -92,18 +103,51 @@ export default function ItemEditScreen() {
     fetchItem();
   }, []);
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      base64: true,
-    });
+        const pickImage = async () => {
+        // Request permissions first (important on Android)
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission required', 'We need access to your photos to continue');
+            return;
+        }
 
-    if (!result.canceled && result.assets?.[0]) {
-      setImage(result.assets[0].uri);
-      setImageBase64(result.assets[0].base64 ?? null);
-    }
-  };
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: 'images', // Corrected string
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+            base64: true,
+        });
+
+        if (!result.canceled && result.assets && result.assets[0]) {
+            const base64 = result.assets[0].base64;
+            setImage(result.assets[0].uri);
+            setImageBase64(base64 ? `data:image/jpeg;base64,${base64}` : null);
+        }
+        };
+
+        // const pickImage = async () => {
+        //     const result = await ImagePicker.launchImageLibraryAsync({
+        //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        //         allowsEditing: true,
+        //         quality: 0.8,
+        //         base64: true,
+        //     });
+
+        //     // console.log('Picker result:', result); // Debug log
+
+        //     if (!result.canceled && result.assets?.[0]) {
+        //         const asset = result.assets[0];
+        //         if (asset.base64) {
+        //         setImage(asset.uri);
+        //         setImageBase64(`data:image/jpeg;base64,${asset.base64}`);
+        //         } else {
+        //         // Handle case where base64 isn't available
+        //         setImage(asset.uri);
+        //         setImageBase64(null);
+        //         }
+        //     }
+        //     };
 
   const saveChanges = async () => {
     if (!food || !food.id) {
@@ -111,18 +155,9 @@ export default function ItemEditScreen() {
       return;
     }
 
-    const selfod=getSelectedFood();
-    if(imageBase64===null && selfod!=null){
-      //maybe use old image, or use null and add check to not overwrite image to BE.
-      //old image is not however in base 64 format.
-    }
-
+    // const selfod=getSelectedFood();
     try {
-        const url = `http://${getBaseUrl()}/edit_dish`;
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        const payload = {
             token: token,
             id: food.id,
             title: title,
@@ -136,8 +171,14 @@ export default function ItemEditScreen() {
             medium_price: mediumPrice !== '' ? parseFloat(mediumPrice) : null,
             large_price: largePrice !== '' ? parseFloat(largePrice) : null,
             discount_base: discountBase !== '' ? parseFloat(discountBase) : null,
-            image_base64: imageBase64,
-            }),
+            image_base64: imageBase64 || originalImageBase64,
+        };
+
+        const url = `http://${getBaseUrl()}/edit_dish`;
+        const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
         });
 
 
@@ -149,21 +190,42 @@ export default function ItemEditScreen() {
           body: JSON.stringify({ token: token, special: title }),
         });
       }
+        if (response.ok) {
+            const updated = await response.json();
+            if (updated.dish?.pic) {
+                setImage(`data:image/jpeg;base64,${updated.dish.pic}`);
+            }
+            Alert.alert('Changes saved');
+            router.back();
+            } else {
+            const error = await response.json();
+            Alert.alert('Error', error.message || 'Failed to save changes');
+            }
+        } catch (e) {
+            console.error(e);
+            Alert.alert('Error', 'Failed to connect to server');
+        }
 
-      Alert.alert('Changes saved');
-      router.back();
-      //router.push('../screens/main_menu');
-    } catch (e) {
-      console.error(e);
-      Alert.alert('Error saving changes');
-    }
-  };
+        // Handle special separately
+        if (isSpecial) {
+            try {
+            const specialUrl = `http://${getBaseUrl()}/todays_special`;
+            await fetch(specialUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token, special: title }),
+            });
+            } catch (e) {
+            console.error('Special update failed:', e);
+            }
+        }
 
-  const deleteItem = async () => {
-    if (!food || !food.id) {
-      Alert.alert('Error', 'Meal data is missing.');
-      return;
-    }
+        };
+    const deleteItem = async () => {
+        if (!food || !food.id) {
+        Alert.alert('Error', 'Meal data is missing.');
+        return;
+        }
 
     Alert.alert('Confirm Delete', 'Are you sure you want to delete this item?', [
       { text: 'Cancel', style: 'cancel' },
@@ -200,8 +262,8 @@ export default function ItemEditScreen() {
 
       return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Triangle in top-left corner */}
-      <View style={styles.triangleCorner} />
+      {/* Triangle in top-left corner
+      <View style={styles.triangleCorner} /> */}
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Title Section */}
@@ -221,11 +283,13 @@ export default function ItemEditScreen() {
           <Text style={[styles.label, { color: theme.text }]}>Dish Image:</Text>
           <TouchableOpacity onPress={pickImage}>
             <Image
-              source={
-                typeof image === 'string' ? { uri: image } : 
-                image || require('../resources/images/sample-dish.png')
-              }
-              style={styles.image}
+            source={
+                image?.startsWith('data:image') ? { uri: image } : 
+                image ? { uri: image } : 
+                require('../resources/images/sample-dish.png')
+            }
+            style={styles.image}
+            onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
             />
           </TouchableOpacity>
         </View>
