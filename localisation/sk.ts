@@ -36,6 +36,15 @@ export default {
       errorServer: 'Nepodarilo sa pripojiť k serveru.',
       errorUnknown: 'Nepodarilo sa zmeniť heslo.',
       saving: 'Ukladá sa...',
-  }
+    },
+    MainMenu:{
+      today_special: "Špeciálna ponuka",
+      categories: "Kategórie",
+      your_space: "Tvoj priestor",
+      menu: "Menu",
+      search: "Hľadať",
+      admin_only: "Len pre administrátorov",
+      unauthorized: "Neoprávnený prístup"
+    }
 
   };

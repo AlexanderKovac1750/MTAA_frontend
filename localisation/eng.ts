@@ -1,3 +1,5 @@
+import MainMenu from "../screens/main_menu";
+
 export default {
   login: {
     title: 'Login',
@@ -36,6 +38,15 @@ export default {
     errorServer: 'Failed to connect to server.',
     errorUnknown: 'Failed to change password.',
     saving: 'Saving...',
+  },
+  MainMenu:{
+    today_special: "Today's Special",
+    categories: "Categories",
+    your_space: "Your Space",
+    menu: "Menu",
+    search: "Search",
+    admin_only: "Admin only",
+    unauthorized: "Unauthorized access"
   }
 
 };

@@ -36,5 +36,14 @@ export default {
       errorServer: 'Ошибка подключения к серверу.',
       errorUnknown: 'Не удалось изменить пароль.',
       saving: 'Сохраняем...',
-  }
+    },
+    MainMenu:{
+      today_special: "Специальное предложение на сегодня",
+      categories: "Категории",
+      your_space: "Ваше пространство",
+      menu: "Меню",
+      search: "Поиск",
+      admin_only: "Только для администраторов",
+      unauthorized: "Несанкционированный доступ"
+    }
   };
