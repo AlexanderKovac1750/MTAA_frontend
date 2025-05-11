@@ -115,11 +115,11 @@ export default function ItemEditScreen() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-            token,
+            token: token,
             id: food.id,
-            title,
-            description,
-            category,
+            title: title,
+            description: description,
+            category: category,
             portion_unit: portionUnit,
             small_portion: smallPortion !== '' ? parseInt(smallPortion) : null,
             medium_portion: mediumPortion !== '' ? parseInt(mediumPortion) : null,
@@ -138,12 +138,12 @@ export default function ItemEditScreen() {
         await fetch(specialUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, special: title }),
+          body: JSON.stringify({ token: token, special: title }),
         });
       }
 
       Alert.alert('Changes saved');
-      router.push('./screens/main_menu');
+      router.push('../screens/main_menu');
     } catch (e) {
       console.error(e);
       Alert.alert('Error saving changes');
@@ -167,11 +167,11 @@ export default function ItemEditScreen() {
             await fetch(url, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ token, id: food.id }),
+              body: JSON.stringify({ token: token, id: food.id }),
             });
             Alert.alert('Item deleted');
             resetSelectedFood();
-            router.push('./screens/main_menu');
+            router.push('../screens/main_menu');
           } catch (e) {
             console.error(e);
             Alert.alert('Error deleting item');
@@ -189,49 +189,168 @@ export default function ItemEditScreen() {
     );
   }
 
-  return (
+      return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Triangle in top-left corner */}
       <View style={styles.triangleCorner} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <TouchableOpacity onPress={pickImage}>
-          <Image
-            source={
-              typeof image === 'string'
-                ? { uri: image }
-                : image || require('../resources/images/sample-dish.png')
-            }
-            style={styles.image}
+        {/* Title Section */}
+        <View style={styles.section}>
+          <Text style={[styles.label, { color: theme.text }]}>Dish Title:</Text>
+          <TextInput
+            style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Enter dish title"
+            placeholderTextColor={theme.placeholder}
           />
-        </TouchableOpacity>
+        </View>
 
-        {[{ val: title, set: setTitle, placeholder: 'Title' },
-          { val: description, set: setDescription, placeholder: title, multiline: true },
-          { val: category, set: setCategory, placeholder: category },
-          { val: portionUnit, set: setPortionUnit, placeholder: portionUnit },
-          { val: smallPortion, set: setSmallPortion, placeholder: smallPortion, type: 'numeric' as KeyboardTypeOptions },
-          { val: mediumPortion, set: setMediumPortion, placeholder: mediumPortion, type: 'numeric' as KeyboardTypeOptions },
-          { val: largePortion, set: setLargePortion, placeholder: largePortion, type: 'numeric' as KeyboardTypeOptions },
-          { val: smallPrice, set: setSmallPrice, placeholder: smallPrice, type: 'numeric' as KeyboardTypeOptions },
-          { val: mediumPrice, set: setMediumPrice, placeholder: mediumPrice, type: 'numeric' as KeyboardTypeOptions },
-          { val: largePrice, set: setLargePrice, placeholder: largePrice, type: 'numeric' as KeyboardTypeOptions },
-          { val: discountBase, set: setDiscountBase, placeholder: discountBase, type: 'numeric' as KeyboardTypeOptions }]
-          .map(({ val, set, placeholder, type, multiline }, idx) => (
-            <TextInput
-              key={idx}
-              style={[styles.input, { color: theme.text, borderColor: theme.border }]}
-              value={val}
-              onChangeText={set}
-              placeholder={placeholder}
-              placeholderTextColor={theme.secondary}
-              keyboardType={type}
-              multiline={multiline}
+        {/* Image Section */}
+        <View style={styles.section}>
+          <Text style={[styles.label, { color: theme.text }]}>Dish Image:</Text>
+          <TouchableOpacity onPress={pickImage}>
+            <Image
+              source={
+                typeof image === 'string' ? { uri: image } : 
+                image || require('../resources/images/sample-dish.png')
+              }
+              style={styles.image}
             />
-          ))}
+          </TouchableOpacity>
+        </View>
 
-        <View style={styles.switchRow}>
-          <Text style={{ color: theme.text }}>Is Special</Text>
+        {/* Category Section */}
+        <View style={styles.section}>
+          <Text style={[styles.label, { color: theme.text }]}>Category:</Text>
+          <TextInput
+            style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+            value={category}
+            onChangeText={setCategory}
+            placeholder="Enter category"
+            placeholderTextColor={theme.placeholder}
+          />
+        </View>
+
+        {/* Description Section */}
+        <View style={styles.section}>
+          <Text style={[styles.label, { color: theme.text }]}>Description:</Text>
+          <TextInput
+            style={[styles.input, { 
+              color: theme.text, 
+              borderColor: theme.border,
+              minHeight: 100,
+              textAlignVertical: 'top'
+            }]}
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Enter description"
+            placeholderTextColor={theme.placeholder}
+            multiline
+          />
+        </View>
+
+        {/* Portion Sizes & Prices */}
+        <View style={styles.section}>
+          <Text style={[styles.label, { color: theme.text }]}>Portion Sizes:</Text>
+          <View style={styles.row}>
+            {/* Small */}
+            <View style={styles.sizeContainer}>
+              <Text style={[styles.subLabel, { color: theme.text }]}>Small</Text>
+              <TextInput
+                style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
+                value={smallPortion}
+                onChangeText={setSmallPortion}
+                placeholder="Size"
+                placeholderTextColor={theme.placeholder}
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
+                value={smallPrice}
+                onChangeText={setSmallPrice}
+                placeholder="Price"
+                placeholderTextColor={theme.placeholder}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* Medium */}
+            <View style={styles.sizeContainer}>
+              <Text style={[styles.subLabel, { color: theme.text }]}>Medium</Text>
+              <TextInput
+                style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
+                value={mediumPortion}
+                onChangeText={setMediumPortion}
+                placeholder="Size"
+                placeholderTextColor={theme.placeholder}
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
+                value={mediumPrice}
+                onChangeText={setMediumPrice}
+                placeholder="Price"
+                placeholderTextColor={theme.placeholder}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* Large */}
+            <View style={styles.sizeContainer}>
+              <Text style={[styles.subLabel, { color: theme.text }]}>Large</Text>
+              <TextInput
+                style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
+                value={largePortion}
+                onChangeText={setLargePortion}
+                placeholder="Size"
+                placeholderTextColor={theme.placeholder}
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
+                value={largePrice}
+                onChangeText={setLargePrice}
+                placeholder="Price"
+                placeholderTextColor={theme.placeholder}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* Unit & Discount */}
+        <View style={styles.section}>
+          <View style={styles.row}>
+            <View style={styles.halfWidth}>
+              <Text style={[styles.label, { color: theme.text }]}>Portion Unit:</Text>
+              <TextInput
+                style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+                value={portionUnit}
+                onChangeText={setPortionUnit}
+                placeholder="Unit (g/ml)"
+                placeholderTextColor={theme.placeholder}
+              />
+            </View>
+            
+            <View style={styles.halfWidth}>
+              <Text style={[styles.label, { color: theme.text }]}>Discount Base:</Text>
+              <TextInput
+                style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+                value={discountBase}
+                onChangeText={setDiscountBase}
+                placeholder="Discount %"
+                placeholderTextColor={theme.placeholder}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* Special Toggle */}
+        <View style={[styles.section, styles.switchRow]}>
+          <Text style={[styles.label, { color: theme.text }]}>Today's Special:</Text>
           <Switch
             value={isSpecial}
             onValueChange={setIsSpecial}
@@ -241,40 +360,99 @@ export default function ItemEditScreen() {
         </View>
       </ScrollView>
 
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#888' }]}
-          onPress={() => router.push('./screens/main_menu')}
-        >
-          <Text style={styles.buttonText}>Zrušiť</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#c0392b' }]}
-          onPress={deleteItem}
-        >
-          <Text style={styles.buttonText}>Zmazať</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#c79a55' }]}
-          onPress={saveChanges}
-          disabled={!food}
-        >
-          <Text style={styles.buttonText}>Uložiť</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        <View style={styles.bottomBar}>
+            <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#888' }]}
+            onPress={() => router.push('../screens/main_menu')}
+            >
+            <Text style={styles.buttonText}>Zrušiť</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#c0392b' }]}
+            // onPress={deleteItem}
+            >
+            <Text style={styles.buttonText}>Zmazať</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#c79a55' }]}
+            onPress={saveChanges}
+            disabled={!food}
+            >
+            <Text style={styles.buttonText}>Uložiť</Text>
+            </TouchableOpacity>
+        </View>
+        </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  // Keep existing styles and add:
+  section: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    paddingVertical: 16,
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  subLabel: {
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  sizeContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  smallInput: {
+    width: '100%',
+    textAlign: 'center',
+    paddingHorizontal: 8,
+  },
+  halfWidth: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
+//   triangleCorner: {
+//     position: 'absolute',
+//     top: 0,
+//     left: 0,
+//     zIndex: 1,
+
+//   },
+  scrollContent: {
+    padding: 20,
+    paddingTop: 60, // Make space for triangle
+    paddingBottom: 120,
+  },
+//   image: {
+//     width: '100%',
+//     height: 200,
+//     borderRadius: 12,
+//     marginBottom: 16,
+//   },
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+    container: {
     flex: 1,
     paddingTop: 60,
     alignItems: 'center',
-  },
-  triangleCorner: {
+},
+    triangleCorner: {
     width: 0,
     height: 0,
+    position: 'absolute',
     backgroundColor: 'transparent',
     borderStyle: 'solid',
     borderTopWidth: 12,
@@ -283,34 +461,21 @@ const styles = StyleSheet.create({
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
     borderRightColor: '#f4e4d4',
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 120,
-  },
-  image: {
+},
+    image: {
     width: width - 40,
     height: 200,
     borderRadius: 12,
     marginBottom: 20,
     alignSelf: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 12,
-    color: '#000',
-    borderColor: '#ccc',
-    fontSize: 14,
-  },
-  switchRow: {
+},
+    switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 12,
-  },
-  bottomBar: {
+},
+    bottomBar: {
     position: 'absolute',
     bottom: 0,
     flexDirection: 'row',
@@ -318,17 +483,17 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 20,
     backgroundColor: '#3a2e25',
-  },
-  button: {
+},
+    button: {
     flex: 1,
     paddingVertical: 12,
     marginHorizontal: 6,
     borderRadius: 8,
     alignItems: 'center',
-  },
-  buttonText: {
+},
+    buttonText: {
     color: '#fff',
     fontWeight: '600',
     fontSize: 14,
-  },
+},
 });
