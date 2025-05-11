@@ -11,6 +11,7 @@ export type order_item = {
 let cart: order_item[] = [];
 let order_id: string|null = null;
 let price: GLfloat = 0.0;
+let order_type: string|null = null;
 
 export const addItem = (new_item: order_item) => {
     cart.push(new_item);
@@ -77,3 +78,9 @@ export const setOrder_price = (newPrice: GLfloat) => {
 
 export const getOrder_price = () => price;
 
+
+export const setOrder_type = (newOrder_type: string|null) => {
+  order_type = newOrder_type;
+};
+
+export const getOrder_type = () => order_type;

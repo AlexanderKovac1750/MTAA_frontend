@@ -7,7 +7,7 @@ import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getBaseUrl, getToken } from '../config';
-import { getCartItems, getOrder_id, getOrder_price, getTotalCount, setOrder_id, setOrder_price } from '../cart';
+import { getCartItems, getOrder_id, getOrder_price, getTotalCount, setOrder_id, setOrder_price, setOrder_type } from '../cart';
 import { chooseDiscount, Discount, getChosenDiscount } from '../discount';
 
 export default function DeliveryScreen() {
@@ -224,6 +224,7 @@ export default function DeliveryScreen() {
             if(response.ok){
                 setOrder_price(result.price);
                 setOrder_id(result['order id']);
+                setOrder_type(tab);
                 console.log(`Order made [${getOrder_id()}] for ${getOrder_price()}`);
                 router.push('./payment');
             }
