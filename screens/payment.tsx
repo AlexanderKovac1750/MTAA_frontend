@@ -22,13 +22,9 @@ export default function PaymentScreen() {
     const [expiryDate, setExpiryDate] = useState('');
     const [cvc, setCVC] = useState('');
     const [discount, setDiscount] = useState<Discount|null>(null);
-    const [discountOptions, setDiscountOptions] = useState<Discount[]>([]);
-    const [availableDPs, setAvailableDPs] = useState<number>(0);
 
     useEffect(() => {
         setDiscount(getChosenDiscount());
-        setDiscountOptions(getAvaiableDiscounts());
-        setAvailableDPs(getDPs());
     },);
 
     const handlePayment = () => {
@@ -137,7 +133,7 @@ export default function PaymentScreen() {
                     </Text>
                 </View>
 
-                <View style={styles.discountColumn}>
+                {/*<View style={styles.discountColumn}>   it is already used in previous screen
                             {discountOptions.map((discOpt) => (
                                 
                                 <TouchableOpacity
@@ -169,7 +165,7 @@ export default function PaymentScreen() {
                                     </Text>
                                 </TouchableOpacity>
                             ))}
-                          </View>
+                          </View>*/}
             </View>
 
 

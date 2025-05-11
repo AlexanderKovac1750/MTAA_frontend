@@ -173,7 +173,7 @@ export default function AccountScreen() {
                                                       opacity: availableDPs >= discOpt.cost ? 1 : 0.4,
                                                       color: theme.text,
                                                       fontSize: 14 * fontScale,
-                                                      fontWeight: (discount === discOpt  ? 700 : 'normal'),
+                                                      fontWeight: (discount === discOpt  ? 900 : 'normal'),
                                                   },
                                                   ]}
                                               >

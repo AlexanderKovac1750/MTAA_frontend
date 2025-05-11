@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
+import { clearAllOrderInfo } from '../cart';
 
 export default function LoyaltyScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -97,7 +98,8 @@ export default function LoyaltyScreen() {
             <TouchableOpacity
                 style={[styles.skipButton, { backgroundColor: theme.primary, width: screenWidth }]}
                 onPress={() =>  {router.dismissAll();
-                router.replace('/screens/first_screen');router.push('/screens/main_menu');}}
+                router.replace('/screens/first_screen');router.push('/screens/main_menu');
+                clearAllOrderInfo();}}
             >
                 <Text style={[styles.skipText, { fontSize: 16 * fontScale }]}>Preskočiť</Text>
             </TouchableOpacity>

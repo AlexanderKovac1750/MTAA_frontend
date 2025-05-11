@@ -44,6 +44,12 @@ export const addOrMergeItem = (item: order_item) => {
     }
 }
 
+export const clearAllOrderInfo =()=>{
+    cart = [];
+    order_id = null;
+    price = 0.0;
+}
+
 export const setItemQuantity = (item: order_item, quantity: number) => {
     const existing = cart.find(cart_item=> cart_item.name === item.name);
     if (existing) {

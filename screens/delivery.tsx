@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getBaseUrl, getToken } from '../config';
 import { getCartItems, getOrder_id, getOrder_price, getTotalCount, setOrder_id, setOrder_price } from '../cart';
-import { Discount, getChosenDiscount } from '../discount';
+import { chooseDiscount, Discount, getChosenDiscount } from '../discount';
 
 export default function DeliveryScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -225,6 +225,7 @@ export default function DeliveryScreen() {
                 setOrder_price(result.price);
                 setOrder_id(result['order id']);
                 console.log(`Order made [${getOrder_id()}] for ${getOrder_price()}`);
+                chooseDiscount(null);
                 router.push('./payment');
             }
         } catch (error) {
