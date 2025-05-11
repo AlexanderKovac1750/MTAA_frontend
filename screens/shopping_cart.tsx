@@ -4,7 +4,7 @@ import { useThemeColors } from '../resources/themes/themeProvider';
 import { useNavigation, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { decItem, getCartItems, incItem, order_item, removeItem, setItemQuantity } from '../cart';
-import { selectFood } from '../config';
+import { getOfflineMode, selectFood } from '../config';
 
 export default function ShoppingCartScreen() {
     const router = useRouter();
@@ -15,6 +15,7 @@ export default function ShoppingCartScreen() {
     const [cartItems, setCartItems] = useState<order_item[]>([]);
     const [reloading, setReloading] = useState(false);
     const navigation = useNavigation();
+    const [isOffline, setIsOfline] = useState(false);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -30,6 +31,10 @@ export default function ShoppingCartScreen() {
             setReloading(false);
         }
     },[reloading]);
+
+    useEffect(()=>{
+        setIsOfline(getOfflineMode());
+    })
 
     const reloadCart = async() => {
         setReloading(true);
@@ -155,7 +160,7 @@ export default function ShoppingCartScreen() {
             <Text style={[styles.total, { color: theme.text, fontSize: 16 * fontScale }]}>
             Spolu: {totalPrice} €
             </Text>
-            <TouchableOpacity
+            {!isOffline && <TouchableOpacity
             style={[styles.orderButton, { backgroundColor: theme.primary }]}
             onPress={() => router.push('/screens/delivery')}
             //   onPress={() => router.push('/screens/favourites')} //just for now, to be changed later
@@ -163,7 +168,7 @@ export default function ShoppingCartScreen() {
             <Text style={[styles.orderText, { color: theme.text, fontSize: 16 * fontScale }]}>
                 Objednať
             </Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
         </View>
         </View>
     );

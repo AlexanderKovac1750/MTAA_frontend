@@ -4,7 +4,7 @@ import { useNavigation, useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { Food, removeFavourite, setFavs } from '../food';
-import { getBaseUrl, getToken, selectFood } from '../config';
+import { getBaseUrl, getOfflineMode, getToken, selectFood } from '../config';
 
 const dummyFavourites = [
     {
@@ -35,6 +35,7 @@ export default function FavouriteMealsScreen() {
     const [favourites, setFavourites] = useState<Food[]>([]);
     const [fetchingFood, setFetchingFood] = useState(true);
     const [imageFetched, setImageFetched] = useState(false);
+    const [isOffline, setIsOfline] = useState(false);
 
     const navigation = useNavigation();
 
@@ -90,6 +91,7 @@ export default function FavouriteMealsScreen() {
 
     useEffect(() => {
         //getFavourites();
+        setIsOfline(getOfflineMode());
       }, []);
 
     useEffect(() => {
@@ -218,7 +220,7 @@ export default function FavouriteMealsScreen() {
         </ScrollView>
 
         {/* Add More Button */}
-        <TouchableOpacity
+        {!isOffline && <TouchableOpacity
             onPress={() => router.push('/screens/main_menu')}
             style={[styles.addMoreBtn, { backgroundColor: theme.surface }]}
         >
@@ -226,7 +228,7 @@ export default function FavouriteMealsScreen() {
             source={require('../resources/images/favourites.png')}
             style={{ width: 30, height: 30, opacity: 0.8 }}
             />
-        </TouchableOpacity>
+        </TouchableOpacity>}
         </View>
     );
 }

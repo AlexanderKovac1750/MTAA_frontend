@@ -2,6 +2,7 @@ let baseUrl = '192.168.0.102:5000'; // Default
 let token = ''; // Default
 let fav_pulled = false;
 let userType: string = 'registered';
+let offlineMode: boolean = true;
 
 export const setBaseUrl = (url: string) => {
   baseUrl = url;
@@ -53,3 +54,9 @@ export function extractFloat(input: string): number {
 
   return isNaN(parsed) ? 0 : parsed;
 }
+
+export const setOfflineMode = (isOffline: boolean) => {
+  offlineMode = isOffline;
+};
+
+export const getOfflineMode = () => offlineMode;

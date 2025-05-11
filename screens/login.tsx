@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useRouter } from 'expo-router';
 import { useThemeColors, ThemeProvider } from '../resources/themes/themeProvider';
 import theme from '../resources/themes/theme';
-import { getBaseUrl, setBaseUrl, setToken, setUserType } from '../config';
+import { getBaseUrl, setBaseUrl, setOfflineMode, setToken, setUserType } from '../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchDiscounts } from '../discount';
 
@@ -94,10 +94,13 @@ export default function LoginScreen() {
       console.log('the role is',data.type);
       if (!response.ok) {
         console.log('❌ Error response:', data.message);
-        Alert.alert('failed: ', data.message);
+        setOfflineMode(true);
+        Alert.alert('failed to connect: ', 'using offline mode, limited functionality. Please relog to');
+        router.push('/screens/favourites');
         return;
       }
     
+      setOfflineMode(false);
       setToken(data.token);
       fetchDiscounts();
       setUserType(data.type);
