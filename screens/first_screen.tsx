@@ -1,17 +1,106 @@
 // app/login-choice.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { router, useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import i18n from '../localisation/localisation';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { getBaseUrl, setOfflineMode, setToken, setUserType, sleep } from '../config';
+import { fetchDiscounts } from '../discount';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function LoginChoiceScreen() {
   const router = useRouter();
   const { theme, toggleTheme, mode, fontScale } = useThemeColors();
   const { t } = useTranslation();
 
+  const anon_login = async() => {
+
+    //try to load from memory
+    let name:string|null = await AsyncStorage.getItem('anon_username');
+    let password:string|null = await AsyncStorage.getItem('anon_password');
+
+    
+
+    if(name === null || password ===null){
+      try {
+          
+        const url = `http://${getBaseUrl()}/anonymous`;
+        const response = await fetch(url, {
+          method: 'POST',
+        });
+      
+        const responseText = await response.text(); // Use `.text()` instead of `.json()`
+        const data: any = JSON.parse(responseText);
+        
+        if (!response.ok) {
+          console.log('❌ Error response:', data.message);
+          Alert.alert('login failed',data.message);
+          return;
+        }
+
+        name=data.name;
+        password=data.password;
+        console.log('✅ anonymous created:', data);
+
+        
+        
+      } catch (error) {
+        console.error('🚨 Login error:', error.message);
+        Alert.alert('failed to connect', error.message);
+      }
+    
+
+      if(name === null || password ===null){
+        return;
+      }
+
+      try{
+            await AsyncStorage.setItem('anon_username', name);
+            await AsyncStorage.setItem('anon_password', password);
+          }
+          catch{
+            console.error('🚨 failed to save anonymous:');
+          }
+    }
+
+    try {
+          
+        const query = `?name=${encodeURIComponent(name)}&password=${encodeURIComponent(password)}`;
+        const url = `http://${getBaseUrl()}/login${query}`;
+        const response = await fetch(url, {
+          method: 'POST',
+        });
+      
+        const responseText = await response.text(); // Use `.text()` instead of `.json()`
+        const data: any = JSON.parse(responseText);
+        console.log('the role is',data.type);
+        if (!response.ok) {
+          console.log('❌ Error response:', data.message);
+          console.log('status is ',response.status);
+          Alert.alert('login failed',data.message);
+          return;
+        }
+      
+        setOfflineMode(false);
+        sleep(100);
+        setToken(data.token);
+        setUserType(data.type);
+
+        router.push('/screens/main_menu');
+        console.log('✅ Login successful !!:', data.token);
+        
+      } catch (error) {
+        console.error('🚨 Login error:', error.message);
+        setOfflineMode(true);
+        Alert.alert('failed to connect: ', 'using offline mode, limited functionality. Please relog to gain full functionality when connection is regained.');
+        router.push('/screens/favourites');
+      }
+}
+
+  
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.topBar}>
@@ -54,7 +143,7 @@ export default function LoginChoiceScreen() {
       <View style={styles.bottomButtons}>
         <TouchableOpacity
           style={[styles.smallButton, { borderColor: theme.border }]}
-          onPress={() => router.push('/screens/experimental/E_MM')}
+          onPress={() => anon_login()}
         >
           <Text style={{ fontSize: 14 * fontScale, color: theme.accent }}>
             {t('account.anonymous')}

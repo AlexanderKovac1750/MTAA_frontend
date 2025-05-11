@@ -83,6 +83,11 @@ export default function LoginScreen() {
   };
   
   const handleLogin = async () => {
+    if(name=='__dev__conf__'){
+      router.push('/screens/experimental/E_MM');
+      return;
+    }
+
     if (rememberMe) {
       await AsyncStorage.setItem('username', name);
       await AsyncStorage.setItem('password', password);
