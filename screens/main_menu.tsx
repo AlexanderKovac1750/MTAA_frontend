@@ -247,6 +247,9 @@ export default function MainMenu() {
             <TouchableOpacity onPress={() => {if(role === 'registered') router.push('/screens/favourites')}}>
               <MaterialCommunityIcons name="silverware-fork-knife" size={32} color={theme.text} style={styles.sidebarIcon} />
             </TouchableOpacity>
+            {(role === 'admin') &&<TouchableOpacity onPress={() => {router.push('/screens/order_overview');}}>
+              <MaterialCommunityIcons name="clipboard-list" size={32} color={theme.text} style={styles.sidebarIcon} />
+            </TouchableOpacity>}
           </View>
         </TouchableWithoutFeedback>
       </View>
