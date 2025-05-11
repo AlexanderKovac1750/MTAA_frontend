@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert} from 'react-native';
 import { useThemeColors } from '../resources/themes/themeProvider';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { getChosenDiscount, Discount, getDPs, getAvaiableDiscounts, chooseDiscount } from '../discount';
+import { getChosenDiscount, Discount, getDPs, getAvaiableDiscounts, chooseDiscount, addDP } from '../discount';
+import { getBaseUrl, getToken } from '../config';
+import { getOrder_id } from '../cart';
 
 export default function PaymentScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -23,9 +25,16 @@ export default function PaymentScreen() {
     const [cvc, setCVC] = useState('');
     const [discount, setDiscount] = useState<Discount|null>(null);
 
-    useEffect(() => {
-        setDiscount(getChosenDiscount());
-    },);
+    const navigation = useNavigation();
+    
+        useEffect(() => {
+            const unsubscribe = navigation.addListener('focus', () => {
+                setDiscount(getChosenDiscount());
+                console.log('📌 Screen is focused');
+            });
+    
+            return unsubscribe;
+        }, [navigation]);
 
     const handlePayment = () => {
         if (paymentMethod === 'card' && (!cardNumber || !expiryDate || !cvc)) {
@@ -39,12 +48,52 @@ export default function PaymentScreen() {
         }
 
         Alert.alert('Platba prebehla úspešne!', `ID objednávky: ${orderId}`);
-        router.push('/screens/account');
+        pay();
     };
 
     const discountedPrice = totalPrice - totalPrice * (discount? discount.effectivness: 0);
     const deliveryFee = deliveryType === 'delivery' ? 2.50 : 0;
 
+    const pay = async() => {
+        console.log('paying with method',paymentMethod);
+        try {
+                
+            const query = `?token=${getToken()}&order_id=${getOrder_id()}`;
+            const POD = paymentMethod==='cash';
+            const url = `http://${getBaseUrl()}/pay${query}&pay_on_delivery=${POD}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ body:{filler:"123"} }), // wrapping inside an object is optional, depending on API
+            });
+            
+                const responseText = await response.text(); // Use `.text()` instead of `.json()`
+                const data: any = JSON.parse(responseText);
+                
+                if (!response.ok) {
+                    console.log('❌ Error response:', data.message);
+                    Alert.alert('failed to pay: ', data.message);
+                    return;
+                }
+
+                const disc_DP_cost = discount ? discount.cost : 0;
+                const disc_obtained = data.disc_points ? data.disc_points : 0;
+                addDP(disc_obtained-disc_DP_cost);
+            
+                chooseDiscount(null);
+                setCardNumber('');
+                setExpiryDate('');
+                setCVC('');
+                console.log('✅ payment successful !!:', data.token);
+                router.push('/screens/add_bonus');
+              
+            } catch (error) {
+                console.error('🚨 payment error:', error.message);
+                Alert.alert('payment Error', error.message);
+            }
+    }
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             {/* Top bar */}
@@ -132,40 +181,6 @@ export default function PaymentScreen() {
                         Spolu: {(discountedPrice + deliveryFee).toFixed(2)} €
                     </Text>
                 </View>
-
-                {/*<View style={styles.discountColumn}>   it is already used in previous screen
-                            {discountOptions.map((discOpt) => (
-                                
-                                <TouchableOpacity
-                                    key={discOpt.id}
-                                onPress = {()=>{
-                                    if(getChosenDiscount() && getChosenDiscount()!.id===discOpt.id){
-                                        chooseDiscount(null);
-                                        setDiscount(null);
-                                    }
-                                    else{
-                                        chooseDiscount(discOpt);
-                                        setDiscount(discOpt);
-                                        console.log('discount chosen',discOpt.id);
-                                    }
-                                }}>
-                                    <Text
-                                        
-                                        style={[
-                                        styles.discountText,
-                                        {
-                                            opacity: availableDPs >= discOpt.cost ? 1 : 0.4,
-                                            color: theme.text,
-                                            fontSize: 14 * fontScale,
-                                            fontWeight:  (discount === discOpt  ? 700 : 'normal'),
-                                        },
-                                        ]}
-                                    >
-                                        zľava {discOpt.effectivness.toFixed(2)}%
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                          </View>*/}
             </View>
 
 
@@ -186,9 +201,6 @@ export default function PaymentScreen() {
                 <TouchableOpacity
                     onPress={() => {
                         handlePayment();
-                        if (isRegisteredUser) {
-                            router.push('/screens/add_bonus');
-                        }
                     }}
                     style={[styles.payButton, { backgroundColor: theme.primary }]}
                 >

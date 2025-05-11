@@ -12,7 +12,7 @@ import {
 import { useNavigation, useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { FontAwesome } from '@expo/vector-icons';
-import { resetSelectedFood, getSelectedFood, selectFood } from '../config';
+import { resetSelectedFood, getSelectedFood, selectFood, extractFloat } from '../config';
 import { addFavourite, Food, removeFavourite} from '../food';
 import { isFav } from '../food';
 import { addOrMergeItem, getTotalCount, order_item } from '../cart'; 
@@ -77,7 +77,7 @@ export default function FoodDescriptionScreen() {
         return;
       }
       const string_price: string = String(portion_price);
-      const float_price = parseFloat(string_price.replace('$', ''))
+      const float_price = extractFloat(string_price);
       console.log('val',float_price)
       const item: order_item = { name:meal.title, size:selectedSize, price:float_price, count:quantity, meal:meal };
       addOrMergeItem(item);

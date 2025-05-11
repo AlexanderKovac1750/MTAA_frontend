@@ -84,7 +84,7 @@ export default function AccountScreen() {
           throw new Error('⚠️ Server returned non-OK or non 404 status for reservation info');
         }
       }
-      console.log('user info fetched');
+      console.log('user info fetched', user);
       const account_info=user.account_info;
       const reservations=reservationData.reservations;
       setName(account_info.name || 'Anonymous');
@@ -149,39 +149,39 @@ export default function AccountScreen() {
 
       <View style={styles.loyaltyContainer}>
         <View style={styles.discountRow}>
-          <View style={[styles.discountColumn, {left:0}]}>
-                                      {discountOptions.map((discOpt) => (
-                                          
-                                          <TouchableOpacity
-                                              key={discOpt.id}
-                                          onPress = {()=>{
-                                              if(getChosenDiscount() && getChosenDiscount()!.id===discOpt.id){
-                                                  chooseDiscount(null);
-                                                  setDiscount(null);
-                                              }
-                                              else{
-                                                  chooseDiscount(discOpt);
-                                                  setDiscount(discOpt);
-                                                  console.log('discount chosen',discOpt.id);
-                                              }
-                                          }}>
-                                              <Text
-                                                  
-                                                  style={[
-                                                  styles.discountText,
-                                                  {
-                                                      opacity: availableDPs >= discOpt.cost ? 1 : 0.4,
-                                                      color: theme.text,
-                                                      fontSize: 14 * fontScale,
-                                                      fontWeight: (discount === discOpt  ? 900 : 'normal'),
-                                                  },
-                                                  ]}
-                                              >
-                                                  zľava {discOpt.effectivness.toFixed(2)}%
-                                              </Text>
-                                          </TouchableOpacity>
-                                      ))}
-                                    </View>
+          <View style={[styles.discountColumn, { left: 0 }]}>
+        {[...discountOptions]
+          .sort((a, b) => b.cost - a.cost) // Sort descending by cost
+          .map((discOpt) => (
+            <TouchableOpacity
+              key={discOpt.id}
+              onPress={() => {
+                if (getChosenDiscount() && getChosenDiscount()!.id === discOpt.id) {
+                  chooseDiscount(null);
+                  setDiscount(null);
+                } else {
+                  chooseDiscount(discOpt);
+                  setDiscount(discOpt);
+                  console.log('discount chosen', discOpt.id);
+                }
+              }}
+            >
+              <Text
+                style={[
+                  styles.discountText,
+                  {
+                    opacity: availableDPs >= discOpt.cost ? 1 : 0.4,
+                    color: theme.text,
+                    fontSize: 14 * fontScale,
+                    fontWeight: discount === discOpt ? '900' : 'normal',
+                  },
+                ]}
+              >
+                zľava {discOpt.effectivness.toFixed(2)}%
+              </Text>
+            </TouchableOpacity>
+          ))}
+      </View>
           <View style={styles.barContainer}>
             <View
               style={[

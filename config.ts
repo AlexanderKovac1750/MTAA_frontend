@@ -42,3 +42,14 @@ export const setUserType = (newUserType: string) => {
 export const getUserType = () => userType;
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export function extractFloat(input: string): number {
+  const match = input.match(/[\d.]+/g); // Match digits and dots
+  if (!match) return 0;
+
+  // Join matched parts and parse as float
+  const floatStr = match.join('');
+  const parsed = parseFloat(floatStr);
+
+  return isNaN(parsed) ? 0 : parsed;
+}
