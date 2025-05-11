@@ -280,7 +280,7 @@ const Sidebar = () => (
                 </TouchableOpacity>
               )}
               {role === 'admin' && (
-                <TouchableOpacity onPress={() => router.push('screens/order_overview.tsx')}>
+                <TouchableOpacity onPress={() => router.push('screens/order_overview')}>
                   <MaterialIcons 
                     name="list-alt" 
                     size={32} 
