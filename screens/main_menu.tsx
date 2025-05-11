@@ -165,16 +165,17 @@ const updatedMeals = [...meals];
 };
 
 const renderItem = ({item}) => {
+  
 if(item==='**HEADER**'){
 return (
 <View style={{width:'100%'}}>
-{renderHeader()} </View>
+{renderHeader()}</View>
 );
 }
 if(item==='**STICKY_HEADER**'){
 return (
 <View style={{width:'100%'}}>
-{renderStickyHeader()} </View>
+{renderStickyHeader()}</View>
 );
 }
 if(item==='**FILLER**'){
@@ -302,7 +303,7 @@ const renderHeader = () => (
 {/* Account icon top-left */}
 <View style={[styles.container, { backgroundColor: theme.background }]}>
 <View style={{ position: 'absolute', top: 32, right: 1, zIndex: 10 }}>
-<TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}> <Ionicons name="person-circle" size={48} color={theme.text} /> </TouchableOpacity> </View> </View>
+<TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}><Ionicons name="person-circle" size={48} color={theme.text} /></TouchableOpacity></View></View>
 
   {/* Special dish section */}
   <View style={{ paddingTop: 0, paddingHorizontal: 16 }}>
@@ -322,7 +323,7 @@ const renderHeader = () => (
 const renderStickyHeader = () => (
 <View style={{ backgroundColor: theme.background, paddingHorizontal: 16, paddingTop: 12 }}>
 {/* Menu row */}
-<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, paddingTop: 20 }}> <TouchableOpacity onPress={toggleSidebar}> <Ionicons name="menu" size={28} color={theme.text} /> </TouchableOpacity>
+<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, paddingTop: 20 }}><TouchableOpacity onPress={toggleSidebar}><Ionicons name="menu" size={28} color={theme.text} /></TouchableOpacity>
 
     <Text style={[{ fontSize: 18, color: theme.text }]}>menu</Text>
 
