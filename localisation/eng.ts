@@ -47,6 +47,26 @@ export default {
     search: "Search",
     admin_only: "Admin only",
     unauthorized: "Unauthorized access"
+  },
+  DeliveryScreen: {
+    title: "Delivery",
+    order_now: "Order Now",
+    track_order: "Track Order",
+    delivery_time: "Estimated Delivery Time",
+    address: "Delivery Address",
+    change_address: "Change Address",
+    delivery_options: "Delivery Options",
+    contactless: "Contactless Delivery",
+    leave_at_door: "Leave at Door",
+    instructions: "Delivery Instructions",
+    confirm: "Confirm Delivery",
+    cancel: "Cancel Order",
+    status_preparing: "Preparing your order...",
+    status_out_for_delivery: "Out for delivery",
+    status_delivered: "Delivered",
+    error_invalid_address: "Please enter a valid address.",
+    error_no_connection: "No connection. Please try again.",
+    success_confirmed: "Your delivery has been confirmed.",
+    success_cancelled: "Your delivery has been cancelled."
   }
-
 };

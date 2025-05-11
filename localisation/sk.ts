@@ -45,6 +45,27 @@ export default {
       search: "Hľadať",
       admin_only: "Len pre administrátorov",
       unauthorized: "Neoprávnený prístup"
+    },
+        DeliveryScreen: {
+      title: "Doručenie",
+      order_now: "Objednať teraz",
+      track_order: "Sledovať objednávku",
+      delivery_time: "Odhadovaný čas doručenia",
+      address: "Adresa doručenia",
+      change_address: "Zmeniť adresu",
+      delivery_options: "Možnosti doručenia",
+      contactless: "Bezkontaktné doručenie",
+      leave_at_door: "Nechať pri dverách",
+      instructions: "Pokyny pre doručenie",
+      confirm: "Potvrdiť doručenie",
+      cancel: "Zrušiť objednávku",
+      status_preparing: "Pripravujeme vašu objednávku...",
+      status_out_for_delivery: "Na ceste k vám",
+      status_delivered: "Doručené",
+      error_invalid_address: "Zadajte platnú adresu.",
+      error_no_connection: "Bez pripojenia. Skúste znova.",
+      success_confirmed: "Vaše doručenie bolo potvrdené.",
+      success_cancelled: "Vaše doručenie bolo zrušené."
     }
 
   };
