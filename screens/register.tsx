@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { useState } from 'react';
-import { getBaseUrl, setToken } from '../config';
+import { getBaseUrl, setToken, setUserType } from '../config';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -39,6 +39,7 @@ export default function RegisterScreen() {
         return;
       }
         
+      setUserType(data.type);
       setToken(data.token);
       router.push('/screens/main_menu');
       console.log('✅ Register successful !!:', data.token);
