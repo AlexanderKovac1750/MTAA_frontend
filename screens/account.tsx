@@ -36,9 +36,9 @@ export default function AccountScreen() {
   const [availableDPs, setAvailableDPs] = useState<number>(0);
   const [discount, setDiscount] = useState<Discount|null>(null);
 
-  const maxPoints = 100;
+  const maxPoints = 20;
   const currentDiscountLevel =
-    userPoints >= 75 ? 20 : userPoints >= 50 ? 10 : userPoints >= 25 ? 5 : 0;
+    userPoints >= 20 ? 20 : userPoints >= 10 ? 10 : userPoints >= 5 ? 5 : 0;
   const freeFavoriteSpaces = Math.floor(loyaltyLevel / 3);
 
   const fetchUserData = async () => {
