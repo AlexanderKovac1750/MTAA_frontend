@@ -21,10 +21,11 @@ export default function LoginChoiceScreen() {
     //try to load from memory
     let name:string|null = await AsyncStorage.getItem('anon_username');
     let password:string|null = await AsyncStorage.getItem('anon_password');
-
+    let was_loaded = true;
     
 
     if(name === null || password ===null){
+      was_loaded=false;
       try {
           
         const url = `http://${getBaseUrl()}/anonymous`;
@@ -81,6 +82,11 @@ export default function LoginChoiceScreen() {
           console.log('❌ Error response:', data.message);
           console.log('status is ',response.status);
           Alert.alert('login failed',data.message);
+
+          if(was_loaded){
+            AsyncStorage.removeItem('anon_username');
+            AsyncStorage.removeItem('anon_password');
+          }
           return;
         }
       
@@ -94,9 +100,6 @@ export default function LoginChoiceScreen() {
         
       } catch (error) {
         console.error('🚨 Login error:', error.message);
-        setOfflineMode(true);
-        Alert.alert('failed to connect: ', 'using offline mode, limited functionality. Please relog to gain full functionality when connection is regained.');
-        router.push('/screens/favourites');
       }
 }
 
