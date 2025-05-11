@@ -233,20 +233,27 @@ useEffect(() => {
         text: 'Delete',
         style: 'destructive',
         onPress: async () => {
-          try {
+        try {
             const url = `http://${getBaseUrl()}/delete_dish`;
-            await fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ token: token, id: food.id }),
+            const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token, id: food.id }),
             });
+
+            const result = await response.json();
+
+            if (response.ok) {
             Alert.alert('Item deleted');
             resetSelectedFood();
             router.push('../screens/main_menu');
-          } catch (e) {
+            } else {
+            Alert.alert('Cannot delete item', result.message || 'Deletion failed');
+            }
+        } catch (e) {
             console.error(e);
-            Alert.alert('Error deleting item');
-          }
+            Alert.alert('Error', 'Failed to connect to server');
+        }
         },
       },
     ]);
@@ -442,7 +449,7 @@ useEffect(() => {
             </TouchableOpacity>
             <TouchableOpacity
             style={[styles.button, { backgroundColor: '#c0392b' }]}
-            // onPress={deleteItem}
+            onPress={deleteItem}
             >
             <Text style={styles.buttonText}>Zmazať</Text>
             </TouchableOpacity>
@@ -522,19 +529,19 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     alignItems: 'center',
 },
-    triangleCorner: {
-    width: 0,
-    height: 0,
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderTopWidth: 12,
-    borderBottomWidth: 12,
-    borderRightWidth: 18,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderRightColor: '#f4e4d4',
-},
+//     triangleCorner: {
+//     width: 0,
+//     height: 0,
+//     position: 'absolute',
+//     backgroundColor: 'transparent',
+//     borderStyle: 'solid',
+//     borderTopWidth: 12,
+//     borderBottomWidth: 12,
+//     borderRightWidth: 18,
+//     borderTopColor: 'transparent',
+//     borderBottomColor: 'transparent',
+//     borderRightColor: '#f4e4d4',
+// },
     image: {
     width: width - 40,
     height: 200,
