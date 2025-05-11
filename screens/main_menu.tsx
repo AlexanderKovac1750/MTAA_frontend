@@ -2,13 +2,13 @@ import { SafeAreaView, View, Text, TextInput, Image, FlatList, TouchableOpacity,
   Dimensions, TouchableWithoutFeedback, StyleSheet,
   ActivityIndicator, Alert} from 'react-native';
 import { useThemeColors } from '../resources/themes//themeProvider';
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
 import { Food, pullFavs } from '../food';
-import { checkFavePulled, getBaseUrl, getToken, getUserType } from '../config';
-import { selectFood } from '../config';
+import { checkFavePulled, getBaseUrl, getToken, getUserType, selectFood } from '../config';
 import { getTotalCount } from '../cart';
+import { useTranslation } from 'react-i18next';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -17,8 +17,8 @@ const itemSize = screenWidth / numColumns;
 
 export default function MainMenu() {
   const router = useRouter();
-
-  const { theme } = useThemeColors();
+  const { t } = useTranslation();
+  const { theme, fontScale } = useThemeColors();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [meals, setMeals] = useState<Food[]>([])
   const [fetchingFood, setFetchingFood] = useState(true);
@@ -27,7 +27,10 @@ export default function MainMenu() {
   const [imageFetched, setImageFetched] = useState(false);
   const [searchNeeded, setSearchNeeded] = useState(true);
   const [cartCount, setCartCount] = useState(0);
-  const [role, setRole]= useState('registered');
+
+  // const [role, setRole] = useState(getUserType());
+  // const [role, setRole] = useState('registered');
+  const [role, setRole] = useState('admin');
 
   const getFilteredMeals= async () => {
     setFetchingFood(true);
@@ -186,15 +189,9 @@ export default function MainMenu() {
     const temp_item : Food = item;
     const imageURI = item.image;
     return (
-      <TouchableOpacity onPress={() =>{selectFood(item); router.push('/screens/item_desc');}}
-        style={{
-        backgroundColor: theme.surface,
-        padding: 8,
-        borderRadius: 8,
-        width: '48%',
-        alignItems: 'center',
-        }}
-      >
+      <TouchableOpacity
+        onPress={() => { selectFood(item); if(role === 'admin') router.push('/screens/item_edit'); else router.push('/screens/item_edit'); }}
+        style={{ backgroundColor: theme.surface, padding: 8, borderRadius: 8, width: '48%', alignItems: 'center' }}>
         {item.image ? (
               <Image
               source={{ uri: imageURI }}
@@ -211,7 +208,7 @@ export default function MainMenu() {
 
         <Text
           numberOfLines={1}
-          style={{ color: theme.text, marginTop: 4, fontSize: 14, textAlign: 'center' }}
+          style={{ color: theme.text, marginTop: 4, fontSize: 14 * fontScale, textAlign: 'center' }}
         >
           {item.title}
         </Text>
@@ -247,7 +244,7 @@ export default function MainMenu() {
             <TouchableOpacity onPress={() => setCategoryFilter('drink')}>
               <MaterialCommunityIcons name="beer" size={32} color={category==='drink'?theme.background:theme.text} style={styles.sidebarIcon} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/screens/favourites')}>
+            <TouchableOpacity onPress={() => {if(role === 'registered') router.push('/screens/favourites')}}>
               <MaterialCommunityIcons name="silverware-fork-knife" size={32} color={theme.text} style={styles.sidebarIcon} />
             </TouchableOpacity>
           </View>
@@ -269,8 +266,8 @@ export default function MainMenu() {
 
       {/* Special dish section */}
       <View style={{ paddingTop: 0, paddingHorizontal: 16 }}>
-        <Text style={{ color: theme.text, fontSize: 18, textAlign: 'center', paddingTop: 32 }}>dnesna specialita</Text>
-        <TouchableOpacity onPress={() => router.push('/screens/item_desc')}>
+        <Text style={{ color: theme.text, fontSize: 18 * fontScale, textAlign: 'center', paddingTop: 32 }}>dnesna specialita</Text>
+        <TouchableOpacity onPress={() => { if(role === 'admin') router.push('/screens/item_edit'); else router.push('/screens/item_desc'); }}>
           <Image
             source={require('../resources/images/beer.png')}
             style={{ width: '100%', height: 140, borderRadius: 8, marginTop: 8 }}
@@ -324,11 +321,19 @@ export default function MainMenu() {
           onChangeText={setPhrase}
         />
         <TouchableOpacity onPress={getFilteredMeals}>
-          <MaterialIcons name="search" size={24} color={theme.accent} />
+          <MaterialIcons name="search" size={24 * fontScale} color={theme.accent} />
         </TouchableOpacity>
       </View>
     </View>
+  
   );
+
+  const addItem = async () => {
+    if (role === 'admin') router.push('/screens/item_add');
+    else Alert.alert(t('unauthorized'), t('admin_only'));
+    // router.push('/screens/item_add');   // For testing purposes, remove later
+    };
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
@@ -350,6 +355,14 @@ export default function MainMenu() {
             ) : null
           }
           />
+
+        {/* Floating Plus Button */}
+        <TouchableOpacity
+          onPress={addItem}
+          style={[styles.floatingButton, { backgroundColor: theme.accent }]}
+        >
+          <AntDesign name="plus" size={24} color="#fff" />
+        </TouchableOpacity>
       </SafeAreaView>
   );
 }
@@ -381,5 +394,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 60,
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    // backgroundColor is dynamically set in the component
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5, // For Android
+    shadowColor: '#000', // For iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
   },
 });
