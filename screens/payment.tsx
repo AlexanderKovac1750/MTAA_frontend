@@ -161,7 +161,7 @@ export default function PaymentScreen() {
                                             opacity: availableDPs >= discOpt.cost ? 1 : 0.4,
                                             color: theme.text,
                                             fontSize: 14 * fontScale,
-                                            fontWeight: (discount ? 'bold' : 'normal'),
+                                            fontWeight:  (discount === discOpt  ? 700 : 'normal'),
                                         },
                                         ]}
                                     >

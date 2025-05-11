@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getBaseUrl, getToken, getUserType } from '../config';
 import { UserAccountInfo } from '../user';
 import { Reservation } from '../reservation';
-import { Discount, fetchDiscounts, getAvaiableDiscounts } from '../discount';
+import { chooseDiscount, Discount, fetchDiscounts, getAvaiableDiscounts, getChosenDiscount, getDPs } from '../discount';
 
 const languages = [
   { code: 'sk', label: 'Slovenčina', emoji: '🇸🇰' },
@@ -33,6 +33,8 @@ export default function AccountScreen() {
   const [discountOptions, setDiscountOptions] = useState<Discount[]>([]);
   const [userType, setUserType] = useState('registered');
   const [reservationsExpanded, setReservationsExpanded] = useState(false);
+  const [availableDPs, setAvailableDPs] = useState<number>(0);
+  const [discount, setDiscount] = useState<Discount|null>(null);
 
   const maxPoints = 20;
   const currentDiscountLevel =
@@ -102,6 +104,9 @@ export default function AccountScreen() {
     fetchUserData();
     setUserType(getUserType());
     setDiscountOptions(getAvaiableDiscounts());
+    
+    setDiscount(getChosenDiscount());
+    setAvailableDPs(getDPs());
   }, []);
 
   const logout_call = async() => {
@@ -144,23 +149,39 @@ export default function AccountScreen() {
 
       <View style={styles.loyaltyContainer}>
         <View style={styles.discountRow}>
-          <View style={styles.discountColumn}>
-            {discountOptions.map((discOpt) => (
-              <Text
-                key={discOpt.id}
-                style={[
-                  styles.discountText,
-                  {
-                    opacity: userPoints >= discOpt.cost ? 1 : 0.4,
-                    color: theme.text,
-                    fontSize: 14 * fontScale,
-                  },
-                ]}
-              >
-                zľava {discOpt.effectivness}%
-              </Text>
-            ))}
-          </View>
+          <View style={[styles.discountColumn, {left:0}]}>
+                                      {discountOptions.map((discOpt) => (
+                                          
+                                          <TouchableOpacity
+                                              key={discOpt.id}
+                                          onPress = {()=>{
+                                              if(getChosenDiscount() && getChosenDiscount()!.id===discOpt.id){
+                                                  chooseDiscount(null);
+                                                  setDiscount(null);
+                                              }
+                                              else{
+                                                  chooseDiscount(discOpt);
+                                                  setDiscount(discOpt);
+                                                  console.log('discount chosen',discOpt.id);
+                                              }
+                                          }}>
+                                              <Text
+                                                  
+                                                  style={[
+                                                  styles.discountText,
+                                                  {
+                                                      opacity: availableDPs >= discOpt.cost ? 1 : 0.4,
+                                                      color: theme.text,
+                                                      fontSize: 14 * fontScale,
+                                                      fontWeight: (discount === discOpt  ? 700 : 'normal'),
+                                                  },
+                                                  ]}
+                                              >
+                                                  zľava {discOpt.effectivness.toFixed(2)}%
+                                              </Text>
+                                          </TouchableOpacity>
+                                      ))}
+                                    </View>
           <View style={styles.barContainer}>
             <View
               style={[
