@@ -157,6 +157,26 @@ export const pullFavs = async () => {
             console.error('🚨 favourites load error:', error.message);
             Alert.alert('favourites load Error', error.message);
         }
-    };
+        
+};
 
 
+export const resetFoodInfo = (): Food => {
+  return {
+    id: '',
+    title: '',
+    category: '',
+    isSpecial: false,
+    description: '',
+    image: '',
+    discount_base: 0,
+    small_size: 0,
+    medium_size: 0,
+    large_size: 0,
+    small_price: 0,
+    medium_price: 0,
+    large_price: 0,
+    unit: '',
+    pic: ''
+  };
+};
