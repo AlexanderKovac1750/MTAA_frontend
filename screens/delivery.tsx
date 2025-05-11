@@ -6,10 +6,11 @@ import { useRouter } from 'expo-router';
 import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { getBaseUrl, getToken } from '../config';
-import { getCartItems, getTotalCount, getCurrentOrder, clearCurrentOrder } from '../cart';
-import { Discount, getChosenDiscount } from '../discount';
-import { useTranslation } from 'react-i18next';
+
+import { extractNumberFromMoneyString, getBaseUrl, getToken } from '../config';
+import { getCartItems, getOrder_id, getOrder_price, getTotalCount, setOrder_id, setOrder_price, setOrder_type } from '../cart';
+import { chooseDiscount, Discount, getChosenDiscount } from '../discount';
+
 
 export default function DeliveryScreen() {
     const router = useRouter();
@@ -226,11 +227,19 @@ export default function DeliveryScreen() {
             });
 
             const result = await response.json();
-            
-            if (response.ok) {
-                router.push('/screens/payment');
-            } else {
-                Alert.alert(t('common.error'), result.message || t('order.failed'));
+
+            if(response.status<500 && response.status>=400){
+                Alert.alert('reservation issue:',result.message);
+            }
+            console.log('Server response:', result.message);
+
+            if(response.ok){
+                const price_num=extractNumberFromMoneyString(result.price);
+                setOrder_price(price_num);
+                setOrder_id(result['order id']);
+                setOrder_type(tab);
+                console.log(`Order made [${getOrder_id()}] for ${getOrder_price()}`);       
+                router.push('./payment');
             }
         } catch (error) {
             console.error('Error:', error);

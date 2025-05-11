@@ -5,25 +5,45 @@ import { useNavigation, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getChosenDiscount, Discount, chooseDiscount } from '../discount';
 import { getBaseUrl, getToken } from '../config';
-import { getOrder_id, getCurrentOrder, clearCurrentOrder } from '../cart';
+import { getOrder_id, getOrder_price, getOrder_type, getTotalCount } from '../cart';
 import { useTranslation } from 'react-i18next';
 
 export default function PaymentScreen() {
     const { theme, fontScale } = useThemeColors();
     const { t } = useTranslation();
     const router = useRouter();
-    const navigation = useNavigation();
+
+
+    // MOCKED DATA
+    const isRegisteredUser = true;
+    const orderId = 'ORD12345';
+    //const discount = 0.10;
 
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash'>('card');
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
     const [cvc, setCVC] = useState('');
-    const [discount, setDiscount] = useState<Discount | null>(null);
-    const [orderDetails, setOrderDetails] = useState<{
-        total: number;
-        itemsCount: number;
-        deliveryType: 'delivery' | 'reservation';
-    } | null>(null);
+    const [discount, setDiscount] = useState<Discount|null>(null);
+    const [totalPrice, setTP] = useState<number>(27.40);
+    const [itemCount, setIC] = useState(5);
+    const [deliveryType, setDT] = useState('delivery');
+
+    useEffect(()=>{
+        let TP = parseFloat(String(getOrder_price()));
+        if(isNaN(TP)){
+            TP=0.00
+        }
+        if(TP!==null){
+            setTP(TP);
+        }
+        
+        setIC(getTotalCount());
+
+        const DT =getOrder_type();
+        if(DT!==null){
+            setDT(DT);
+        }
+    })
 
     useEffect(() => {
         const loadOrderDetails = () => {
