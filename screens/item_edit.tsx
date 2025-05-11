@@ -246,6 +246,7 @@ useEffect(() => {
             if (response.ok) {
             Alert.alert('Item deleted');
             resetSelectedFood();
+            // router.push('../screens/main_menu');
             router.back()
             } else {
             Alert.alert('Cannot delete item', result.message || 'Deletion failed');
@@ -443,7 +444,7 @@ useEffect(() => {
         <View style={styles.bottomBar}>
             <TouchableOpacity
             style={[styles.button, { backgroundColor: '#888' }]}
-            onPress={() => router.back()}
+            onPress={() => router.push('../screens/main_menu')}
             >
             <Text style={styles.buttonText}>Zrušiť</Text>
             </TouchableOpacity>

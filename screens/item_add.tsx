@@ -103,6 +103,7 @@ export default function AddItemScreen() {
           });
         }
         Alert.alert('Item Added', 'The new item has been created.');
+        // router.push('../screens/main_menu');
         router.back()
       } else {
         const error = await response.json();
@@ -267,7 +268,6 @@ export default function AddItemScreen() {
 
 
 const styles = StyleSheet.create({
-  // Keep existing styles and add:
   section: {
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
