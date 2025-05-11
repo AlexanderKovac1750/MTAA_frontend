@@ -87,7 +87,7 @@ export async function getFullFoodInfo(id: string) {
         }
 
         const food = await response.json();
-        console.log('✅ Full dish info:', food);
+        console.log('✅ Full dish info:', food.id, food.title, food.category, food.isSpecial, food.description, food.image, food.discount_base, food.small_size, food.medium_size, food.large_size, food.small_price, food.medium_price, food.large_price, food.unit);
         return food;
     } catch (error) {
         console.error('🚨 Error fetching full dish info:', error);
