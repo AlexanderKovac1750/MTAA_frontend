@@ -247,7 +247,7 @@ export default function DeliveryScreen() {
                 <View style={styles.backTriangle} />
             </TouchableOpacity>
 
-            <Text style={[styles.title, { color: theme.text }]}>{t('DeliveryScreen.delivery_option')}</Text>
+            <Text style={[styles.title, { color: theme.text }]}>{t('DeliveryScreen.delivery_options')}</Text>
 
             <TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}>
                 <Ionicons name="person-circle" size={36 * fontScale} color={theme.text} />

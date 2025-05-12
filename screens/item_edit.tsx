@@ -34,6 +34,7 @@ export default function ItemEditScreen() {
     const { theme, fontScale } = useThemeColors();
     const router = useRouter();
     const token = getToken();
+    const { t } = useTranslation();
 
     let [food, setMeal] = useState<{ id: number; [key: string]: any } | null>(
         null
@@ -279,7 +280,7 @@ useEffect(() => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Title Section */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Dish Title:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.dish_title')}</Text>
           <TextInput
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
             value={title}
@@ -291,7 +292,7 @@ useEffect(() => {
 
         {/* Image Section */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Dish Image:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.dish_image')}</Text>
           <TouchableOpacity onPress={pickImage}>
             <Image
             source={
@@ -307,7 +308,7 @@ useEffect(() => {
 
         {/* Category Section */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Category:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.category')}</Text>
           <TextInput
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
             value={category}
@@ -319,7 +320,7 @@ useEffect(() => {
 
         {/* Description Section */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Description:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.description')}</Text>
           <TextInput
             style={[styles.input, { 
               color: theme.text, 

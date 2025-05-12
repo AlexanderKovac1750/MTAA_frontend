@@ -65,7 +65,7 @@ export default function LoyaltyScreen() {
   if (!user) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={{ color: theme.text }}>{t('loading')}</Text>
+        <Text style={{ color: theme.text }}>{t('LoyalityScreen.loading')}</Text>
       </View>
     );
   }

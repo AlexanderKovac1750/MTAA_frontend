@@ -129,7 +129,7 @@ export default function LoginScreen() {
       </TouchableOpacity>
 
       <Text style={{ fontSize: 24 * fontScale, color: theme.text, marginBottom: 20, fontWeight: 'bold' }}>
-        {t('appName')}
+        {t('login.appName')}
       </Text>
 
       <View style={[styles.logoPlaceholder, { backgroundColor: theme.card, borderRadius: 16, padding: 8 }]}>
@@ -137,7 +137,7 @@ export default function LoginScreen() {
       </View>
 
       <TextInput
-        placeholder={t('name')}
+        placeholder={t('login.name')}
         placeholderTextColor={theme.placeholder}
         style={[
           styles.input,
@@ -153,7 +153,7 @@ export default function LoginScreen() {
       />
 
       <TextInput
-        placeholder={t('password')}
+        placeholder={t('login.password')}
         placeholderTextColor={theme.placeholder}
         secureTextEntry
         style={[
@@ -195,7 +195,7 @@ export default function LoginScreen() {
             fontSize: 14 * fontScale,
           }}
         >
-          {t('rememberMe')}
+          {t('login.rememberMe')}
         </Text>
       </View>
 
@@ -204,7 +204,7 @@ export default function LoginScreen() {
         onPress={handleLogin}
         accessibilityRole="button"
       >
-        <Text style={{ fontSize: 18 * fontScale, color: theme.surface }}>{t('loginButton')}</Text>
+        <Text style={{ fontSize: 18 * fontScale, color: theme.surface }}>{t('login.loginButton')}</Text>
       </TouchableOpacity>
     </View>
   );

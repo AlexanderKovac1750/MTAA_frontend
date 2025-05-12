@@ -240,7 +240,7 @@ export default function MainMenu() {
             borderRightColor: theme.primary
           }]}>
             <View style={styles.section}>
-              <Text style={[styles.sectionHeader, { color: theme.text }]}>{t('categories')}</Text>
+              <Text style={[styles.sectionHeader, { color: theme.text }]}>{t('MainMenu.categories')}</Text>
               <TouchableOpacity onPress={() => setCategoryFilter('polievka')}>
                 <MaterialCommunityIcons 
                   name="noodles" 
@@ -268,7 +268,7 @@ export default function MainMenu() {
             </View>
             {(role === 'registered' || role === 'admin') && (
               <View style={styles.section}>
-                <Text style={[styles.sectionHeader, { color: theme.text }]}>{t('your_space')}</Text>
+                <Text style={[styles.sectionHeader, { color: theme.text }]}>{t('MainMenu.your_space')}</Text>
                 {role === 'registered' && (
                   <TouchableOpacity onPress={() => router.push('/screens/favourites')}>
                     <MaterialCommunityIcons 
@@ -308,7 +308,7 @@ export default function MainMenu() {
       </View>
       <View style={{ paddingTop: 0, paddingHorizontal: 16 }}>
         <Text style={{ color: theme.text, fontSize: 18 * fontScale, textAlign: 'center', paddingTop: 32 }}>
-          {currentSpecial ? currentSpecial.title : t('today_special')}
+          {currentSpecial ? currentSpecial.title : t('MainMenu.today_special')}
         </Text>
         <TouchableOpacity 
           onPress={() => { 
@@ -343,7 +343,7 @@ export default function MainMenu() {
         <TouchableOpacity onPress={toggleSidebar}>
           <Ionicons name="menu" size={28} color={theme.text} />
         </TouchableOpacity>
-        <Text style={[{ fontSize: 18 * fontScale, color: theme.text }]}>{t('menu')}</Text>
+        <Text style={[{ fontSize: 18 * fontScale, color: theme.text }]}>{t('MainMenu.menu')}</Text>
         <View style={{ position: 'relative' }}>
           <TouchableOpacity onPress={() => router.push('/screens/shopping_cart')}>
             <Ionicons name="cart" size={28} color={theme.accent} />
@@ -364,7 +364,7 @@ export default function MainMenu() {
         marginBottom: 12,
       }}>
         <TextInput
-          placeholder={t('search')}
+          placeholder={t('MainMenu.search')}
           placeholderTextColor={theme.text}
           style={{ flex: 1, color: theme.text, height: 40 }}
           value={phrase}
@@ -379,7 +379,7 @@ export default function MainMenu() {
 
   const addItem = async () => {
     if (role === 'admin') router.push('/screens/item_add');
-    else Alert.alert(t('unauthorized'), t('admin_only'));
+    else Alert.alert(t('MainMenu.unauthorized'), t('MainMenu.admin_only'));
   };
 
   return (

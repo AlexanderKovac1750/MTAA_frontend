@@ -26,7 +26,8 @@ export default function AddItemScreen() {
   const { theme } = useThemeColors();
   const router = useRouter();
   const token = getToken();
-
+  
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -125,7 +126,7 @@ export default function AddItemScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Title */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Dish Title:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.dish_title')}</Text>
           <TextInput
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
             value={title}
@@ -137,7 +138,7 @@ export default function AddItemScreen() {
 
         {/* Image */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Dish Image:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.dish_image')}</Text>
           <TouchableOpacity onPress={pickImage}>
             <Image
               source={
@@ -150,7 +151,7 @@ export default function AddItemScreen() {
 
         {/* Category */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Category:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.category')}</Text>
           <TextInput
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
             value={category}
@@ -162,7 +163,7 @@ export default function AddItemScreen() {
 
         {/* Description */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Description:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.description')}</Text>
           <TextInput
             style={[
               styles.input,
@@ -178,7 +179,7 @@ export default function AddItemScreen() {
 
         {/* Portions */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Portion Sizes:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.portion_size')}</Text>
           <View style={styles.row}>
             {['Small', 'Medium', 'Large'].map((label, i) => {
               const portionState = [smallPortion, mediumPortion, largePortion];
@@ -215,7 +216,7 @@ export default function AddItemScreen() {
         <View style={styles.section}>
           <View style={styles.row}>
             <View style={styles.halfWidth}>
-              <Text style={[styles.label, { color: theme.text }]}>Portion Unit:</Text>
+              <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.unit')}</Text>
               <TextInput
                 style={[styles.input, { color: theme.text, borderColor: theme.border }]}
                 value={portionUnit}
@@ -225,7 +226,7 @@ export default function AddItemScreen() {
               />
             </View>
             <View style={styles.halfWidth}>
-              <Text style={[styles.label, { color: theme.text }]}>Discount Base:</Text>
+              <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.discount')}</Text>
               <TextInput
                 style={[styles.input, { color: theme.text, borderColor: theme.border }]}
                 value={discountBase}
@@ -240,7 +241,7 @@ export default function AddItemScreen() {
 
         {/* Special Toggle */}
         <View style={[styles.section, styles.switchRow]}>
-          <Text style={[styles.label, { color: theme.text }]}>Today's Special:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.special')}</Text>
           <Switch
             value={isSpecial}
             onValueChange={setIsSpecial}
@@ -255,14 +256,14 @@ export default function AddItemScreen() {
           style={[styles.button, { backgroundColor: '#888' }]}
           onPress={() => router.back()}
         >
-          <Text style={styles.buttonText}>Zrušiť</Text>
+          <Text style={styles.buttonText}>{t('AddItemScreen.cancel')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#c79a55' }]}
           onPress={submitNewItem}
           disabled={submitting}
         >
-          {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Pridať</Text>}
+          {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{t('AddItemScreen.addButton')}</Text>}
         </TouchableOpacity>
       </View>
     </View>

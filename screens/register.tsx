@@ -13,6 +13,7 @@ export default function RegisterScreen() {
   const router = useRouter();
   const { theme, fontScale } = useThemeColors();
   const [inputs, setInputs] = useState(['', '', '']); // [meno, heslo, heslo znova]
+  const { t } = useTranslation();
 
   const handleChange = (text, index) => {
     const newInputs = [...inputs];
@@ -33,7 +34,7 @@ export default function RegisterScreen() {
         method: 'POST',
       });
     
-      const responseText = await response.text(); // Use `.text()` instead of `.json()`
+      const responseText = await response.text(); // `.text()` instead of `.json()`
       const data: any = JSON.parse(responseText);
     
       if (!response.ok) {
@@ -61,14 +62,14 @@ export default function RegisterScreen() {
       </TouchableOpacity>
 
       <Text style={{ fontSize: 24 * fontScale, color: theme.text, marginBottom: 20 }}>
-        U slepeho orla
+        {t('login.appName')}
       </Text>
 
       <View style={styles.logoPlaceholder}>
         <Text style={{ fontSize: 48 * fontScale }}>🦅</Text>
       </View>
 
-      {['meno', 'heslo', 'heslo znova'].map((ph, idx) => (
+      {[t('login.name'), t('login.password'), 'Register.password_aagain'].map((ph, idx) => (
         <TextInput
           key={idx}
           placeholder={ph}
@@ -89,7 +90,7 @@ export default function RegisterScreen() {
       ))}
 
       <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleRegister}>
-        <Text style={{ fontSize: 18 * fontScale, color: theme.text }}>Registruj</Text>
+        <Text style={{ fontSize: 18 * fontScale, color: theme.text }}>{t('RegisterScreen.register')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -97,7 +98,7 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', paddingTop: 100 },
-  backButton: { position: 'absolute', top: 50, left: 20 },
+  backButton: { position: 'absolute', top: 60, left: 20 },
   logoPlaceholder: { marginVertical: 20 },
   input: {
     width: 250,

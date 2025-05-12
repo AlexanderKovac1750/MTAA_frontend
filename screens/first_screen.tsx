@@ -46,7 +46,7 @@ export default function LoginChoiceScreen() {
           method: 'POST',
         });
       
-        const responseText = await response.text(); // Use `.text()` instead of `.json()`
+        const responseText = await response.text(); // `.text()` instead of `.json()`
         const data: any = JSON.parse(responseText);
         
         if (!response.ok) {
