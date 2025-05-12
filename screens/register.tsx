@@ -69,7 +69,7 @@ export default function RegisterScreen() {
         <Text style={{ fontSize: 48 * fontScale }}>🦅</Text>
       </View>
 
-      {[t('login.name'), t('login.password'), 'Register.password_again'].map((ph, idx) => (
+      {[t('login.name'), t('login.password'), 'RegisterScreen.password_again'].map((ph, idx) => (
         <TextInput
           key={idx}
           placeholder={ph}
