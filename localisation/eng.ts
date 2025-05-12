@@ -1,5 +1,8 @@
 import { post } from "axios";
 import MainMenu from "../screens/main_menu";
+import FavouriteMealsScreen from "../screens/favourites";
+import PaymentScreen from "../screens/payment";
+import { fetchDiscounts } from "../discount";
 
 export default {
   login: {
@@ -109,6 +112,42 @@ export default {
         discount: "Discount Base:",
         special: "Today's Special:",
         cancel: "Cancel",
-        addButton: "Add item"
+        addButton: "Add item",
+        small: "Small",
+        medium: "Medium",
+        large: "Large",
+        delete: "Delete",
+        save: "Save",
+        unit2: "Unit (g/ml):",
+        discount2: "Discount %:",
+        size: "Size:",
+        price: "Price:",
+        error: "Error",
+        category2: "Enter category",
+        title2: "Enter dish title",
+        desc2: "Enter description",
+        unit3: "Enter portion unit (g/ml)",
     },
+
+    FavouriteMealsScreen: {
+      title: "Favourites",
+    },
+
+    PaymentScreen: {
+      title: "Payment",
+      with_card: "Pay with card",
+      after_delivery: "Pay after delivery",
+      card: "Card details",
+      card_number: "Card Number",
+      card_expiry: "Expiry Date (MM/YY)",
+      card_cvc: "CVC",
+      number_of_items: "Number of items",
+      total_price: "Total Price",
+      discount: "Discount",
+      pay: "Pay",
+      confirm: "Your confirmation:",
+      total: "Total",
+      delivery_price: "Delivery: 2.50 €",
+      reservation_price: "Reservation: 1.50 €",
+    }
 };

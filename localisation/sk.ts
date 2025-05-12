@@ -1,3 +1,4 @@
+import FavouriteMealsScreen from "../screens/favourites";
 import RegisterScreen from "../screens/register";
 
 export default {
@@ -97,4 +98,54 @@ export default {
       register: "Zaregistrovať sa",
       password_again: "Heslo znova"
     },
-  };
+    AddItemScreen:  {
+        dish_title: "Názov jedla:",
+        dish_image: "Dish Item:",
+        category: "Kategória:",
+        description: "Description:",
+        portion_size: "Veľkosť porcie:",
+        unit: "Portion Unit:",
+        discount: "Základná zľava:",
+        special: "Dnešná zľava:",
+        cancel: "Zrušiť",
+        addButton: "Add item",
+        small: "Small",
+        medium: "Medium",
+        large: "Large",
+        delete: "Delete",
+        save: "Uložiť",
+        unit2: "Jednotka (g/ml):",
+        discount2: "Zľava %:",
+        size: "Veľkosť:",
+        price: "Cena:",
+        error: "Chyba",
+        category2: "Zadajte kategóriu",
+        title2: "Zadajte názov pokrmu",
+        desc2: "Zadajte opis",
+        unit3: "Zadajte jednotku porcie (g/ml)",
+      },
+
+    FavouriteMealsScreen: {
+      title: "Obľúbené jedlá",
+    },
+
+    PaymentScreen: {     
+      názov: "Payment",
+      with_card: "Zaplatiť kartou",
+      after_delivery: "Zaplatiť po doručení",
+      card: "Údaje o karte",
+      card_number: "Číslo karty",
+      card_expiry: "Dátum platnosti (MM/RRRR)",
+      card_cvc: "CVC",
+      number_of_items: "Počet položiek",
+      total_price: "Celková cena",
+      discount: "Zľava",
+      pay: "Pay",
+      confirm: "Your confermation:",
+      total: "Total",
+      delivery_price: "Delivery: 2.50 €",
+      reservation_price: "Rezervácia: 1.50 €",
+
+    },
+    
+};

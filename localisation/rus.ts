@@ -1,3 +1,5 @@
+import FavouriteMealsScreen from "../screens/favourites";
+
 export default {
     login: {
       appName: 'У Слепого Орла',
@@ -95,8 +97,53 @@ export default {
       register: "Зарегистрироваться",
       password_again: "Повторите пароль",
     },
-    AddItemScreen:  {
+      AddItemScreen:  {
+      dish_title: "Название блюда:",
+      dish_image: "Предмет блюда:",
+      category: "Категория:",
+      description: "Описание:",
+      portion_size: "Размер порции:",
+      unit: "Единица порции:",
+      discount: "База скидок:",
+      special: "Today's Special:",
+      cancel: "Отмена",
+      addButton: "Добавить товар",
+      small: "Маленький",
+      medium: "Средний",
+      large: "Большой",
+      delete: "Удалить",
+      save: "Сохранить",
+      unit2: "Единица измерения (г/мл):",
+      discount2: "Скидка %:",
+      size: "Размер:",
+      price: "Цена:",
+      error: "Ошибка",
+      category2: "Введите категорию",
+      title2: "Введите название блюда",
+      desc2: "Введите описание",
+      unit3: "Введите единицу порции (г/мл)",
+      },
+      FavouriteMealsScreen: { 
+        title: "Избранные блюда",
+        },
       
-    },
+      PaymentScreen: {
+        title: "Оплата",
+        cash: "Наличные",
+        with_card: "Оплатить картой",
+        after_delivery: "Оплатить после доставки",
+        card: "Детали карты",
+        card_number: "Номер карты",
+        card_expiry: "Срок действия карты",
+        card_cvc: "CVC",
+        number_of_items: "Количество предметов",
+        total_price: "Общая цена",
+        discount: "Скидка",
+        total: "Итого",
+        pay: "Оплатить",
+        confirm: "Подтвердить", 
+        delivery_price: "Цена доставки: 2.50 €",
+        resrvation_price: "Цена резервирования: 1.50 €",
+      }
 
   };
