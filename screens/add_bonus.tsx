@@ -5,7 +5,7 @@ import { useThemeColors } from '../resources/themes/themeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
 import { clearAllOrderInfo } from '../cart';
-import { UserAccountInfo } from '../user';
+import { getLeveled_up, UserAccountInfo } from '../user';
 import { getBaseUrl, getToken } from '../config';
 import i18n from '../localisation/localisation';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,7 @@ export default function LoyaltyScreen() {
   const router = useRouter();
   const [user, setUser] = useState<UserAccountInfo | null>(null);
   const [userPoints, setUserPoints] = useState(0);
+  const [hasLeveledUp, setHASLU] = useState(false);
   
   // Animation and layout setup
   const screenWidth = Dimensions.get('window').width;
@@ -41,9 +42,12 @@ export default function LoyaltyScreen() {
         );
         const userData = await accountRes.json();
         setUser(userData);
+        console.log(userData);
         
-        const points = UserAccountInfo.getPoints(userData);
-        setUserPoints(points.loyalty_points || 0);
+        const points = UserAccountInfo.getPoints(userData.account_info);
+        console.log(points);
+        setUserPoints(points.discount_points || 0);
+        setHASLU(getLeveled_up());
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -54,6 +58,7 @@ export default function LoyaltyScreen() {
 
   // Animation effect
   useEffect(() => {
+    console.log('UP',userPoints);
     const progress = userPoints / maxPoints;
     Animated.timing(progressAnim, {
       toValue: progress,
@@ -84,6 +89,10 @@ export default function LoyaltyScreen() {
       <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>
         {t('account.discount')}
       </Text>
+      
+      {hasLeveledUp && <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>
+        Level UP
+      </Text>}
 
       {/* Center Row: Labels – Bar – Beer */}
       <View style={styles.centerContent}>

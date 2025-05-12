@@ -9,6 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { extractNumberFromMoneyString, getBaseUrl, getToken } from '../config';
 import { getCartItems, getOrder_id, getOrder_price, getTotalCount, setOrder_id, setOrder_price, setOrder_type } from '../cart';
 import { chooseDiscount, Discount, getChosenDiscount } from '../discount';
+import { scheduleNotification } from './experimental/notifications';
 
 import i18n from '../localisation/localisation';
 import { useTranslation } from 'react-i18next';
@@ -426,7 +427,4 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
 });
-function scheduleNotification(start_time: Date) {
-    throw new Error('Function not implemented.');
-}
 

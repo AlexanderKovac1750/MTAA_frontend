@@ -9,6 +9,7 @@ import { getOrder_id, getOrder_price, getOrder_type, getTotalCount } from '../ca
 
 import i18n from '../localisation/localisation';
 import { useTranslation } from 'react-i18next';
+import { setLeveled_up } from '../user';
 
 export default function PaymentScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -103,6 +104,7 @@ export default function PaymentScreen() {
                 const disc_DP_cost = discount ? discount.cost : 0;
                 const disc_obtained = data.disc_points ? data.disc_points : 0;
                 addDP(disc_obtained-disc_DP_cost);
+                setLeveled_up(data.leveled_up);
             
                 chooseDiscount(null);
                 setCardNumber('');
@@ -126,7 +128,7 @@ export default function PaymentScreen() {
                 </TouchableOpacity>
             </View>
 
-            <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>Platba</Text>
+            <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>{t('PaymentScreen.pay')}</Text>
 
             {/* Payment Method Selector */}
             <View style={styles.methodSelector}>
@@ -197,10 +199,10 @@ export default function PaymentScreen() {
                         <Text style={[styles.summaryText, { color: theme.text }]}>{t('DeliveryScreen.discount')}: -{(discount.effectivness * 100).toFixed(0)}%</Text>
                     )}
                     <Text style={[styles.summaryText, { color: theme.text }]}>
-                        {deliveryType === 'delivery' ? t('PaymentScreen.delivery_price') : t('PaymentScreen.resrvation_price')}
+                        {deliveryType === 'delivery' ? t('PaymentScreen.delivery_price') : t('PaymentScreen.reservation_price')}
                     </Text>
                     <Text style={[styles.summaryText, { color: theme.text, fontWeight: 'bold' }]}>
-                        Spolu: {(discountedPrice + deliveryFee).toFixed(2)} €
+                        {/*should be spolu/total/?, but close enought*/}{t('ShoppingCartScreen.total_price')}: {(discountedPrice + deliveryFee).toFixed(2)} €
                     </Text>
                 </View>
             </View>
@@ -209,7 +211,7 @@ export default function PaymentScreen() {
             {/* QR Section - just in case!!!*/}
             {paymentMethod === 'cash' && isRegisteredUser && (
                 <View style={[styles.qrContainer, { borderWidth: 1, borderColor: theme.border, borderRadius: 8, padding: 10 }]}>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('DeliveryScreen.cornfirm')}</Text>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('DeliveryScreen.confirm')}</Text>
                     <Image
                         source={require('../resources/images/beer.png')}
                         style={styles.qrImage}

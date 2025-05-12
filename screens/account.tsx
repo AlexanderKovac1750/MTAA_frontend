@@ -35,11 +35,28 @@ export default function AccountScreen() {
   const [reservationsExpanded, setReservationsExpanded] = useState(false);
   const [availableDPs, setAvailableDPs] = useState<number>(0);
   const [discount, setDiscount] = useState<Discount|null>(null);
+  const [maxPoints, setMaxPoints] = useState(100);
+  const [currentDiscountLevel, setCurrentDL] = useState<number>();
 
-  const maxPoints = 100;
-  const currentDiscountLevel =
-    userPoints >= 75 ? 20 : userPoints >= 50 ? 10 : userPoints >= 25 ? 5 : 0;
   const freeFavoriteSpaces = Math.floor(loyaltyLevel / 3);
+
+  const setDiscVars = ()=>{
+    console.log('UP', userPoints);
+
+    console.log('UP1', discountOptions);
+    const temp_disc = discountOptions.filter(DO => DO.cost <= availableDPs);
+    console.log('UP2', temp_disc);
+
+    const maxDisc = Math.max(...temp_disc.map(item => item.effectivness));
+    const maxDisc2 = isFinite(maxDisc) ? maxDisc*100 : 0 ;
+    setCurrentDL(maxDisc2);
+
+    const maxCost = Math.max(...discountOptions.map(item => item.cost));
+    if(maxCost<availableDPs){
+      setAvailableDPs(maxCost);
+    }
+    setMaxPoints(maxCost);
+  }
 
   const fetchUserData = async () => {
     const token = getToken();
@@ -109,7 +126,12 @@ export default function AccountScreen() {
     setAvailableDPs(getDPs());
   }, []);
 
+  useEffect(()=>{
+    setDiscVars();
+  }, [discountOptions,userPoints])
+
   const logout_call = async() => {
+    console.log('dasd',discountOptions)
     try {
                 const query = `?token=${getToken()}`;
                 const url = `http://${getBaseUrl()}/logout${query}`;
@@ -177,7 +199,7 @@ export default function AccountScreen() {
                   },
                 ]}
               >
-                {t('account.discount')} {discOpt.effectivness.toFixed(2)}%
+                {t('account.discount')} {discOpt.effectivness*100}%
               </Text>
             </TouchableOpacity>
           ))}

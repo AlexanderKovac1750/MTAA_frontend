@@ -18,3 +18,9 @@ export namespace UserAccountInfo {
     };
   }
 }
+
+let leveled_up: boolean = false;
+export const setLeveled_up = (hasLVLUP: boolean)=>{
+  leveled_up=hasLVLUP;
+}
+export const getLeveled_up = () => {return leveled_up;}

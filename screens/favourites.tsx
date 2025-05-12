@@ -244,7 +244,7 @@ export default function FavouriteMealsScreen() {
 
         {/* Title */}
         <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>
-            {t('FavouriteMealsAcreen.title')} ({favourites.length})
+            {t('FavouriteMealsScreen.title')} ({favourites.length})
         </Text>
 
         {/* Scrollable favourites list */}

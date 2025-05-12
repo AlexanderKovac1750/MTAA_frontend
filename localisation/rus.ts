@@ -148,7 +148,7 @@ export default {
         pay: "Оплатить",
         confirm: "Подтвердить", 
         delivery_price: "Цена доставки: 2.50 €",
-        resrvation_price: "Цена резервирования: 1.50 €",
+        reservation_price: "Цена резервирования: 1.50 €",
       },
       add_to_cart: "Добавить в корзину",
 
