@@ -363,7 +363,7 @@ useEffect(() => {
 
             {/* Medium */}
             <View style={styles.sizeContainer}>
-              <Text style={[styles.subLabel, { color: theme.text }]}>{t('AddItemScreen.meedium')}</Text>
+              <Text style={[styles.subLabel, { color: theme.text }]}>{t('AddItemScreen.medium')}</Text>
               <TextInput
                 style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                 value={mediumPortion}
@@ -384,7 +384,7 @@ useEffect(() => {
 
             {/* Large */}
             <View style={styles.sizeContainer}>
-              <Text style={[styles.subLabel, { color: theme.text }]}>{t('AddItemScreen.dish_large')}</Text>
+              <Text style={[styles.subLabel, { color: theme.text }]}>{t('AddItemScreen.large')}</Text>
               <TextInput
                 style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                 value={largePortion}
