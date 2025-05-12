@@ -142,7 +142,7 @@ export default function LoyaltyScreen() {
           clearAllOrderInfo();
         }}
       >
-        <Text style={[styles.skipText, { fontSize: 16 * fontScale }]}>{t('login.loginButton')}</Text>
+        <Text style={[styles.skipText, { fontSize: 16 * fontScale }]}>{t('login.skipButton')}</Text>
       </TouchableOpacity>
     </Animatable.View>
   );

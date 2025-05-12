@@ -177,7 +177,7 @@ export default function AccountScreen() {
                   },
                 ]}
               >
-                zľava {discOpt.effectivness.toFixed(2)}%
+                {t('account.discount')} {discOpt.effectivness.toFixed(2)}%
               </Text>
             </TouchableOpacity>
           ))}
@@ -200,13 +200,13 @@ export default function AccountScreen() {
           />
         </View>
         <Text style={[styles.levelText, { color: theme.text, fontSize: 14 * fontScale }]}>
-          Aktuálna lojalitná úroveň: {loyaltyLevel}
+          {t('account.loyality_level')} {loyaltyLevel}
         </Text>
         <Text style={[styles.levelText, { color: theme.text, fontSize: 14 * fontScale }]}>
-          Dostupné obľúbené jedlo: {freeFavoriteSpaces}
+          {t('account.fav_meals')} {freeFavoriteSpaces}
         </Text>
         <Text style={[styles.levelText, { color: theme.text, fontSize: 14 * fontScale }]}>
-          Aktuálna úroveň bonusu: {currentDiscountLevel}%
+          {t('account.loyality_level')} {currentDiscountLevel}%
         </Text>
       </View>
 

@@ -194,7 +194,7 @@ export default function PaymentScreen() {
                     <Text style={[styles.summaryText, { color: theme.text }]}>{t('AddItemScreen.number_of_items')} {itemCount}</Text>
                     <Text style={[styles.summaryText, { color: theme.text }]}>{t('AddItemScreen.total_price')} {totalPrice.toFixed(2)} €</Text>
                     {discount && (
-                        <Text style={[styles.summaryText, { color: theme.text }]}>Zľava: -{(discount.effectivness * 100).toFixed(0)}%</Text>
+                        <Text style={[styles.summaryText, { color: theme.text }]}>{t('DeliveryScreen.discount')}: -{(discount.effectivness * 100).toFixed(0)}%</Text>
                     )}
                     <Text style={[styles.summaryText, { color: theme.text }]}>
                         {deliveryType === 'delivery' ? t('AddItemScreen.delivery_price') : t('AddItemScreen.resrvation_price')}
@@ -209,7 +209,7 @@ export default function PaymentScreen() {
             {/* QR Section - just in case!!!*/}
             {paymentMethod === 'cash' && isRegisteredUser && (
                 <View style={[styles.qrContainer, { borderWidth: 1, borderColor: theme.border, borderRadius: 8, padding: 10 }]}>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>Vaše potvrdenie:</Text>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('DeliveryScreen.cornfirm')}</Text>
                     <Image
                         source={require('../resources/images/beer.png')}
                         style={styles.qrImage}
@@ -226,7 +226,7 @@ export default function PaymentScreen() {
                     }}
                     style={[styles.payButton, { backgroundColor: theme.primary }]}
                 >
-                    <Text style={[styles.payText, { fontSize: 16 * fontScale }]}>Zaplatiť</Text>
+                    <Text style={[styles.payText, { fontSize: 16 * fontScale }]}>{t('DeliveryScreen.pay')}</Text>
                 </TouchableOpacity>
             </View>
 

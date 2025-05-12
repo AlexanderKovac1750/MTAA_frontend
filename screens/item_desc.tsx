@@ -25,6 +25,7 @@ const { width } = Dimensions.get('window');
 export default function FoodDescriptionScreen() {
   const { theme, fontScale } = useThemeColors();
   const router = useRouter();
+  const { t } = useTranslation();
 
   // States
   const [cartCount, setCartCount] = useState(0);
@@ -188,7 +189,7 @@ export default function FoodDescriptionScreen() {
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.addButton} onPress={buy}>
-          <Text style={styles.addButtonText}>Pridať do košíka</Text>
+          <Text style={styles.addButtonText}>{t('add_to_cart')}</Text>
         </TouchableOpacity>
       </View>)}
     </View>

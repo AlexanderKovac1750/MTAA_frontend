@@ -19,6 +19,7 @@ export default function ShoppingCartScreen() {
     const [reloading, setReloading] = useState(false);
     const navigation = useNavigation();
     const [isOffline, setIsOfline] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -108,7 +109,7 @@ export default function ShoppingCartScreen() {
 
         {/* Title */}
         <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>
-            Nákupný košík ({totalItemCount})
+            {t('ShoppingCartScreen.title')} ({totalItemCount})
         </Text>
 
         {/* Scrollable cart items */}
@@ -161,7 +162,7 @@ export default function ShoppingCartScreen() {
         {/* Bottom bar */}
         <View style={[styles.bottomBar, { backgroundColor: theme.surface }]}>
             <Text style={[styles.total, { color: theme.text, fontSize: 16 * fontScale }]}>
-            Spolu: {totalPrice} €
+            {t('ShoppingCartScreen.total_price')} {totalPrice} €
             </Text>
             {!isOffline && <TouchableOpacity
             style={[styles.orderButton, { backgroundColor: theme.primary }]}
@@ -169,7 +170,7 @@ export default function ShoppingCartScreen() {
             //   onPress={() => router.push('/screens/favourites')} //just for now, to be changed later
             >
             <Text style={[styles.orderText, { color: theme.text, fontSize: 16 * fontScale }]}>
-                Objednať
+                {t('ShoppingCartScreen.order')}
             </Text>
             </TouchableOpacity>}
         </View>
