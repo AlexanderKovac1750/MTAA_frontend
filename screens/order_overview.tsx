@@ -74,7 +74,7 @@ export default function ReservationsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>Reservations</Text>
+      <Text style={[styles.title, { color: theme.text, paddingTop: 60 }]}>Reservations</Text>
       <FlatList
         key={isTablet ? 'tablet' : 'mobile'}
         data={reservations}
