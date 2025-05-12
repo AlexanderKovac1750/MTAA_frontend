@@ -37,8 +37,7 @@ export default function AccountScreen() {
   const [discount, setDiscount] = useState<Discount|null>(null);
   const [maxPoints, setMaxPoints] = useState(100);
   const [currentDiscountLevel, setCurrentDL] = useState<number>();
-
-  const freeFavoriteSpaces = Math.floor(loyaltyLevel / 3);
+  const [freeFavoriteSpaces, setFreeFavoriteSpaces] = useState(0);
 
   const setDiscVars = ()=>{
     console.log('UP', userPoints);
@@ -106,7 +105,8 @@ export default function AccountScreen() {
       const reservations=reservationData.reservations;
       setName(account_info.name || 'Anonymous');
       setUserPoints(account_info.loyalty_points || 0);
-      setLoyaltyLevel(account_info.loyalty_level || 0);
+      setLoyaltyLevel(account_info.level || 0);
+      setFreeFavoriteSpaces(account_info.favourite_free)
       setReservations(reservationData.reservations || []);
     } catch (err) {
       console.error('❌ [ERROR] Failed to fetch user data:', err.message);
