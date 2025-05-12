@@ -17,6 +17,9 @@ import { addFavourite, Food, removeFavourite} from '../food';
 import { isFav } from '../food';
 import { addOrMergeItem, getTotalCount, order_item } from '../cart'; 
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 const { width } = Dimensions.get('window');
 
 export default function FoodDescriptionScreen() {

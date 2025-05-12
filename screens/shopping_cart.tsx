@@ -6,6 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { decItem, getCartItems, incItem, order_item, removeItem, setItemQuantity } from '../cart';
 import { getOfflineMode, selectFood } from '../config';
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 export default function ShoppingCartScreen() {
     const router = useRouter();
     const { theme, fontScale } = useThemeColors();

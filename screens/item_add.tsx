@@ -17,6 +17,9 @@ import { useRouter } from 'expo-router';
 import { getBaseUrl, getToken } from '../config';
 import * as ImagePicker from 'expo-image-picker';
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 const { width } = Dimensions.get('window');
 
 export default function AddItemScreen() {

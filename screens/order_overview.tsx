@@ -6,6 +6,9 @@ import { getBaseUrl } from "../config";
 import { Reservation } from "../reservation";
 import { useThemeColors } from "../resources/themes/themeProvider";
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 export default function ReservationsScreen() {
   const router = useRouter();
   const [reservations, setReservations] = useState<Reservation[]>([]);

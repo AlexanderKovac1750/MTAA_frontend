@@ -6,6 +6,9 @@ import { useThemeColors } from '../resources/themes/themeProvider';
 import { useState } from 'react';
 import { getBaseUrl, setToken, setUserType } from '../config';
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 export default function RegisterScreen() {
   const router = useRouter();
   const { theme, fontScale } = useThemeColors();

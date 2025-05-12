@@ -10,9 +10,13 @@ import { extractNumberFromMoneyString, getBaseUrl, getToken } from '../config';
 import { getCartItems, getOrder_id, getOrder_price, getTotalCount, setOrder_id, setOrder_price, setOrder_type } from '../cart';
 import { chooseDiscount, Discount, getChosenDiscount } from '../discount';
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 export default function DeliveryScreen() {
     const { theme, fontScale } = useThemeColors();
     const router = useRouter();
+    const { t } = useTranslation();
 
     const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
     const [marker, setMarker] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -243,7 +247,7 @@ export default function DeliveryScreen() {
                 <View style={styles.backTriangle} />
             </TouchableOpacity>
 
-            <Text style={[styles.title, { color: theme.text }]}>spôsob doručenia</Text>
+            <Text style={[styles.title, { color: theme.text }]}>{t('DeliveryScreen.delivery_option')}</Text>
 
             <TouchableOpacity onPress={() => {console.log('Account pressed'); router.push('/screens/account'); }}>
                 <Ionicons name="person-circle" size={36 * fontScale} color={theme.text} />
@@ -252,22 +256,22 @@ export default function DeliveryScreen() {
 
             <View style={styles.row}>
             <Pressable style={[styles.option, tab === 'reservation' ? { backgroundColor: theme.primary } : { backgroundColor: theme.secondary }]} onPress={() => setTab('reservation')}>
-                <Text style={{ color: tab === 'reservation' ? theme.background : theme.text }}>rezervácia</Text>
+                <Text style={{ color: tab === 'reservation' ? theme.background : theme.text }}>{t('DeliveryScreen.delivery')}</Text>
             </Pressable>
             <Pressable style={[styles.option, tab === 'delivery' ? { backgroundColor: theme.primary } : { backgroundColor: theme.secondary }]} onPress={() => setTab('delivery')}>
-                <Text style={{ color: tab === 'delivery' ? theme.background : theme.text }}>donáška</Text>
+                <Text style={{ color: tab === 'delivery' ? theme.background : theme.text }}>{t('DeliveryScreen.reservation')}</Text>
             </Pressable>
             </View>
 
             {tab === 'delivery' && (
             <>
                 <TextInput
-                style={[styles.input, { backgroundColor: theme.card, color: theme.text }]} placeholder="ulica" placeholderTextColor={theme.placeholder} value={street} onChangeText={setStreet} />
+                style={[styles.input, { backgroundColor: theme.card, color: theme.text }]} placeholder={t('DeliveryScreen.street')} placeholderTextColor={theme.placeholder} value={street} onChangeText={setStreet} />
                 <View style={styles.row}>
                 <TextInput
-                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="číslo" placeholderTextColor={theme.placeholder} value={number} onChangeText={setNumber} />
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder={t('DeliveryScreen.number')} placeholderTextColor={theme.placeholder} value={number} onChangeText={setNumber} />
                 <TextInput
-                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="PSČ" placeholderTextColor={theme.placeholder} value={postcode} onChangeText={setPostcode} />
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder={t('DeliveryScreen.postal_code')} placeholderTextColor={theme.placeholder} value={postcode} onChangeText={setPostcode} />
                 </View>
 
                 {location && (
@@ -286,7 +290,7 @@ export default function DeliveryScreen() {
                 )}
 
                 <TextInput
-                style={[styles.commentInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="komentár" placeholderTextColor={theme.placeholder} value={comment} onChangeText={setComment} multiline />
+                style={[styles.commentInput, { backgroundColor: theme.card, color: theme.text }]} placeholder={t('DeliveryScreen.comment')} placeholderTextColor={theme.placeholder} value={comment} onChangeText={setComment} multiline />
             </>
             )}
 
@@ -294,31 +298,31 @@ export default function DeliveryScreen() {
             <>
                 <View style={styles.row}>
                 <TextInput
-                    style={[styles.input, { flex: 1, backgroundColor: theme.card, color: theme.text }]} placeholder="Vyber dátum" placeholderTextColor={theme.placeholder} value={date ? date.toLocaleDateString() : ''} editable={false} />
+                    style={[styles.input, { flex: 1, backgroundColor: theme.card, color: theme.text }]} placeholder={t('DeliveryScreen.date')} placeholderTextColor={theme.placeholder} value={date ? date.toLocaleDateString() : ''} editable={false} />
                 <TouchableOpacity onPress={() => setShowDatePicker(true)}>
                     <Ionicons name="calendar" size={28 * fontScale} color={theme.text} style={{ marginLeft: 8, marginTop: 20 }} />
                 </TouchableOpacity>
                 </View>
                 <View style={styles.row}>
                 <TextInput
-                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="od" placeholderTextColor={theme.placeholder} value={timeFrom ? timeFrom.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''} editable={false} />
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder={t('DeliveryScreen.time_from')} placeholderTextColor={theme.placeholder} value={timeFrom ? timeFrom.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''} editable={false} />
                 <TouchableOpacity onPress={() => setShowTimeFromPicker(true)}>
                     <Ionicons name="time" size={28 * fontScale} color={theme.text} style={{ marginTop: 20 }} />
                 </TouchableOpacity>
                 <TextInput
-                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="do" placeholderTextColor={theme.placeholder} value={timeTo ? timeTo.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''} editable={false} />
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.card, color: theme.text }]} placeholder={t('DeliveryScreen.time_to')} placeholderTextColor={theme.placeholder} value={timeTo ? timeTo.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''} editable={false} />
                 <TouchableOpacity onPress={() => setShowTimeToPicker(true)}>
                     <Ionicons name="time" size={28 * fontScale} color={theme.text} style={{ marginTop: 20 }} />
                 </TouchableOpacity>
                 </View>
                 <View style={[styles.row, { alignItems: 'center', marginTop: 16 }]}>
-                <Text style={{ color: theme.text }}>Počet hostí:</Text>
+                <Text style={{ color: theme.text }}>{t('DeliveryScreen.number_of_people')}</Text>
                 <TouchableOpacity style={styles.option} onPress={decrementGuests}><Text>-</Text></TouchableOpacity>
                 <Text style={{ color: theme.text }}>{guestCount}</Text>
                 <TouchableOpacity style={styles.option} onPress={incrementGuests}><Text>+</Text></TouchableOpacity>
                 </View>
                 <TextInput
-                style={[styles.commentInput, { backgroundColor: theme.card, color: theme.text }]} placeholder="komentár" placeholderTextColor={theme.placeholder} value={comment} onChangeText={setComment} multiline />
+                style={[styles.commentInput, { backgroundColor: theme.card, color: theme.text }]} placeholder={t('DeliveryScreen.comment')} placeholderTextColor={theme.placeholder} value={comment} onChangeText={setComment} multiline />
             </>
             )}
 
@@ -338,7 +342,7 @@ export default function DeliveryScreen() {
             style={[styles.payBtn, { backgroundColor: theme.card }]}
             onPress={pay}
             >
-            <Text style={{ color: theme.text }}>Zaplatiť</Text>
+            <Text style={{ color: theme.text }}>{t('DeliveryScreen.pay')}</Text>
             </Pressable>
 
         </View>

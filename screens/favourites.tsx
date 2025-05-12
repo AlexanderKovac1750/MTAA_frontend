@@ -7,6 +7,9 @@ import { Food, removeFavourite, setFavs } from '../food';
 import { getBaseUrl, getOfflineMode, getToken, selectFood } from '../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 const dummyFavourites = [
     {
         id: 1,

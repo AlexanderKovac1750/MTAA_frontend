@@ -7,6 +7,9 @@ import { getChosenDiscount, Discount, getDPs, getAvaiableDiscounts, chooseDiscou
 import { getBaseUrl, getToken } from '../config';
 import { getOrder_id, getOrder_price, getOrder_type, getTotalCount } from '../cart';
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 export default function PaymentScreen() {
     const { theme, fontScale } = useThemeColors();
     const router = useRouter();

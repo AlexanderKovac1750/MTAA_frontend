@@ -25,6 +25,9 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { getFullFoodInfo, resetFoodInfo } from '../food';
 
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
+
 const { width } = Dimensions.get('window');
 
 export default function ItemEditScreen() {

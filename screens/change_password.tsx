@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { getBaseUrl, getToken } from '../config';
 import { useThemeColors } from '../resources/themes/themeProvider';
-import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+
+import i18n from '../localisation/localisation';
+import { useTranslation } from 'react-i18next';
 
 
 const ChangePasswordScreen = () => {

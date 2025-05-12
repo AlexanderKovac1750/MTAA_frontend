@@ -8,6 +8,7 @@ import { useNavigation, useRouter } from 'expo-router';
 import { Food, pullFavs } from '../food';
 import { checkFavePulled, getBaseUrl, getToken, getUserType, selectFood } from '../config';
 import { getTotalCount } from '../cart';
+import i18n from '../localisation/localisation';
 import { useTranslation } from 'react-i18next';
 
 const screenWidth = Dimensions.get('window').width;
@@ -342,13 +343,13 @@ export default function MainMenu() {
         <TouchableOpacity onPress={toggleSidebar}>
           <Ionicons name="menu" size={28} color={theme.text} />
         </TouchableOpacity>
-        <Text style={[{ fontSize: 18, color: theme.text }]}>{t('menu')}</Text>
+        <Text style={[{ fontSize: 18 * fontScale, color: theme.text }]}>{t('menu')}</Text>
         <View style={{ position: 'relative' }}>
           <TouchableOpacity onPress={() => router.push('/screens/shopping_cart')}>
             <Ionicons name="cart" size={28} color={theme.accent} />
           </TouchableOpacity>
           {cartCount !== 0 && (
-            <Text style={{ color: theme.secondary, fontSize: 10, position: 'absolute', right: -6, top: -6 }}>
+            <Text style={{ color: theme.secondary, fontSize: 10 * fontScale, position: 'absolute', right: -6, top: -6 }}>
               {cartCount}
             </Text>
           )}
@@ -370,7 +371,7 @@ export default function MainMenu() {
           onChangeText={setPhrase}
         />
         <TouchableOpacity onPress={getFilteredMeals}>
-          <MaterialIcons name="search" size={24 * fontScale} color={theme.accent} />
+          <MaterialIcons name="search" size={24 /* fontScale*/} color={theme.accent} />
         </TouchableOpacity>
       </View>
     </View>
