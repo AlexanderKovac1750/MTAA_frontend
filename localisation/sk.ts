@@ -1,5 +1,6 @@
 import FavouriteMealsScreen from "../screens/favourites";
 import RegisterScreen from "../screens/register";
+import ShoppingCartScreen from "../screens/shopping_cart";
 
 export default {
     login: {
@@ -29,7 +30,11 @@ export default {
         setting3: "Nastavenie 3",
         changePassword: "Zmeniť heslo",
         myReservations: "Moje rezervácie",
-        save: "Uložiť zmeny"
+        save: "Uložiť zmeny",
+        loyality_points: "Aktuálne vernostné body",
+        fav_meals: "Voľné miesta pre obľúbené jedlá",
+        loyality_discount: "Maximálna zľava z vernostných bodov",
+        loyality_level: "Úroveň vernosti",
     },
     changePassword: {
       title: 'Zmeniť heslo',
@@ -92,7 +97,7 @@ export default {
       rewards: "Odmeny",
       discount: "Zľava",
       currentDiscount: "Aktuálna zľava",
-      loginButton: "Prihlásiť sa"
+      skipButton: "Preskočiť"
     },
     RegisterScreen: {
       register: "Zaregistrovať sa",
@@ -141,11 +146,25 @@ export default {
       total_price: "Celková cena",
       discount: "Zľava",
       pay: "Pay",
-      confirm: "Your confermation:",
+      confirm: "Vaše potvrdenie:",
       total: "Total",
       delivery_price: "Delivery: 2.50 €",
       reservation_price: "Rezervácia: 1.50 €",
 
     },
-    
+    add_to_cart: "Pridať do košíka",
+
+    ShoppingCartScreen: {
+      title: "Nákupný košík",
+      empty: "Košík je prázdny",
+      total_price: "Celková cena",
+      total_items: "Celkový počet položiek",
+      checkout: "Pokladňa",
+      remove_item: "Odstrániť položku",
+      update_quantity: "Aktualizovať množstvo",
+      item_details: "Podrobnosti o položke",
+      item_name: "Názov položky",
+      item_size: "Veľkosť položky",
+      order: "Objednať",
+    },
 };

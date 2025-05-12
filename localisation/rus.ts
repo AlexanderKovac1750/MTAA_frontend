@@ -1,4 +1,5 @@
 import FavouriteMealsScreen from "../screens/favourites";
+import ShoppingCartScreen from "../screens/shopping_cart";
 
 export default {
     login: {
@@ -28,7 +29,11 @@ export default {
         setting3: "Настройка 3",
         changePassword: "Сменить пароль",
         myReservations: "Мои бронирования",
-        save: "Сохранить изменения"
+        save: "Сохранить изменения",
+        loyality_points: "Текущие баллы лояльности",
+        fav_meals: "Свободные места для избранных блюд",
+        loyality_discount: "Максимальная скидка по баллам лояльности",
+        loyality_level: "Уровень лояльности",
     },
     changePassword: {
       title: 'Сменить пароль',
@@ -89,7 +94,7 @@ export default {
       rewards: "Награды",
       discount: "Скидка",
       currentDiscount: "Текущая скидка",
-      loginButton: "Войти",
+      skipButton: "Пропустить",
       loading: "The incorrect data read. Try again after account verification."
   
     },
@@ -144,6 +149,19 @@ export default {
         confirm: "Подтвердить", 
         delivery_price: "Цена доставки: 2.50 €",
         resrvation_price: "Цена резервирования: 1.50 €",
-      }
+      },
+      add_to_cart: "Добавить в корзину",
 
+      ShoppingCartScreen: {
+        title: "Корзина",
+        empty: "Ваша корзина пуста",
+        total_price: "Общая цена",
+        total_items: "Всего предметов",
+        remove_item: "Удалить предмет",
+        checkout: "Оформить заказ",
+        continue_shopping: "Продолжить покупки",
+        item_count: "Количество предметов",
+        item_price: "Цена предмета",
+        order: "Заказать",
+      },
   };

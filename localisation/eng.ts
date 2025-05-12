@@ -35,7 +35,12 @@ export default {
     setting3: "Setting 3",
     changePassword: "Change Password",
     myReservations: "My Reservations",
-    save: "Save changes"
+    save: "Save changes",
+    loyality_points: "Actual loyalty points",
+    fav_meals: "Free spaces for favourite meals",
+    loyality_discount: "Maximal discount from loyalty points",
+    loyality_level: "Loyalty level",
+
   },
   changePassword: {
     title: 'Change Password',
@@ -93,7 +98,7 @@ export default {
     rewards: "Rewards",
     discount: "Discount",
     currentDiscount: "Current Discount",
-    loginButton: "Login", 
+    skipButton: "Skip",
     loading: "The incorrect data read. Try again after account verification."
   },
 
@@ -102,7 +107,7 @@ export default {
       password_again: "Re-enter Password",
     },
 
-      AddItemScreen:  {
+    AddItemScreen:  {
         dish_title: "Dish Title:",
         dish_image: "Dish Item:",
         category: "Category:",
@@ -149,5 +154,20 @@ export default {
       total: "Total",
       delivery_price: "Delivery: 2.50 €",
       reservation_price: "Reservation: 1.50 €",
-    }
+    },
+    add_to_cart: "Add to cart",
+
+    ShoppingCartScreen: {
+      title: "Shopping Cart",
+      empty: "Your cart is empty.",
+      total_price: "Total Price",
+      total_items: "Total Items",
+      remove_item: "Remove Item",
+      checkout: "Checkout",
+      continue_shopping: "Continue Shopping",
+      item_removed: "Item removed from cart.",
+      item_added: "Item added to cart.",
+      error: "Error",
+      order: "Order",
+    },
 };
