@@ -1,6 +1,8 @@
+import RegisterScreen from "../screens/register";
+
 export default {
     login: {
-    appName: 'U slepeho orla',
+    appName: 'U slepého orla',
     name: 'Meno',
     password: 'Heslo',
     rememberMe: 'Zapamätať si ma',
@@ -91,5 +93,8 @@ export default {
       currentDiscount: "Aktuálna zľava",
       loginButton: "Prihlásiť sa"
     },
-
+    RegisterScreen: {
+      register: "Zaregistrovať sa",
+      password_again: "Heslo znova"
+    },
   };

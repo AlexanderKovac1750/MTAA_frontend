@@ -87,7 +87,16 @@ export default {
       rewards: "Награды",
       discount: "Скидка",
       currentDiscount: "Текущая скидка",
-      loginButton: "Войти"
-    }
+      loginButton: "Войти",
+      loading: "The incorrect data read. Try again after account verification."
+  
+    },
+    RegisterScreen: {
+      register: "Зарегистрироваться",
+      password_again: "Повторите пароль",
+    },
+    AddItemScreen:  {
+      
+    },
 
   };

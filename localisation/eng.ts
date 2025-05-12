@@ -16,7 +16,7 @@ export default {
     offlineModeMessage: 'Using offline mode, limited functionality...'
   },
   account: {
-    pubName: "U slepého orla",
+    pubName: "At the Blind Eagle",
     login: "Login",
     register: "Register",
     anonymous: "Anonymous mode",
@@ -90,8 +90,25 @@ export default {
     rewards: "Rewards",
     discount: "Discount",
     currentDiscount: "Current Discount",
-    loginButton: "Login"
-  }
-  
+    loginButton: "Login", 
+    loading: "The incorrect data read. Try again after account verification."
+  },
 
+    RegisterScreen: {
+      register: "Register",
+      password_again: "Re-enter Password",
+    },
+
+      AddItemScreen:  {
+        dish_title: "Dish Title:",
+        dish_image: "Dish Item:",
+        category: "Category:",
+        description: "Description:",
+        portion_size: "Portion Sizes:",
+        unit: "Portion Unit:",
+        discount: "Discount Base:",
+        special: "Today's Special:",
+        cancel: "Cancel",
+        addButton: "Add item"
+    },
 };
