@@ -12,6 +12,7 @@ import { chooseDiscount, Discount, getChosenDiscount } from '../discount';
 
 import i18n from '../localisation/localisation';
 import { useTranslation } from 'react-i18next';
+import { scheduleNotification } from './experimental/notifications';
 
 export default function DeliveryScreen() {
     const { theme, fontScale } = useThemeColors();
@@ -193,6 +194,12 @@ export default function DeliveryScreen() {
                     }
 
                 console.log('making reservation', body);
+
+                const start_time = date;
+                start_time.setHours(timeFrom.getHours());
+                start_time.setMinutes(timeFrom.getMinutes());
+                scheduleNotification(start_time);
+
             }
         }
         
