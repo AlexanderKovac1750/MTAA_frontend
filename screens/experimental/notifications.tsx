@@ -12,14 +12,19 @@ export const requestPermissions = async () => {
 export const scheduleNotification = async (ReservationDate: Date) => {
     // Calculate hour before reservation
     console.log('added notification at: ',ReservationDate);
-    const date = ReservationDate;
-    date.setHours(date.getHours()-1);
-    ReservationDate.setHours(ReservationDate.getHours()-1);
+    const gdate = ReservationDate;
+    gdate.setHours(gdate.getHours()-1);
+    ReservationDate;
+    const date = new Date(ReservationDate);
 
+    console.log('date',date)
+    console.log('ReservationDate',ReservationDate)
+    console.log('localDate',date)
+    
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Reservation in hour',
-        body: `Don''t forget about your reservation at ${Date}`,
+        body: `Don''t forget about your reservation at ${date}`,
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
