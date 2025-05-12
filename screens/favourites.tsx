@@ -36,6 +36,7 @@ const dummyFavourites = [
 export default function FavouriteMealsScreen() {
     const { theme, fontScale } = useThemeColors();
     const router = useRouter();
+    const { t } = useTranslation();
     const [favourites, setFavourites] = useState<Food[]>([]);
     const [fetchingFood, setFetchingFood] = useState(true);
     const [imageFetched, setImageFetched] = useState(false);
@@ -243,7 +244,7 @@ export default function FavouriteMealsScreen() {
 
         {/* Title */}
         <Text style={[styles.title, { color: theme.text, fontSize: 20 * fontScale }]}>
-            Obľúbené jedlá ({favourites.length})
+            {t('FavouriteMealsAcreen.title')} ({favourites.length})
         </Text>
 
         {/* Scrollable favourites list */}

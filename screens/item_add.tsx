@@ -131,7 +131,7 @@ export default function AddItemScreen() {
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
             value={title}
             onChangeText={setTitle}
-            placeholder="insert food title here"
+            placeholder={t('AddItemScreen.title2')}
             placeholderTextColor={theme.placeholder}
           />
         </View>
@@ -156,7 +156,7 @@ export default function AddItemScreen() {
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
             value={category}
             onChangeText={setCategory}
-            placeholder="insert food category here"
+            placeholder={t('AddItemScreen.category2')}
             placeholderTextColor={theme.placeholder}
           />
         </View>
@@ -171,7 +171,7 @@ export default function AddItemScreen() {
             ]}
             value={description}
             onChangeText={setDescription}
-            placeholder="insert food description here"
+            placeholder={t('AddItemScreen.desc2')}
             placeholderTextColor={theme.placeholder}
             multiline
           />
@@ -181,7 +181,7 @@ export default function AddItemScreen() {
         <View style={styles.section}>
           <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.portion_size')}</Text>
           <View style={styles.row}>
-            {['Small', 'Medium', 'Large'].map((label, i) => {
+            {[t('AddItemScreen.small'), t('AddItemScreen.medium'), t('AddItemScreen.large')].map((label, i) => {
               const portionState = [smallPortion, mediumPortion, largePortion];
               const priceState = [smallPrice, mediumPrice, largePrice];
               const setPortion = [setSmallPortion, setMediumPortion, setLargePortion];
@@ -194,7 +194,7 @@ export default function AddItemScreen() {
                     style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                     value={portionState[i]}
                     onChangeText={setPortion[i]}
-                    placeholder="Size"
+                    placeholder={t('AddItemScreen.size')}
                     placeholderTextColor={theme.placeholder}
                     keyboardType="numeric"
                   />
@@ -202,7 +202,7 @@ export default function AddItemScreen() {
                     style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                     value={priceState[i]}
                     onChangeText={setPrice[i]}
-                    placeholder="Price"
+                    placeholder={t('AddItemScreen.price')}
                     placeholderTextColor={theme.placeholder}
                     keyboardType="numeric"
                   />
@@ -221,7 +221,7 @@ export default function AddItemScreen() {
                 style={[styles.input, { color: theme.text, borderColor: theme.border }]}
                 value={portionUnit}
                 onChangeText={setPortionUnit}
-                placeholder="insert portion unit (g/ml)"
+                placeholder={t('AddItemScreen.unit3')}
                 placeholderTextColor={theme.placeholder}
               />
             </View>
@@ -231,7 +231,7 @@ export default function AddItemScreen() {
                 style={[styles.input, { color: theme.text, borderColor: theme.border }]}
                 value={discountBase}
                 onChangeText={setDiscountBase}
-                placeholder="discount %"
+                placeholder={t('AddItemScreen.discount2')}
                 placeholderTextColor={theme.placeholder}
                 keyboardType="numeric"
               />

@@ -285,7 +285,7 @@ useEffect(() => {
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
             value={title}
             onChangeText={setTitle}
-            placeholder="Enter dish title"
+            placeholder={t('AddItemScreen.title2')}
             placeholderTextColor={theme.placeholder}
           />
         </View>
@@ -313,7 +313,7 @@ useEffect(() => {
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
             value={category}
             onChangeText={setCategory}
-            placeholder="Enter category"
+            placeholder={t('AddItemScreen.category2')}
             placeholderTextColor={theme.placeholder}
           />
         </View>
@@ -330,7 +330,7 @@ useEffect(() => {
             }]}
             value={description}
             onChangeText={setDescription}
-            placeholder="Enter description"
+            placeholder={t('AddItemScreen.desc2')}
             placeholderTextColor={theme.placeholder}
             multiline
           />
@@ -338,16 +338,16 @@ useEffect(() => {
 
         {/* Portion Sizes & Prices */}
         <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.text }]}>Portion Sizes:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.portion_size')}</Text>
           <View style={styles.row}>
             {/* Small */}
             <View style={styles.sizeContainer}>
-              <Text style={[styles.subLabel, { color: theme.text }]}>Small</Text>
+              <Text style={[styles.subLabel, { color: theme.text }]}>{t('AddItemScreen.small')}</Text>
               <TextInput
                 style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                 value={smallPortion}
                 onChangeText={setSmallPortion}
-                placeholder="Size"
+                placeholder={t('AddItemScreen.size')}
                 placeholderTextColor={theme.placeholder}
                 keyboardType="numeric"
               />
@@ -355,7 +355,7 @@ useEffect(() => {
                 style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                 value={smallPrice}
                 onChangeText={setSmallPrice}
-                placeholder="Price"
+                placeholder={t('AddItemScreen.price')}
                 placeholderTextColor={theme.placeholder}
                 keyboardType="numeric"
               />
@@ -363,12 +363,12 @@ useEffect(() => {
 
             {/* Medium */}
             <View style={styles.sizeContainer}>
-              <Text style={[styles.subLabel, { color: theme.text }]}>Medium</Text>
+              <Text style={[styles.subLabel, { color: theme.text }]}>{t('AddItemScreen.meedium')}</Text>
               <TextInput
                 style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                 value={mediumPortion}
                 onChangeText={setMediumPortion}
-                placeholder="Size"
+                placeholder={t('AddItemScreen.size')}
                 placeholderTextColor={theme.placeholder}
                 keyboardType="numeric"
               />
@@ -376,7 +376,7 @@ useEffect(() => {
                 style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                 value={mediumPrice}
                 onChangeText={setMediumPrice}
-                placeholder="Price"
+                placeholder={t('AddItemScreen.price')}
                 placeholderTextColor={theme.placeholder}
                 keyboardType="numeric"
               />
@@ -384,12 +384,12 @@ useEffect(() => {
 
             {/* Large */}
             <View style={styles.sizeContainer}>
-              <Text style={[styles.subLabel, { color: theme.text }]}>Large</Text>
+              <Text style={[styles.subLabel, { color: theme.text }]}>{t('AddItemScreen.dish_large')}</Text>
               <TextInput
                 style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                 value={largePortion}
                 onChangeText={setLargePortion}
-                placeholder="Size"
+                placeholder={t('AddItemScreen.size')}
                 placeholderTextColor={theme.placeholder}
                 keyboardType="numeric"
               />
@@ -397,7 +397,7 @@ useEffect(() => {
                 style={[styles.input, styles.smallInput, { color: theme.text, borderColor: theme.border }]}
                 value={largePrice}
                 onChangeText={setLargePrice}
-                placeholder="Price"
+                placeholder={t('AddItemScreen.price')}
                 placeholderTextColor={theme.placeholder}
                 keyboardType="numeric"
               />
@@ -409,23 +409,23 @@ useEffect(() => {
         <View style={styles.section}>
           <View style={styles.row}>
             <View style={styles.halfWidth}>
-              <Text style={[styles.label, { color: theme.text }]}>Portion Unit:</Text>
+              <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.unit')}</Text>
               <TextInput
                 style={[styles.input, { color: theme.text, borderColor: theme.border }]}
                 value={portionUnit}
                 onChangeText={setPortionUnit}
-                placeholder="Unit (g/ml)"
+                placeholder={t('AddItemScreen.unit2')}
                 placeholderTextColor={theme.placeholder}
               />
             </View>
             
             <View style={styles.halfWidth}>
-              <Text style={[styles.label, { color: theme.text }]}>Discount Base:</Text>
+              <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.discount')}</Text>
               <TextInput
                 style={[styles.input, { color: theme.text, borderColor: theme.border }]}
                 value={discountBase}
                 onChangeText={setDiscountBase}
-                placeholder="Discount %"
+                placeholder={t('AddItemScreen.discount2')}
                 placeholderTextColor={theme.placeholder}
                 keyboardType="numeric"
               />
@@ -435,7 +435,7 @@ useEffect(() => {
 
         {/* Special Toggle */}
         <View style={[styles.section, styles.switchRow]}>
-          <Text style={[styles.label, { color: theme.text }]}>Today's Special:</Text>
+          <Text style={[styles.label, { color: theme.text }]}>{t('AddItemScreen.special')}</Text>
           <Switch
             value={isSpecial}
             onValueChange={setIsSpecial}
@@ -450,20 +450,20 @@ useEffect(() => {
             style={[styles.button, { backgroundColor: '#888' }]}
             onPress={() => router.push('../screens/main_menu')}
             >
-            <Text style={styles.buttonText}>Zrušiť</Text>
+            <Text style={styles.buttonText}>{t('AddItemScreen.cancel')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
             style={[styles.button, { backgroundColor: '#c0392b' }]}
             onPress={deleteItem}
             >
-            <Text style={styles.buttonText}>Zmazať</Text>
+            <Text style={styles.buttonText}>{t('AddItemScreen.delete')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
             style={[styles.button, { backgroundColor: '#c79a55' }]}
             onPress={saveChanges}
             disabled={!food}
             >
-            <Text style={styles.buttonText}>Uložiť</Text>
+            <Text style={styles.buttonText}>{t('AddItemScreen.save')}</Text>
             </TouchableOpacity>
         </View>
         </View>

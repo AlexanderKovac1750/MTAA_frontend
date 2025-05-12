@@ -28,6 +28,8 @@ export default function PaymentScreen() {
     const [itemCount, setIC] = useState(5);
     const [deliveryType, setDT] = useState('delivery');
 
+    const { t } = useTranslation();
+
     useEffect(()=>{
         let TP = parseFloat(String(getOrder_price()));
         if(isNaN(TP)){
@@ -86,10 +88,10 @@ export default function PaymentScreen() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ body:{filler:"123"} }), // wrapping inside an object is optional, depending on API
+                body: JSON.stringify({ body:{filler:"123"} }), // wrapping inside an object is optional
             });
             
-                const responseText = await response.text(); // Use `.text()` instead of `.json()`
+                const responseText = await response.text(); // `.text()` instead of `.json()`
                 const data: any = JSON.parse(responseText);
                 
                 if (!response.ok) {
@@ -141,7 +143,7 @@ export default function PaymentScreen() {
                         ]}
                     >
                         <Text style={{ color: paymentMethod === method ? theme.background : theme.text }}>
-                            {method === 'card' ? 'Kartou' : 'Po doručení'}
+                            {method === 'card' ? t('AddItemScreen.with_card') : t('AddItemScreen.after_delivery')}
                         </Text>
                     </TouchableOpacity>
                 ))}
@@ -151,7 +153,7 @@ export default function PaymentScreen() {
             {paymentMethod === 'card' && (
                 <View style={[styles.cardSection, { backgroundColor: theme.card }]}>
                     <View style={styles.cardHeader}>
-                        <Text style={[styles.cardLabel, { color: theme.text }]}>Údaje o karte</Text>
+                        <Text style={[styles.cardLabel, { color: theme.text }]}>{t('AddItemScreen.card')}</Text>
                         <Image
                             source={require('../resources/images/card_icon.png')}
                             style={styles.cardIcons}
@@ -160,7 +162,7 @@ export default function PaymentScreen() {
                     </View>
                     <TextInput
                         style={[styles.input, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                        placeholder="Číslo karty"
+                        placeholder={t('AddItemScreen.card_number')}
                         placeholderTextColor={theme.placeholder}
                         keyboardType="numeric"
                         value={cardNumber}
@@ -169,14 +171,14 @@ export default function PaymentScreen() {
                     <View style={styles.row}>
                         <TextInput
                             style={[styles.input, styles.halfInput, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                            placeholder="Platnosť (MM/YY)"
+                            placeholder={t('AddItemScreen.card_expiry')}
                             placeholderTextColor={theme.placeholder}
                             value={expiryDate}
                             onChangeText={setExpiryDate}
                         />
                         <TextInput
                             style={[styles.input, styles.halfInput, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                            placeholder="CVC"
+                            placeholder={t('AddItemScreen.card_cvc')}
                             placeholderTextColor={theme.placeholder}
                             keyboardType="numeric"
                             value={cvc}
@@ -189,13 +191,13 @@ export default function PaymentScreen() {
             {/* Summary Section */}
             <View style={[styles.summarySection,{flexDirection: 'row', justifyContent: 'space-between'}]}>
                 <View>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>Počet položiek: {itemCount}</Text>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>Cena: {totalPrice.toFixed(2)} €</Text>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('AddItemScreen.number_of_items')} {itemCount}</Text>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('AddItemScreen.total_price')} {totalPrice.toFixed(2)} €</Text>
                     {discount && (
                         <Text style={[styles.summaryText, { color: theme.text }]}>Zľava: -{(discount.effectivness * 100).toFixed(0)}%</Text>
                     )}
                     <Text style={[styles.summaryText, { color: theme.text }]}>
-                        {deliveryType === 'delivery' ? 'Doručenie: 2.50 €' : 'Rezervácia: 1.00 €'}
+                        {deliveryType === 'delivery' ? t('AddItemScreen.delivery_price') : t('AddItemScreen.resrvation_price')}
                     </Text>
                     <Text style={[styles.summaryText, { color: theme.text, fontWeight: 'bold' }]}>
                         Spolu: {(discountedPrice + deliveryFee).toFixed(2)} €

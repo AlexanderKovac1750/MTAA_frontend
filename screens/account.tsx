@@ -36,23 +36,10 @@ export default function AccountScreen() {
   const [availableDPs, setAvailableDPs] = useState<number>(0);
   const [discount, setDiscount] = useState<Discount|null>(null);
 
-  const [maxPoints, setMaxPoints] = useState(100);
-  const [currentDiscountLevel, setCurrentDL] = useState<number>();
+  const maxPoints = 100;
+  const currentDiscountLevel =
+    userPoints >= 75 ? 20 : userPoints >= 50 ? 10 : userPoints >= 25 ? 5 : 0;
   const freeFavoriteSpaces = Math.floor(loyaltyLevel / 3);
-
-  const setDiscVars = ()=>{
-    console.log('UP', userPoints);
-
-    console.log('UP1', discountOptions);
-    const temp_disc = discountOptions.filter(DO => DO.cost <= availableDPs);
-    console.log('UP2', temp_disc);
-
-    const maxDisc = Math.max(...temp_disc.map(item => item.effectivness));
-    setCurrentDL(maxDisc*100);
-
-    const maxCost = Math.max(...discountOptions.map(item => item.cost));
-    setMaxPoints(maxCost);
-  }
 
   const fetchUserData = async () => {
     const token = getToken();
@@ -122,12 +109,7 @@ export default function AccountScreen() {
     setAvailableDPs(getDPs());
   }, []);
 
-  useEffect(()=>{
-    setDiscVars();
-  }, [discountOptions,userPoints])
-
   const logout_call = async() => {
-    console.log('dasd',discountOptions)
     try {
                 const query = `?token=${getToken()}`;
                 const url = `http://${getBaseUrl()}/logout${query}`;
@@ -195,7 +177,7 @@ export default function AccountScreen() {
                   },
                 ]}
               >
-                zľava {discOpt.effectivness*100}%
+                zľava {discOpt.effectivness.toFixed(2)}%
               </Text>
             </TouchableOpacity>
           ))}

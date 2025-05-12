@@ -256,10 +256,10 @@ export default function DeliveryScreen() {
 
             <View style={styles.row}>
             <Pressable style={[styles.option, tab === 'reservation' ? { backgroundColor: theme.primary } : { backgroundColor: theme.secondary }]} onPress={() => setTab('reservation')}>
-                <Text style={{ color: tab === 'reservation' ? theme.background : theme.text }}>{t('DeliveryScreen.delivery')}</Text>
+                <Text style={{ color: tab === 'reservation' ? theme.background : theme.text }}>{t('DeliveryScreen.reservation')}</Text>
             </Pressable>
             <Pressable style={[styles.option, tab === 'delivery' ? { backgroundColor: theme.primary } : { backgroundColor: theme.secondary }]} onPress={() => setTab('delivery')}>
-                <Text style={{ color: tab === 'delivery' ? theme.background : theme.text }}>{t('DeliveryScreen.reservation')}</Text>
+                <Text style={{ color: tab === 'delivery' ? theme.background : theme.text }}>{t('DeliveryScreen.delivery')}</Text>
             </Pressable>
             </View>
 
