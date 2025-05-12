@@ -162,6 +162,7 @@ export default function DeliveryScreen() {
                         }
 
                     console.log('requesting delivery', body);
+                    
                 }
                 catch{
                     Alert.alert('please choose valid house number');
@@ -193,6 +194,13 @@ export default function DeliveryScreen() {
                     }
 
                 console.log('making reservation', body);
+
+                
+                const start_time = date;
+                start_time.setHours(timeFrom.getHours());
+                start_time.setMinutes(timeFrom.getMinutes());
+                scheduleNotification(start_time);
+
             }
         }
         
@@ -418,3 +426,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
 });
+function scheduleNotification(start_time: Date) {
+    throw new Error('Function not implemented.');
+}
+
