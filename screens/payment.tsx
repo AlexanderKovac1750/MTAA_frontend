@@ -143,7 +143,7 @@ export default function PaymentScreen() {
                         ]}
                     >
                         <Text style={{ color: paymentMethod === method ? theme.background : theme.text }}>
-                            {method === 'card' ? t('AddItemScreen.with_card') : t('AddItemScreen.after_delivery')}
+                            {method === 'card' ? t('PaymentScreen.with_card') : t('PaymentScreen.after_delivery')}
                         </Text>
                     </TouchableOpacity>
                 ))}
@@ -153,7 +153,7 @@ export default function PaymentScreen() {
             {paymentMethod === 'card' && (
                 <View style={[styles.cardSection, { backgroundColor: theme.card }]}>
                     <View style={styles.cardHeader}>
-                        <Text style={[styles.cardLabel, { color: theme.text }]}>{t('AddItemScreen.card')}</Text>
+                        <Text style={[styles.cardLabel, { color: theme.text }]}>{t('PaymentScreen.card')}</Text>
                         <Image
                             source={require('../resources/images/card_icon.png')}
                             style={styles.cardIcons}
@@ -162,7 +162,7 @@ export default function PaymentScreen() {
                     </View>
                     <TextInput
                         style={[styles.input, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                        placeholder={t('AddItemScreen.card_number')}
+                        placeholder={t('PaymentScreen.card_number')}
                         placeholderTextColor={theme.placeholder}
                         keyboardType="numeric"
                         value={cardNumber}
@@ -171,14 +171,14 @@ export default function PaymentScreen() {
                     <View style={styles.row}>
                         <TextInput
                             style={[styles.input, styles.halfInput, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                            placeholder={t('AddItemScreen.card_expiry')}
+                            placeholder={t('PaymentScreen.card_expiry')}
                             placeholderTextColor={theme.placeholder}
                             value={expiryDate}
                             onChangeText={setExpiryDate}
                         />
                         <TextInput
                             style={[styles.input, styles.halfInput, { color: theme.text, backgroundColor: theme.surface, borderColor: theme.border }]}
-                            placeholder={t('AddItemScreen.card_cvc')}
+                            placeholder={t('PaymentScreen.card_cvc')}
                             placeholderTextColor={theme.placeholder}
                             keyboardType="numeric"
                             value={cvc}
@@ -191,13 +191,13 @@ export default function PaymentScreen() {
             {/* Summary Section */}
             <View style={[styles.summarySection,{flexDirection: 'row', justifyContent: 'space-between'}]}>
                 <View>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('AddItemScreen.number_of_items')} {itemCount}</Text>
-                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('AddItemScreen.total_price')} {totalPrice.toFixed(2)} €</Text>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('PaymentScreen.number_of_items')} {itemCount}</Text>
+                    <Text style={[styles.summaryText, { color: theme.text }]}>{t('PaymentScreen.total_price')} {totalPrice.toFixed(2)} €</Text>
                     {discount && (
                         <Text style={[styles.summaryText, { color: theme.text }]}>{t('DeliveryScreen.discount')}: -{(discount.effectivness * 100).toFixed(0)}%</Text>
                     )}
                     <Text style={[styles.summaryText, { color: theme.text }]}>
-                        {deliveryType === 'delivery' ? t('AddItemScreen.delivery_price') : t('AddItemScreen.resrvation_price')}
+                        {deliveryType === 'delivery' ? t('PaymentScreen.delivery_price') : t('PaymentScreen.resrvation_price')}
                     </Text>
                     <Text style={[styles.summaryText, { color: theme.text, fontWeight: 'bold' }]}>
                         Spolu: {(discountedPrice + deliveryFee).toFixed(2)} €
