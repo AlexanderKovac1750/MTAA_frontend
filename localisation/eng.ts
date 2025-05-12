@@ -1,3 +1,4 @@
+import { post } from "axios";
 import MainMenu from "../screens/main_menu";
 
 export default {
@@ -5,6 +6,14 @@ export default {
     title: 'Login',
     anonymous: 'Anonymous mode',
     register: 'Register',
+    appName: 'At the Blind Eagle',
+    name: 'Name',
+    password: 'Password',
+    rememberMe: 'Remember me',
+    loginButton: 'Log in',
+    loginFailed: 'Login failed',
+    connectionFailed: 'Connection failed',
+    offlineModeMessage: 'Using offline mode, limited functionality...'
   },
   account: {
     pubName: "U slepého orla",
@@ -49,17 +58,23 @@ export default {
     unauthorized: "Unauthorized access"
   },
   DeliveryScreen: {
-    title: "Delivery",
+    delivery: "Delivery",
+    reservation: "Reservation",
+    street: "Street",
+    number: "Number",
+    postal_code: "Postal Code",
     order_now: "Order Now",
+    comment: "Comment",
+    date: "Choose Date",
+    time_from: "time from",
+    time_to: "time until",
+    pay: "Pay",
+    number_of_people: "Number of Guests",
     track_order: "Track Order",
     delivery_time: "Estimated Delivery Time",
     address: "Delivery Address",
     change_address: "Change Address",
-    delivery_options: "Delivery Options",
-    contactless: "Contactless Delivery",
-    leave_at_door: "Leave at Door",
-    instructions: "Delivery Instructions",
-    confirm: "Confirm Delivery",
+    delivery_options: "Delivery Options or Reservation",
     cancel: "Cancel Order",
     status_preparing: "Preparing your order...",
     status_out_for_delivery: "Out for delivery",
@@ -68,5 +83,15 @@ export default {
     error_no_connection: "No connection. Please try again.",
     success_confirmed: "Your delivery has been confirmed.",
     success_cancelled: "Your delivery has been cancelled."
+  },
+    LoyalityScreen: {
+    title: "Loyalty Program",
+    points: "Points",
+    rewards: "Rewards",
+    discount: "Discount",
+    currentDiscount: "Current Discount",
+    loginButton: "Login"
   }
+  
+
 };

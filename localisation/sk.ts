@@ -1,8 +1,13 @@
 export default {
     login: {
-      title: 'Prihlásenie',
-      anonymous: 'anonymní mód',
-      register: 'zaregistruj sa',
+    appName: 'U slepeho orla',
+    name: 'Meno',
+    password: 'Heslo',
+    rememberMe: 'Zapamätať si ma',
+    loginButton: 'Prihlásiť sa',
+    loginFailed: 'Prihlásenie zlyhalo',
+    connectionFailed: 'Chyba pripojenia',
+    offlineModeMessage: 'Používa sa offline režim...'
     },
     account: {
         pubName: "U slepého orla",
@@ -46,14 +51,25 @@ export default {
       admin_only: "Len pre administrátorov",
       unauthorized: "Neoprávnený prístup"
     },
-        DeliveryScreen: {
-      title: "Doručenie",
-      order_now: "Objednať teraz",
+    DeliveryScreen: {
+      delivery: "Doručenie",
+      reservetion: "Rezervácia",
+      street: "Ulica",
+      postal_code: "PSČ",
+      reservation: "Rezervácia",
+      number: "Číslo",
+      order_now: "Order Now",
+      comment: "Komentár",
+      date: "Vyberte dátum",
+      time_from: "čas od",
+      time_to: "čas do",
+      pay: "Zaplaťte",
+      number_of_people: "Počet hostí",
       track_order: "Sledovať objednávku",
       delivery_time: "Odhadovaný čas doručenia",
       address: "Adresa doručenia",
       change_address: "Zmeniť adresu",
-      delivery_options: "Možnosti doručenia",
+      delivery_options: "Možnosti doručenia alebo rezervácie",
       contactless: "Bezkontaktné doručenie",
       leave_at_door: "Nechať pri dverách",
       instructions: "Pokyny pre doručenie",
@@ -66,6 +82,14 @@ export default {
       error_no_connection: "Bez pripojenia. Skúste znova.",
       success_confirmed: "Vaše doručenie bolo potvrdené.",
       success_cancelled: "Vaše doručenie bolo zrušené."
-    }
+    },
+    LoyalityScreen: {
+      title: "Vernostný program",
+      points: "Body",
+      rewards: "Odmeny",
+      discount: "Zľava",
+      currentDiscount: "Aktuálna zľava",
+      loginButton: "Prihlásiť sa"
+    },
 
   };

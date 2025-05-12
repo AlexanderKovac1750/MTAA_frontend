@@ -1,8 +1,13 @@
 export default {
     login: {
-      title: 'Логин',
-      anonymous: 'Анонимный режим',
-      register: 'Регистрация',
+      appName: 'У Слепого Орла',
+      name: 'Имя',
+      password: 'Пароль',
+      rememberMe: 'Запомнить меня',
+      loginButton: 'Войти',
+      loginFailed: 'Ошибка входа',
+      connectionFailed: 'Ошибка подключения',
+      offlineModeMessage: 'Используется автономный режим...'
     },
     account: {
         pubName: "У слепого орла",
@@ -47,13 +52,22 @@ export default {
       unauthorized: "Несанкционированный доступ"
     },
     DeliveryScreen: {
-      title: "Доставка",
+      delivery: "Доставка",
+      reservetion: "Резервирование",
+      street: "Улица",
+      postal_code: "Почтовый индекс",
+      reservation: "Резервирование",
+      number: " Номер",
       order_now: "Заказать сейчас",
-      track_order: "Отслеживать заказ",
-      delivery_time: "Предполагаемое время доставки",
+      comment: "Комментарий",
+      date: "Выберите дату",
+      time_from: "время с",
+      time_to: "время до",
+      pay: "Оплатить",
+      number_of_people: "Количество гостей",
       address: "Адрес доставки",
       change_address: "Изменить адрес",
-      delivery_options: "Параметры доставки",
+      delivery_options: "Возможность доставки или резервирования",
       contactless: "Бесконтактная доставка",
       leave_at_door: "Оставить у двери",
       instructions: "Инструкции по доставке",
@@ -66,5 +80,14 @@ export default {
       error_no_connection: "Нет подключения. Попробуйте снова.",
       success_confirmed: "Ваша доставка подтверждена.",
       success_cancelled: "Ваша доставка отменена."
+    },
+    LoyalityScreen: {
+      title: "Программа лояльности",
+      points: "Очки",
+      rewards: "Награды",
+      discount: "Скидка",
+      currentDiscount: "Текущая скидка",
+      loginButton: "Войти"
     }
+
   };
